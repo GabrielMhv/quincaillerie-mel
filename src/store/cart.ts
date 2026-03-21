@@ -24,6 +24,7 @@ export const useCartStore = create<CartState>()(
           const existing = state.items.find(
             (i) => i.product.id === product.id
           );
+          
           if (existing) {
             return {
               items: state.items.map((i) =>
@@ -31,11 +32,13 @@ export const useCartStore = create<CartState>()(
                   ? { ...i, quantity: i.quantity + quantity }
                   : i
               ),
+              boutiqueId: state.boutiqueId || boutique_id,
             };
           }
+          
           return {
             items: [...state.items, { product, quantity, boutique_id }],
-            boutiqueId: boutique_id,
+            boutiqueId: state.boutiqueId || boutique_id,
           };
         });
       },

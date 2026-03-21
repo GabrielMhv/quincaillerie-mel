@@ -28,6 +28,7 @@ export interface Product {
   price: number;
   description?: string;
   category_id: string;
+  min_stock_alert?: number;
   image_url?: string;
   created_at: string;
   category?: Category;

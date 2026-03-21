@@ -1,0 +1,84 @@
+"use client";
+
+import { createContext, useContext, useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
+interface BrandingSettings {
+  name: string;
+  description: string;
+  address: string;
+  phone: string;
+  email: string;
+  facebook?: string;
+  instagram?: string;
+  whatsapp?: string;
+  linkedin?: string;
+}
+
+interface BrandingContextType {
+  settings: BrandingSettings;
+  isLoading: boolean;
+}
+
+const defaultSettings: BrandingSettings = {
+  name: "Ets La Championne",
+  description: "Votre partenaire pour tous vos travaux de quincaillerie.",
+  address: "Ségbé & Sanguera, Lomé, Togo",
+  phone: "+228 00 00 00 00",
+  email: "contact@lachampionne.com",
+  facebook: "",
+  instagram: "",
+  whatsapp: "",
+  linkedin: "",
+};
+
+const BrandingContext = createContext<BrandingContextType>({
+  settings: defaultSettings,
+  isLoading: true,
+});
+
+export function BrandingProvider({ 
+  children,
+  initialSettings 
+}: { 
+  children: React.ReactNode;
+  initialSettings?: BrandingSettings;
+}) {
+  const [settings, setSettings] = useState<BrandingSettings>(initialSettings || defaultSettings);
+  const [isLoading, setIsLoading] = useState(!initialSettings);
+  const supabase = createClient();
+
+  useEffect(() => {
+    // Si nous avons déjà des réglages initiaux, on peut sauter le fetch initial 
+    // ou le faire en arrière-plan pour rafraîchir.
+    if (initialSettings) return;
+
+    async function fetchSettings() {
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "branding")
+          .single();
+
+        if (data?.value) {
+          setSettings(data.value);
+        }
+      } catch (error) {
+        console.error("Error fetching branding:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchSettings();
+  }, [supabase, initialSettings]);
+
+  return (
+    <BrandingContext.Provider value={{ settings, isLoading }}>
+      {children}
+    </BrandingContext.Provider>
+  );
+}
+
+export const useBranding = () => useContext(BrandingContext);
