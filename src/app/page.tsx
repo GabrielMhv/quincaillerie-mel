@@ -15,6 +15,7 @@ import {
   Hammer,
 } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { ProductCard } from "@/components/products/product-card";
 import { Product } from "@/types";
 
