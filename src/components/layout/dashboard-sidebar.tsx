@@ -25,7 +25,7 @@ import {
   LogOut,
   ShieldCheck,
   Target,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -180,16 +180,23 @@ export function DashboardSidebar() {
   return (
     <aside className="hidden w-72 flex-col border-r border-primary/5 bg-card/30 backdrop-blur-2xl md:flex relative z-50">
       {/* Glow Effect */}
-      <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
-      
+      <div className="absolute top-0 left-0 w-full h-64 bg-linear-to-b from-primary/5 to-transparent pointer-events-none" />
+
       <div className="flex h-24 items-center px-8 relative">
-        <Link href="/" className="flex items-center gap-3 group transition-all duration-500 hover:scale-105">
+        <Link
+          href="/"
+          className="flex items-center gap-3 group transition-all duration-500 hover:scale-105"
+        >
           <div className="h-10 w-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 rotate-3 group-hover:rotate-0 transition-transform">
             <Store className="h-6 w-6 text-primary-foreground" />
           </div>
           <div className="flex flex-col">
-             <span className="text-xl font-black tracking-tighter text-gradient leading-none">Championne</span>
-             <span className="text-[10px] font-bold text-muted-foreground/40 tracking-[0.3em] ml-0.5">EST. 2024</span>
+            <span className="text-xl font-black tracking-tighter text-gradient leading-none">
+              Championne
+            </span>
+            <span className="text-[10px] font-bold text-muted-foreground/40 tracking-[0.3em] ml-0.5">
+              EST. 2024
+            </span>
           </div>
         </Link>
       </div>
@@ -219,10 +226,21 @@ export function DashboardSidebar() {
                     )}
                   >
                     <div className="flex items-center gap-4">
-                      <item.icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", isActive ? "text-primary-foreground" : "text-primary/40")} />
-                      <span className="text-sm font-bold tracking-tight">{item.title}</span>
+                      <item.icon
+                        className={cn(
+                          "h-5 w-5 transition-transform group-hover:scale-110",
+                          isActive
+                            ? "text-primary-foreground"
+                            : "text-primary/40",
+                        )}
+                      />
+                      <span className="text-sm font-bold tracking-tight">
+                        {item.title}
+                      </span>
                     </div>
-                    {isActive && <ChevronRight className="h-4 w-4 opacity-50" />}
+                    {isActive && (
+                      <ChevronRight className="h-4 w-4 opacity-50" />
+                    )}
                   </Link>
                 );
               })}
@@ -235,7 +253,9 @@ export function DashboardSidebar() {
           <div className="px-6 flex items-center justify-between group cursor-default">
             <h2 className="text-[10px] font-black tracking-widest text-muted-foreground/40 italic lowercase">
               {activeBoutiqueId
-                ? user.role === "admin" ? "Opérations Filiale" : "Environnement Local"
+                ? user.role === "admin"
+                  ? "Opérations Filiale"
+                  : "Environnement Local"
                 : "Navigation Restreinte"}
             </h2>
             <LayoutDashboard className="h-3 w-3 text-orange-500/30 group-hover:scale-125 transition-transform" />
@@ -243,7 +263,9 @@ export function DashboardSidebar() {
           {activeBoutiqueId ? (
             <nav className="space-y-1">
               {boutiqueItems.map((item) => {
-                const isActive = pathname === item.href && (boutiqueId || user.role !== "admin");
+                const isActive =
+                  pathname === item.href &&
+                  (boutiqueId || user.role !== "admin");
                 const hrefWithBoutique = `${item.href}${item.href.includes("?") ? "&" : "?"}boutiqueId=${activeBoutiqueId}`;
 
                 return (
@@ -253,60 +275,86 @@ export function DashboardSidebar() {
                     className={cn(
                       "group flex items-center justify-between rounded-2xl px-6 py-3.5 transition-all duration-300",
                       isActive
-                        ? "bg-gradient-to-r from-orange-500 to-amber-500 shadow-lg shadow-orange-500/20 text-white font-black"
+                        ? "bg-linear-to-r from-orange-500 to-amber-500 shadow-lg shadow-orange-500/20 text-white font-black"
                         : "text-muted-foreground/70 hover:bg-orange-500/5 hover:text-foreground",
                     )}
                   >
                     <div className="flex items-center gap-4">
-                      <item.icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", isActive ? "text-white" : "text-orange-500/40")} />
-                      <span className="text-sm font-bold tracking-tight">{item.title}</span>
+                      <item.icon
+                        className={cn(
+                          "h-5 w-5 transition-transform group-hover:scale-110",
+                          isActive ? "text-white" : "text-orange-500/40",
+                        )}
+                      />
+                      <span className="text-sm font-bold tracking-tight">
+                        {item.title}
+                      </span>
                     </div>
-                    {isActive && <ChevronRight className="h-4 w-4 opacity-50" />}
+                    {isActive && (
+                      <ChevronRight className="h-4 w-4 opacity-50" />
+                    )}
                   </Link>
                 );
               })}
             </nav>
           ) : (
             <div className="mx-4 p-8 text-center rounded-[2.5rem] border border-dashed border-primary/10 bg-primary/5">
-                <div className="h-10 w-10 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                   <Target className="h-5 w-5 text-primary/40" />
-                </div>
-                <p className="text-[10px] font-bold text-muted-foreground/60 leading-relaxed italic">
-                  Veuillez spécifier un point de vente pour activer les fonctions locales.
-                </p>
+              <div className="h-10 w-10 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <Target className="h-5 w-5 text-primary/40" />
+              </div>
+              <p className="text-[10px] font-bold text-muted-foreground/60 leading-relaxed italic">
+                Veuillez spécifier un point de vente pour activer les fonctions
+                locales.
+              </p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="mt-auto p-6 space-y-4 border-t border-primary/5 bg-gradient-to-t from-primary/[0.02] to-transparent">
+      <div className="mt-auto p-6 space-y-4 border-t border-primary/5 bg-linear-to-t from-primary/2 to-transparent">
         {boutiqueId && (
           <div className="rounded-3xl bg-orange-600 shadow-lg shadow-orange-600/20 p-5 relative overflow-hidden group">
             <div className="absolute -top-4 -right-4 h-16 w-16 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
             <div className="relative flex items-center gap-3">
-               <ShieldCheck className="h-5 w-5 text-white" />
-               <p className="text-[11px] font-black text-white tracking-widest italic lowercase">Haut Commandement Boutique</p>
+              <ShieldCheck className="h-5 w-5 text-white" />
+              <p className="text-[11px] font-black text-white tracking-widest italic lowercase">
+                Haut Commandement Boutique
+              </p>
             </div>
           </div>
         )}
-        
+
         <div className="group rounded-[2.5rem] bg-card/60 backdrop-blur-md border border-primary/5 p-6 transition-all duration-500 hover:shadow-xl hover:shadow-primary/5">
           <div className="flex items-center gap-4 mb-4">
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center text-primary border border-primary/20 shadow-sm transition-transform group-hover:rotate-6">
-                <User className="h-6 w-6" />
-             </div>
-             <div className="flex-1 min-w-0">
-                <p className="text-xs font-black text-muted-foreground/40 tracking-widest italic lowercase truncate">Signature</p>
-                <p className="font-black text-base tracking-tighter truncate text-foreground/90 leading-tight mt-0.5">{user.name}</p>
-             </div>
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center text-primary border border-primary/20 shadow-sm transition-transform group-hover:rotate-6">
+              <User className="h-6 w-6" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-black text-muted-foreground/40 tracking-widest italic lowercase truncate">
+                Signature
+              </p>
+              <p className="font-black text-base tracking-tighter truncate text-foreground/90 leading-tight mt-0.5">
+                {user.name}
+              </p>
+            </div>
           </div>
           <div className="flex items-center justify-between border-t border-primary/5 pt-4">
-             <Badge variant="outline" className="rounded-full px-3 py-0.5 bg-primary/5 text-primary border-primary/10 text-[9px] font-black tracking-[0.2em] italic">
-                {user.role === 'admin' ? 'Administrateur' : user.role === 'manager' ? 'Directeur' : 'Collaborateur'}
-             </Badge>
-             <button onClick={() => signOut()} className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive flex items-center justify-center transition-all text-muted-foreground/40 hover:scale-110">
-                <LogOut className="h-4 w-4" />
-             </button>
+            <Badge
+              variant="outline"
+              className="rounded-full px-3 py-0.5 bg-primary/5 text-primary border-primary/10 text-[9px] font-black tracking-[0.2em] italic"
+            >
+              {user.role === "admin"
+                ? "Administrateur"
+                : user.role === "manager"
+                  ? "Directeur"
+                  : "Collaborateur"}
+            </Badge>
+            <button
+              onClick={() => signOut()}
+              className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive flex items-center justify-center transition-all text-muted-foreground/40 hover:scale-110"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>

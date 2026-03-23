@@ -40,7 +40,7 @@ export function PublicFooter() {
                   {settings.name}
                 </span>
               </div>
-              <p className="text-[11px] tracking-tight font-bold text-blue-400 opacity-60 pl-1 uppercase tracking-[0.2em]">
+              <p className="text-[11px] tracking-tight font-bold text-blue-400 opacity-60 pl-1">
                 {settings.address}
               </p>
             </Link>
@@ -171,7 +171,7 @@ export function PublicFooter() {
               <Sparkles className="h-3.5 w-3.5 text-primary/40" />
             </div>
             <p className="opacity-60">
-              © {new Date().getFullYear()} Ets La Championne • Excellence &
+              &copy; {new Date().getFullYear()} Ets La Championne • Excellence &
               Innovation au Togo.
             </p>
           </div>

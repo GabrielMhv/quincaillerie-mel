@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Loader2, ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -30,9 +29,10 @@ export function LoginForm() {
 
       if (error) {
         toast.error("Échec d'authentification", {
-          description: error.message === "Invalid login credentials" 
-            ? "L'email ou le mot de passe est invalide." 
-            : error.message
+          description:
+            error.message === "Invalid login credentials"
+              ? "L'email ou le mot de passe est invalide."
+              : error.message,
         });
         setIsLoading(false);
         return;
@@ -40,7 +40,7 @@ export function LoginForm() {
 
       if (data.user) {
         toast.success("Authentification réussie", {
-          description: "Redirection vers votre console de gestion..."
+          description: "Redirection vers votre console de gestion...",
         });
         router.push("/dashboard");
         router.refresh();
@@ -53,10 +53,18 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleLogin} className="space-y-10 animate-in fade-in duration-700 delay-500">
+    <form
+      onSubmit={handleLogin}
+      className="space-y-10 animate-in fade-in duration-700 delay-500"
+    >
       <div className="space-y-6">
         <div className="space-y-3">
-          <Label htmlFor="email" className="text-[11px] font-bold tracking-widest text-slate-400 ml-1">Email professionnel</Label>
+          <Label
+            htmlFor="email"
+            className="text-[11px] font-bold tracking-widest text-slate-400 ml-1"
+          >
+            Email professionnel
+          </Label>
           <Input
             id="email"
             type="email"
@@ -71,8 +79,17 @@ export function LoginForm() {
         </div>
         <div className="space-y-3">
           <div className="flex items-center justify-between ml-1">
-            <Label htmlFor="password" className="text-[11px] font-bold tracking-widest text-slate-400">Mot de passe</Label>
-            <Button variant="link" className="p-0 h-auto text-[10px] font-bold text-primary hover:text-primary/70 no-underline" type="button">
+            <Label
+              htmlFor="password"
+              className="text-[11px] font-bold tracking-widest text-slate-400"
+            >
+              Mot de passe
+            </Label>
+            <Button
+              variant="link"
+              className="p-0 h-auto text-[10px] font-bold text-primary hover:text-primary/70 no-underline"
+              type="button"
+            >
               Identifiants oubliés ?
             </Button>
           </div>
@@ -91,10 +108,10 @@ export function LoginForm() {
           </div>
         </div>
       </div>
-      
-      <Button 
-        type="submit" 
-        className="w-full h-18 rounded-2xl text-[14px] font-black tracking-tight bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-3xl hover:scale-[1.02] active:scale-95 transition-all group" 
+
+      <Button
+        type="submit"
+        className="w-full h-18 rounded-2xl text-[14px] font-black tracking-tight bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-3xl hover:scale-[1.02] active:scale-95 transition-all group"
         disabled={isLoading}
       >
         {isLoading ? (
@@ -113,8 +130,11 @@ export function LoginForm() {
       <div className="pt-8 border-t border-slate-200 dark:border-white/5 text-center">
         <p className="text-xs font-medium text-slate-500">
           Vous êtes un client ?{" "}
-          <Link href="/" className="text-primary font-bold hover:underline underline-offset-4">
-             Retourner au site public
+          <Link
+            href="/"
+            className="text-primary font-bold hover:underline underline-offset-4"
+          >
+            Retourner au site public
           </Link>
         </p>
       </div>

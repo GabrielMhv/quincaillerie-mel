@@ -407,7 +407,7 @@ export function PublicHeader() {
               </div>
             </div>
             <p className="text-[9px] font-medium tracking-tight opacity-20 max-w-50">
-              © {new Date().getFullYear()} {settings.name}. Tous droits
+              &copy; {new Date().getFullYear()} {settings.name}. Tous droits
               réservés. Digital Edition.
             </p>
           </div>
