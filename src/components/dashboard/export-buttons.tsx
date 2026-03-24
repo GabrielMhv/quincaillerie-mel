@@ -3,9 +3,11 @@
 import { Download, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
 import { formatCurrency } from "@/lib/utils";
+
+import { useState } from "react";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface ExportButtonsProps {
   data: any[];
@@ -13,10 +15,14 @@ interface ExportButtonsProps {
 }
 
 export function ExportButtons({ data, filename = "Rapport_Transactions" }: ExportButtonsProps) {
-  const exportToCSV = () => {
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
+  const [isCsvLoading, setIsCsvLoading] = useState(false);
+
+  const exportToCSV = async () => {
+    setIsCsvLoading(true);
     try {
       if (!data.length) {
-        alert("Pas de données à exporter");
+        toast.error("Aucune donnée à exporter");
         return;
       }
       
@@ -44,13 +50,17 @@ export function ExportButtons({ data, filename = "Rapport_Transactions" }: Expor
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+      toast.success("Export CSV réussi");
     } catch (e) {
       console.error(e);
-      alert("Erreur CSV: " + e);
+      toast.error("Erreur lors de l'export CSV");
+    } finally {
+      setIsCsvLoading(false);
     }
   };
 
   const exportToPDF = async () => {
+    setIsPdfLoading(true);
     try {
       const { jsPDF } = await import("jspdf");
       const { default: autoTable } = await import("jspdf-autotable");
@@ -71,10 +81,13 @@ export function ExportButtons({ data, filename = "Rapport_Transactions" }: Expor
         body: tableData,
       });
 
-      doc.save(`${filename}.pdf`);
+      doc.save(`${filename}_${format(new Date(), "yyyy-MM-dd")}.pdf`);
+      toast.success("Export PDF réussi");
     } catch (e) {
       console.error(e);
-      alert("Erreur PDF: " + e);
+      toast.error("Erreur lors de l'export PDF");
+    } finally {
+      setIsPdfLoading(false);
     }
   };
 
@@ -82,17 +95,21 @@ export function ExportButtons({ data, filename = "Rapport_Transactions" }: Expor
     <div className="flex gap-4 relative z-50">
       <button 
         type="button"
+        disabled={isPdfLoading}
         onClick={exportToPDF}
-        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white text-xs font-black tracking-widest hover:bg-primary/80 transition-all shadow-lg"
+        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white text-xs font-black tracking-widest hover:bg-primary/80 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Download className="h-4 w-4" /> PDF
+        {isPdfLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+        PDF
       </button>
       <button 
         type="button"
+        disabled={isCsvLoading}
         onClick={exportToCSV}
-        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 border border-primary/20 text-xs font-black tracking-widest hover:bg-primary/10 transition-all"
+        className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 border border-primary/20 text-xs font-black tracking-widest hover:bg-primary/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Download className="h-4 w-4" /> CSV
+        {isCsvLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+        CSV
       </button>
     </div>
   );
