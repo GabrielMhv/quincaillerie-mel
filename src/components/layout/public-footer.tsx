@@ -25,7 +25,7 @@ export function PublicFooter() {
     <footer className="w-full bg-indigo-950 text-white/50 border-t border-white/5 relative overflow-hidden">
       {/* Background Decorative */}
       <div className="absolute top-0 left-0 w-full h-full bg-premium-grid opacity-5 pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 h-150 w-150 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 h-[400px] w-[400px] lg:h-[600px] lg:w-[600px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="container mx-auto px-6 py-16 md:py-20 relative z-10">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 items-start">

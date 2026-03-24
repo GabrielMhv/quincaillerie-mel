@@ -52,41 +52,42 @@ export default async function HomePage(props: {
         <div className="absolute bottom-[20%] right-[-10%] w-[1000px] h-[1000px] bg-indigo-500/5 rounded-full blur-[160px] -z-10 pointer-events-none" />
         <div className="absolute inset-0 bg-premium-grid opacity-[0.03] dark:opacity-[0.08] pointer-events-none" />
 
-        <div className="container mx-auto px-6 relative z-10 pt-16 lg:pt-32 pb-40">
+        <div className="container mx-auto px-6 lg:px-12 relative z-10 pt-10 lg:pt-32 pb-24 lg:pb-40 overflow-hidden md:overflow-visible">
           {/* High-Impact Hero Section */}
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-24 mb-48">
-            <div className="lg:w-3/5 space-y-12 animate-in fade-in slide-in-from-left-12 duration-1000">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 mb-32 lg:mb-48">
+            <div className="lg:w-3/5 space-y-8 lg:space-y-12 animate-in fade-in slide-in-from-left-12 duration-1000">
               <div className="space-y-6">
-                <h1 className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] text-slate-900 dark:text-white">
+                <h1 className="text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter leading-[0.85] text-slate-900 dark:text-white">
                   Tout pour <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-indigo-500 bg-[length:200%_auto] animate-gradient">
                     vos chantiers.
                   </span>
                 </h1>
-                <p className="text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-relaxed">
+                <p className="text-lg md:text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-relaxed">
                   L&apos;outillage professionnel et les matériaux de
                   construction qu&apos;il vous faut à Ségbé et Sanguera. Plus de
                   2500 références en stock pour les pros et les particuliers.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-6 pt-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-6 w-full">
                 <Link
                   href={
                     boutiqueId
                       ? `/products?boutiqueId=${boutiqueId}`
                       : "/products"
                   }
+                  className="w-full sm:w-auto"
                 >
-                  <Button className="rounded-full px-12 h-20 bg-primary text-white font-black tracking-tight text-lg shadow-3xl hover:scale-105 active:scale-95 transition-all group overflow-hidden">
+                  <Button className="w-full sm:w-auto rounded-full px-8 md:px-12 h-16 md:h-20 bg-primary text-white font-black tracking-tight text-base md:text-lg shadow-3xl hover:scale-105 active:scale-95 transition-all group overflow-hidden">
                     Commander mes matériels
                     <ArrowRight className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-3" />
                   </Button>
                 </Link>
-                <Link href="/contact">
+                <Link href="/contact" className="w-full sm:w-auto">
                   <Button
                     variant="outline"
-                    className="rounded-full px-12 h-20 border-2 border-slate-200 dark:border-white/10 font-bold tracking-tight text-lg hover:bg-white dark:hover:bg-white/5 hover:border-primary/50 transition-all"
+                    className="w-full sm:w-auto rounded-full px-8 md:px-12 h-16 md:h-20 border-2 border-slate-200 dark:border-white/10 font-bold tracking-tight text-base md:text-lg hover:bg-white dark:hover:bg-white/5 hover:border-primary/50 transition-all"
                   >
                     Demander un devis
                   </Button>
@@ -94,27 +95,27 @@ export default async function HomePage(props: {
               </div>
 
               {/* Stats Bar */}
-              <div className="flex items-center gap-10 pt-10 border-t border-slate-200 dark:border-white/5 max-w-xl">
+              <div className="flex flex-wrap items-center gap-6 md:gap-10 pt-8 mt-4 border-t border-slate-200 dark:border-white/5 max-w-xl justify-between sm:justify-start">
                 <div className="space-y-1">
-                  <p className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
+                  <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     15k+
                   </p>
                   <p className="text-[11px] font-bold text-slate-400 tracking-widest">
                     Clients servis
                   </p>
                 </div>
-                <div className="h-12 w-px bg-slate-200 dark:bg-white/5" />
+                <div className="h-10 md:h-12 w-px bg-slate-200 dark:bg-white/5" />
                 <div className="space-y-1">
-                  <p className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
+                  <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     2.5k
                   </p>
                   <p className="text-[11px] font-bold text-slate-400 tracking-widest">
                     Références
                   </p>
                 </div>
-                <div className="h-12 w-px bg-slate-200 dark:bg-white/5" />
+                <div className="h-10 md:h-12 w-px bg-slate-200 dark:bg-white/5 hidden sm:block" />
                 <div className="space-y-1">
-                  <p className="text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
+                  <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     02
                   </p>
                   <p className="text-[11px] font-bold text-slate-400 tracking-widest">
@@ -149,9 +150,9 @@ export default async function HomePage(props: {
               </div>
 
               {/* Floating elements with depth */}
-              <div className="absolute -bottom-12 -left-12 glass p-8 rounded-[3rem] shadow-3xl flex items-center gap-6 animate-bounce-slow border-white/40 dark:border-white/10">
-                <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                  <CheckCircle2 className="h-8 w-8" />
+              <div className="absolute -bottom-6 md:-bottom-12 -left-4 md:-left-12 glass p-5 md:p-8 rounded-[2rem] md:rounded-[3rem] shadow-3xl flex items-center gap-4 md:gap-6 animate-bounce-slow border-white/40 dark:border-white/10 z-20">
+                <div className="h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                  <CheckCircle2 className="h-6 w-6 md:h-8 md:w-8" />
                 </div>
                 <div className="space-y-1">
                   <p className="text-[13px] font-black tracking-tighter text-slate-900 dark:text-white leading-none">
@@ -170,12 +171,12 @@ export default async function HomePage(props: {
           </div>
 
           {/* Core Specializations (Categories Cards) */}
-          <section className="mb-48 space-y-16">
-            <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <section className="mb-24 lg:mb-48 space-y-10 lg:space-y-16">
+            <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700 px-4">
               <p className="text-[11px] font-black tracking-[0.3em] text-primary uppercase">
                 Expertise Sectorielle
               </p>
-              <h2 className="text-5xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
                 Nos domaines de{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
                   spécialisation.
@@ -183,7 +184,7 @@ export default async function HomePage(props: {
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 px-4 lg:px-0">
               {categories?.slice(0, 6).map((category, i) => (
                 <Link
                   key={category.id}
@@ -202,8 +203,8 @@ export default async function HomePage(props: {
           </section>
 
           {/* Professional Advantages Grid */}
-          <section className="mb-48">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <section className="mb-24 lg:mb-48 px-4 lg:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
               {[
                 {
                   icon: Truck,
@@ -226,7 +227,7 @@ export default async function HomePage(props: {
               ].map((advantage, i) => (
                 <div
                   key={i}
-                  className="group relative p-10 rounded-[3.5rem] bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-xl"
+                  className="group relative p-6 md:p-10 rounded-[2rem] md:rounded-[3.5rem] bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-xl"
                 >
                   <div
                     className={cn(
@@ -253,30 +254,30 @@ export default async function HomePage(props: {
           </section>
 
           {/* Featured Collections Overlay */}
-          <section className="mb-48 space-y-16">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-4">
+          <section className="mb-24 lg:mb-48 space-y-10 lg:space-y-16">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
               <div className="space-y-4">
                 <p className="text-[11px] font-black tracking-[0.3em] text-primary uppercase">
                   Collections Vedettes
                 </p>
-                <h2 className="text-5xl md:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
-                  Le meilleur de <br />
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
+                  Le meilleur de <br className="hidden md:block" />
                   notre{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 dark:from-blue-400 dark:to-indigo-400">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-600 dark:from-primary dark:to-emerald-400">
                     inventaire.
                   </span>
                 </h2>
               </div>
               <Link
                 href="/products"
-                className="group h-16 px-10 rounded-full border-2 border-slate-200 dark:border-white/10 flex items-center gap-3 text-sm font-black tracking-tight hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-slate-950 transition-all"
+                className="group w-full md:w-auto h-14 md:h-16 px-6 md:px-10 rounded-full border-2 border-slate-200 dark:border-white/10 flex items-center justify-center gap-3 text-sm font-black tracking-tight hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-slate-950 transition-all"
               >
                 Voir tout le catalogue{" "}
                 <ChevronRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 px-4 lg:px-0">
               {products?.map((product, i) => (
                 <ProductCard
                   key={product.id}
@@ -289,43 +290,43 @@ export default async function HomePage(props: {
           </section>
 
           {/* Master CTA Container */}
-          <section className="relative">
-            <div className="absolute inset-0 bg-primary rounded-[5rem] rotate-1 scale-[1.02] -z-10 opacity-10 blur-xl" />
-            <div className="relative z-10 p-1 lg:p-2 rounded-[5rem] bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 shadow-3xl overflow-hidden group">
+          <section className="relative px-2 lg:px-0 mb-12">
+            <div className="absolute inset-0 bg-primary rounded-[2rem] md:rounded-[5rem] rotate-1 scale-[1.02] -z-10 opacity-10 blur-xl" />
+            <div className="relative z-10 p-1 lg:p-2 rounded-[2rem] md:rounded-[5rem] bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 shadow-3xl overflow-hidden group">
               {/* Background animations within CTA */}
               <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] pointer-events-none group-hover:scale-125 transition-transform duration-[3s]" />
 
-              <div className="relative z-10 p-12 lg:p-24 flex flex-col lg:flex-row items-center justify-between gap-20">
-                <div className="space-y-10 lg:w-3/5 text-center lg:text-left">
+              <div className="relative z-10 p-8 md:p-12 lg:p-24 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
+                <div className="space-y-8 lg:space-y-10 lg:w-3/5 text-center lg:text-left">
                   <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/10 text-white/90 text-[10px] font-black tracking-widest backdrop-blur-md border border-white/10">
-                    <Landmark className="h-4 w-4 text-blue-400" /> Partenaire
+                    <Landmark className="h-4 w-4 text-emerald-400" /> Partenaire
                     des grands projets
                   </div>
-                  <h2 className="text-6xl lg:text-8xl font-black tracking-tighter text-white leading-tight">
-                    Prêt pour vos <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
+                  <h2 className="text-4xl sm:text-5xl lg:text-8xl font-black tracking-tighter text-white leading-tight">
+                    Prêt pour vos <br className="hidden sm:block" />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-500">
                       futurs chantiers ?
                     </span>
                   </h2>
-                  <p className="text-xl text-slate-400 font-medium leading-relaxed max-w-xl">
+                  <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
                     Bénéficiez de conditions préférentielles et d&apos;un
                     support technique dédié pour vos approvisionnements
                     professionnels.
                   </p>
-                  <div className="flex flex-wrap justify-center lg:justify-start gap-6 pt-6">
-                    <Button className="rounded-full px-12 h-20 bg-white text-slate-900 font-black tracking-tight text-xl shadow-2xl hover:scale-105 transition-all">
+                  <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4 md:pt-6 w-full sm:w-auto">
+                    <Button className="w-full sm:w-auto rounded-full px-8 md:px-12 h-14 md:h-20 bg-white text-slate-900 font-black tracking-tight text-base md:text-xl shadow-2xl hover:scale-105 transition-all">
                       Devenir partenaire
                     </Button>
                     <Button
                       variant="outline"
-                      className="rounded-full px-12 h-20 border-white/20 text-white hover:bg-white/10 font-bold tracking-tight text-xl backdrop-blur-sm"
+                      className="w-full sm:w-auto rounded-full px-8 md:px-12 h-14 md:h-20 border-white/20 text-white hover:bg-white/10 font-bold tracking-tight text-base md:text-xl backdrop-blur-sm"
                     >
                       Nous contacter
                     </Button>
                   </div>
                 </div>
 
-                <div className="lg:w-1/3 grid grid-cols-2 gap-6 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000 delay-300">
+                <div className="lg:w-1/3 grid grid-cols-2 gap-4 md:gap-6 w-full opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-1000 delay-300">
                   {[
                     { icon: Package, label: "2500+", sub: "Stock Global" },
                     { icon: Hammer, label: "Pro", sub: "Gamme Outillage" },
@@ -338,13 +339,13 @@ export default async function HomePage(props: {
                   ].map((stat, i) => (
                     <div
                       key={i}
-                      className="glass p-8 rounded-[3rem] items-center text-center space-y-3 border-white/10 hover:bg-white/10 transition-colors"
+                      className="glass p-4 sm:p-8 rounded-[1.5rem] md:rounded-[3rem] items-center text-center space-y-2 sm:space-y-3 border-white/10 hover:bg-white/10 transition-colors"
                     >
-                      <stat.icon className="h-10 w-10 text-blue-400 mb-2 mx-auto" />
-                      <p className="text-3xl font-black tracking-tighter text-white">
+                      <stat.icon className="h-8 w-8 sm:h-10 sm:w-10 text-emerald-400 mb-1 sm:mb-2 mx-auto" />
+                      <p className="text-2xl sm:text-3xl font-black tracking-tighter text-white">
                         {stat.label}
                       </p>
-                      <p className="text-[10px] font-bold text-slate-500 tracking-widest uppercase">
+                      <p className="text-[10px] font-bold text-slate-500 tracking-widest uppercase line-clamp-1">
                         {stat.sub}
                       </p>
                     </div>

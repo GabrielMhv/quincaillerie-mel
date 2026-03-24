@@ -88,19 +88,19 @@ function ProductsContent() {
       <div className="absolute bottom-[-10%] left-[-10%] w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-[150px] -z-10 pointer-events-none" />
       <div className="absolute inset-0 bg-premium-grid opacity-[0.03] dark:opacity-[0.08] pointer-events-none" />
 
-      <div className="container mx-auto px-6 pt-24 lg:pt-36">
+      <div className="container mx-auto px-4 md:px-6 pt-12 md:pt-24 lg:pt-36">
         
         {/* Immersive Showroom Hero */}
-        <div className="relative mb-32 space-y-12 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-          <div className="max-w-4xl space-y-6">
-            <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-black tracking-widest shadow-sm">
+        <div className="relative mb-8 md:mb-16 lg:mb-32 space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+          <div className="max-w-4xl space-y-4 md:space-y-6">
+            <div className="inline-flex items-center gap-2 md:gap-3 px-3 md:px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-black tracking-widest shadow-sm">
               <Warehouse className="h-3.5 w-3.5" /> Inventaire certifié A+
             </div>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-[0.9] text-slate-900 dark:text-white">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-tight leading-[1] md:leading-[0.9] text-slate-900 dark:text-white">
               Showroom <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-indigo-500 bg-[length:200%_auto] animate-gradient">Equipements.</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-500 to-green-600 bg-[length:200%_auto] animate-gradient">Equipements.</span>
             </h1>
-            <p className="text-xl text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">
               Explorez notre sélection rigoureuse d&apos;outillage professionnel et de matériaux haut de gamme, sourcés pour la réussite de vos projets au Togo.
             </p>
           </div>
@@ -124,11 +124,11 @@ function ProductsContent() {
         </div>
 
         {/* Horizontal Category Filters */}
-        <div className="flex items-center gap-3 overflow-x-auto pb-6 scrollbar-none justify-start md:justify-center mb-6 px-4">
+        <div className="flex items-center gap-2 md:gap-3 overflow-x-auto pb-4 md:pb-6 scrollbar-none justify-start md:justify-center mb-6 px-4">
             <button 
               onClick={() => updateFilters({ category: null })}
               className={cn(
-                "whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold transition-all",
+                "whitespace-nowrap px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm font-bold transition-all",
                 !categoryId ? "bg-primary text-white shadow-md" : "bg-white/80 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5"
               )}
             >
@@ -139,7 +139,7 @@ function ProductsContent() {
                 key={cat.id}
                 onClick={() => updateFilters({ category: cat.id })}
                 className={cn(
-                  "whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold transition-all",
+                  "whitespace-nowrap px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm font-bold transition-all",
                   categoryId === cat.id ? "bg-primary text-white shadow-md" : "bg-white/80 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5"
                 )}
               >
@@ -177,21 +177,21 @@ function ProductsContent() {
               ) : products.length > 0 ? (
                 <ProductGrid products={products} selectedBoutiqueId={boutiqueId} />
               ) : (
-                <div className="py-40 text-center space-y-8 glass-card rounded-[5rem] animate-in zoom-in-95 duration-1000">
-                  <div className="h-32 w-32 bg-primary/10 rounded-[3rem] flex items-center justify-center mx-auto text-primary animate-bounce-slow">
-                    <Hammer className="h-14 w-14" />
+                <div className="py-20 md:py-40 text-center space-y-6 md:space-y-8 glass-card rounded-[2rem] md:rounded-[5rem] animate-in zoom-in-95 duration-1000 mx-4">
+                  <div className="h-20 w-20 md:h-32 md:w-32 bg-primary/10 rounded-3xl md:rounded-[3rem] flex items-center justify-center mx-auto text-primary animate-bounce-slow">
+                    <Hammer className="h-10 w-10 md:h-14 md:w-14" />
                   </div>
-                  <div className="space-y-4">
-                    <h3 className="text-5xl font-black tracking-tighter text-slate-900 dark:text-white italic">
+                  <div className="space-y-4 px-4">
+                    <h3 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-slate-900 dark:text-white italic">
                       Coffre vide.
                     </h3>
-                    <p className="text-xl text-muted-foreground font-medium max-w-md mx-auto leading-relaxed">
+                    <p className="text-base md:text-xl text-muted-foreground font-medium max-w-md mx-auto leading-relaxed">
                       Aucun matériel ne semble correspondre à ces critères. Essayez d&apos;élargir votre recherche technique.
                     </p>
                   </div>
                   <Button
                     onClick={() => router.push('/products')}
-                    className="rounded-full px-12 h-16 bg-primary text-white font-black tracking-tight text-lg shadow-2xl shadow-primary/20 hover:scale-105 transition-all"
+                    className="rounded-full px-8 md:px-12 h-14 md:h-16 bg-primary text-white font-black tracking-tight text-base md:text-lg shadow-2xl shadow-primary/20 hover:scale-105 transition-all w-full sm:w-auto mt-4 mx-auto"
                   >
                     Voir tout le stock
                   </Button>
