@@ -19,6 +19,7 @@ import {
   ShoppingCart,
   Sparkles,
   Zap,
+  Clock,
 } from "lucide-react";
 import {
   SparkAreaChart,
