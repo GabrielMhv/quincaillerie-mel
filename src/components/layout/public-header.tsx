@@ -18,7 +18,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { useCartStore } from "@/store/cart";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useBoutique } from "@/components/providers/boutique-provider";
 import {
@@ -32,11 +32,14 @@ import { useBranding } from "@/components/providers/branding-provider";
 export function PublicHeader() {
   const { user, signOut, isAdmin, isManager, isEmployee } = useAuth();
   const { items } = useCartStore();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const { settings } = useBranding();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { boutiques, selectedBoutique, setSelectedBoutique, isLoading } =
     useBoutique();
+
+  useEffect(() => { setMounted(true); }, []);
 
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const canAccessDashboard = isAdmin || isManager || isEmployee;
@@ -163,11 +166,15 @@ export function PublicHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full h-11 w-11 hover:bg-primary/10 text-primary transition-colors"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="rounded-full h-11 w-11 hover:bg-primary/10 text-primary transition-colors relative"
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              aria-label="Changer de thème"
             >
-              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              {mounted && resolvedTheme === "dark" ? (
+                <Sun className="h-5 w-5 transition-all" />
+              ) : (
+                <Moon className="h-5 w-5 transition-all" />
+              )}
             </Button>
 
             <Link href="/cart">
