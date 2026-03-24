@@ -36,10 +36,20 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
   const [isSearching, setIsSearching] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientName, setClientName] = useState("Client comptoir");
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const { user } = useAuth();
   const supabase = createClient();
 
-  const fetchProducts = useCallback(async (query: string = "") => {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data } = await supabase.from("categories").select("*").order("name");
+      setCategories(data || []);
+    };
+    fetchCategories();
+  }, [supabase]);
+
+  const fetchProducts = useCallback(async (query: string = "", categoryId: string | null = null) => {
     setIsSearching(true);
     try {
       let q = supabase
@@ -53,11 +63,13 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
 
       if (query.trim()) {
         q = q.ilike("name", `%${query}%`);
-      } else {
-        q = q.limit(32);
+      }
+      
+      if (categoryId) {
+        q = q.eq("category_id", categoryId);
       }
 
-      const { data, error } = await q;
+      const { data, error } = await q.limit(40);
 
       if (error) throw error;
       setSearchResults(data as any[]);
@@ -70,8 +82,8 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
   }, [boutiqueId, supabase]);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    fetchProducts(searchTerm, selectedCategoryId);
+  }, [fetchProducts, selectedCategoryId, searchTerm]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,18 +192,47 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
     <div className="flex h-[calc(100vh-140px)] gap-8 p-6 animate-in fade-in duration-700">
       {/* Left Area: Search & Products */}
       <div className="flex-1 flex flex-col gap-6 overflow-hidden">
-        <div className="relative group">
-          <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
-          <input 
-            placeholder="Scanner un code barre ou rechercher par nom..." 
-            className="w-full h-16 pl-14 pr-6 bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-muted-foreground/30"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && fetchProducts(searchTerm)}
-          />
-          {isSearching && (
-            <Loader2 className="absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 animate-spin text-primary" />
-          )}
+        <div className="flex flex-col gap-6">
+          <div className="relative group">
+            <Search className="absolute left-6 top-1/2 h-6 w-6 -translate-y-1/2 text-muted-foreground/30 group-focus-within:text-primary transition-colors" />
+            <input 
+              placeholder="Scanner un code barre ou rechercher par nom..." 
+              className="w-full h-20 pl-16 pr-8 bg-card/60 backdrop-blur-3xl border-2 border-border/50 rounded-[2.5rem] text-lg font-black tracking-tight focus:outline-none focus:ring-8 focus:ring-primary/5 focus:border-primary transition-all placeholder:text-muted-foreground/20 shadow-2xl shadow-primary/5"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {isSearching && (
+              <Loader2 className="absolute right-6 top-1/2 h-6 w-6 -translate-y-1/2 animate-spin text-primary" />
+            )}
+          </div>
+
+          <div className="flex items-center gap-3 overflow-x-auto pb-2 px-1 custom-scrollbar no-scrollbar scroll-smooth">
+             <button
+               onClick={() => setSelectedCategoryId(null)}
+               className={cn(
+                 "px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all duration-300 shrink-0 whitespace-nowrap border italic",
+                 !selectedCategoryId 
+                  ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105" 
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted border-border/50"
+               )}
+             >
+               Tout le Stock
+             </button>
+             {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategoryId(cat.id)}
+                  className={cn(
+                    "px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all duration-300 shrink-0 whitespace-nowrap border italic",
+                    selectedCategoryId === cat.id
+                      ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105" 
+                      : "bg-muted/50 text-muted-foreground hover:bg-muted border-border/50"
+                  )}
+                >
+                  {cat.name}
+                </button>
+             ))}
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">

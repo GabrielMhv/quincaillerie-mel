@@ -24,6 +24,7 @@ import {
   ChevronRight,
   LogOut,
   ShieldCheck,
+  DollarSign,
   Target,
   TrendingUp,
 } from "lucide-react";
@@ -64,13 +65,19 @@ export function DashboardSidebar() {
     {
       title: "Tableau de bord",
       href: "/dashboard",
-      icon: BarChart3,
+      icon: LayoutDashboard,
       roles: ["admin"],
     },
     {
-      title: "Analyses & Stats",
-      href: "/dashboard/stats",
+      title: "Analyses",
+      href: "/dashboard/analyses",
       icon: TrendingUp,
+      roles: ["admin"],
+    },
+    {
+      title: "Comptabilité",
+      href: "/dashboard/comptabilite",
+      icon: DollarSign,
       roles: ["admin"],
     },
     {
@@ -109,7 +116,13 @@ export function DashboardSidebar() {
       icon: ArrowRightLeft,
       roles: ["admin"],
     },
-    { title: "Équipe", href: "/dashboard/team", icon: Users, roles: ["admin"] },
+    {
+      title: "Clients",
+      href: "/dashboard/clients",
+      icon: Users,
+      roles: ["admin"],
+    },
+    { title: "Équipe", href: "/dashboard/team", icon: ShieldCheck, roles: ["admin"] },
     {
       title: "Paramètres",
       href: "/dashboard/settings",
@@ -126,9 +139,21 @@ export function DashboardSidebar() {
       roles: ["admin", "manager", "employee"],
     },
     {
+      title: "Analyses",
+      href: "/dashboard/analyses",
+      icon: TrendingUp,
+      roles: ["admin", "manager"],
+    },
+    {
+      title: "Comptabilité",
+      href: "/dashboard/comptabilite",
+      icon: DollarSign,
+      roles: ["admin", "manager"],
+    },
+    {
       title: "Performances",
       href: "/dashboard/stats",
-      icon: TrendingUp,
+      icon: Target,
       roles: ["admin", "manager"],
     },
     {
@@ -165,6 +190,12 @@ export function DashboardSidebar() {
       title: "Transferts",
       href: "/dashboard/stocks/transfers",
       icon: ArrowRightLeft,
+      roles: ["admin", "manager"],
+    },
+    {
+      title: "Clients",
+      href: "/dashboard/clients",
+      icon: Users,
       roles: ["admin", "manager"],
     },
     {

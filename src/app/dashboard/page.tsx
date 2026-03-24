@@ -29,6 +29,7 @@ import { fr } from "date-fns/locale";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ProductFormModal } from "@/components/products/product-form-modal";
+import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
 
 export default async function DashboardPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -93,7 +94,15 @@ export default async function DashboardPage(props: {
     currentBoutiqueName = "Réseau (Global)";
   }
 
-  // Fetch orders for the filtered boutique
+  const range = (searchParams.range as string) || "7d";
+
+  // Calculate Date Filters
+  let dateFilter: string | null = null;
+  if (range === "today") dateFilter = startOfDay(new Date()).toISOString();
+  else if (range === "7d") dateFilter = subDays(new Date(), 7).toISOString();
+  else if (range === "30d") dateFilter = subDays(new Date(), 30).toISOString();
+
+  // Fetch orders with optional date filter
   let ordersQuery = supabase.from("orders").select(`
       *,
       order_items(product_id, quantity, products(name)),
@@ -103,6 +112,10 @@ export default async function DashboardPage(props: {
 
   if (filteredBoutiqueId) {
     ordersQuery = ordersQuery.eq("boutique_id", filteredBoutiqueId);
+  }
+
+  if (dateFilter) {
+    ordersQuery = ordersQuery.gte("created_at", dateFilter);
   }
 
   const { data: orders } = await ordersQuery;
@@ -289,6 +302,15 @@ export default async function DashboardPage(props: {
              />
           )}
         </div>
+      </section>
+
+      {/* Filter Section */}
+      <section className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 rounded-[3rem] bg-card/40 backdrop-blur-xl border border-border/50 shadow-sm">
+         <div className="flex items-center gap-4">
+            <Clock className="h-5 w-5 text-primary/40" />
+            <h2 className="text-xl font-black tracking-tighter italic">Période <span className="text-primary">d&apos;Analyse</span></h2>
+         </div>
+         <DashboardFilters />
       </section>
 
       {/* GLOBAL HUD - Multi-store Hub (Admin ONLY) */}

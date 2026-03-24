@@ -135,20 +135,27 @@ export default async function DashboardStocksPage(props: {
             </thead>
             <tbody className="divide-y divide-border/20">
               {products?.map((product) => (
-                <tr key={product.id} className="group hover:bg-primary/[0.02] transition-colors h-32">
-                  <td className="px-10 sticky left-0 bg-card z-10 border-r border-border/30 group-hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-4">
-                       <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
-                          <Package className="h-6 w-6" />
+                <tr key={product.id} className="group hover:bg-primary/[0.02] transition-all h-32 border-none">
+                  <td className="px-10 sticky left-0 bg-card/90 backdrop-blur-md z-10 border-r border-border/30 group-hover:bg-primary/[0.03] transition-colors">
+                    <div className="flex items-center gap-6">
+                       <div className="h-20 w-20 rounded-3xl bg-secondary/30 relative overflow-hidden border border-border/50 shrink-0 shadow-sm transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-3">
+                          <img 
+                            src={product.image_url || "/placeholder-product.jpg"} 
+                            alt="" 
+                            className="h-full w-full object-cover transition-transform group-hover:scale-110" 
+                          />
                        </div>
-                       <div className="min-w-0 flex-1">
-                          <p className="font-black text-base tracking-tight truncate group-hover:text-primary transition-colors">
+                       <div className="min-w-0 flex-1 space-y-2">
+                          <p className="font-black text-lg tracking-tight truncate group-hover:text-primary transition-colors leading-none">
                             {product.name}
                           </p>
-                          <div className="flex items-center gap-2 mt-1">
-                             <span className="text-[10px] font-bold text-muted-foreground/60">{formatCurrency(product.price)}</span>
-                             <span className="h-1 w-1 rounded-full bg-border" />
-                             <span className="text-[10px] font-bold text-rose-600/60 leading-none">Alerte: {product.min_stock_alert}</span>
+                          <div className="flex flex-wrap items-center gap-3">
+                             <Badge variant="outline" className="text-[9px] font-black tracking-widest bg-emerald-500/5 text-emerald-600 border-emerald-500/10 px-2 py-0.5 rounded-full italic">
+                               {formatCurrency(product.price)}
+                             </Badge>
+                             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-500/5 border border-rose-500/10 text-[9px] font-black text-rose-600 tracking-widest italic">
+                                Alerte: {product.min_stock_alert}
+                             </div>
                           </div>
                        </div>
                     </div>
