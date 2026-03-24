@@ -49,23 +49,18 @@ export function ProductCard({ product, selectedBoutiqueId, delay = 0, priority =
 
   return (
     <div 
-      className="group relative flex flex-col bg-white/40 dark:bg-white/[0.03] backdrop-blur-2xl rounded-[2.5rem] p-5 border border-white/50 dark:border-white/10 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_40px_100px_-20px_rgba(29,78,216,0.15)] transition-all duration-700 hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-8"
+      className="group relative flex flex-col bg-white dark:bg-card rounded-2xl border border-slate-200/60 dark:border-white/5 shadow-sm hover:shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-8 overflow-hidden"
       style={{ animationDelay: `${delay}ms` }}
     >
-      {/* Decorative inner glow */}
-      <div className="absolute top-0 right-0 h-40 w-40 bg-primary/5 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-      {/* Badge Flottant - Catégorie */}
-      <div className="absolute top-6 left-6 z-10">
-        {product.category && (
-          <Badge className="bg-slate-900/90 dark:bg-white/90 text-white dark:text-black hover:opacity-100 text-[9px] font-black h-7 px-4 rounded-full border-none shadow-premium transition-all">
-            {product.category.name}
-          </Badge>
-        )}
+      {/* Badge Flottant - Price */}
+      <div className="absolute top-3 right-3 z-10">
+        <Badge className="bg-primary hover:bg-primary/90 text-white rounded-full px-3 py-1 text-sm font-bold shadow-md border-none z-20 transition-transform hover:scale-105">
+          {formatCurrency(product.price)}
+        </Badge>
       </div>
 
       {/* Image Container */}
-      <div className="relative aspect-square rounded-[2rem] overflow-hidden mb-8 bg-slate-200/30 dark:bg-white/5 border border-white/20 dark:border-white/[0.05] group shadow-inner">
+      <div className="relative aspect-[4/3] w-full bg-slate-100 dark:bg-slate-800 group overflow-hidden">
         <Image
           src={product.image_url || "/placeholder-product.jpg"}
           alt={product.name}
@@ -100,21 +95,26 @@ export function ProductCard({ product, selectedBoutiqueId, delay = 0, priority =
       </div>
 
       {/* Info Section */}
-      <div className="space-y-4 px-1 flex-1 flex flex-col relative z-10">
-        <div className="space-y-1">
-          <h3 className="text-xl font-bold tracking-tight leading-tight group-hover:text-primary transition-colors line-clamp-2">
+      <div className="p-4 flex flex-col flex-1 bg-white dark:bg-card">
+        <div className="mb-2">
+          <h3 className="text-lg font-bold text-primary dark:text-primary leading-tight line-clamp-1">
             {product.name}
           </h3>
-          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 line-clamp-1 opacity-70">
-            {product.category?.name} &bull; Equipement Pro
+          <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400 mt-1">
+            {product.category?.name || "Catégorie inconnue"}
+            {relevantStocks && totalStock > 0 ? (
+              <span className="text-primary opacity-80 ml-1">
+                • {totalStock} dispo.
+              </span>
+            ) : null}
           </p>
         </div>
 
-        <p className="text-[12px] font-medium text-slate-500 line-clamp-2 leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity">
-          {product.description || "Équipement professionnel de haute précision testé par nos experts."}
+        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute bottom-4 left-4 right-4 bg-white/90 dark:bg-card/90 backdrop-blur-sm p-3 rounded-xl border border-slate-100 dark:border-white/5 shadow-lg transform translate-y-2 group-hover:translate-y-0 z-20">
+          {product.description || "Aucune description supplémentaire."}
         </p>
         
-        <div className="mt-auto pt-6 flex items-center justify-between border-t border-slate-200 dark:border-white/5">
+        <div className="mt-auto hidden">
           <div className="flex flex-col">
             <span className="text-2xl font-black tracking-tighter tabular-nums text-slate-900 dark:text-white group-hover:text-primary transition-colors">{formatCurrency(product.price)}</span>
             <span className="text-[10px] font-bold opacity-30 tracking-widest">Prix unitaire</span>
