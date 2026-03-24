@@ -306,13 +306,71 @@ export default async function DashboardPage(props: {
       </section>
 
       {/* Filter Section */}
-      <section className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 rounded-[3rem] bg-card/40 backdrop-blur-xl border border-border/50 shadow-sm">
+      <section className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 rounded-[3rem] bg-card/40 backdrop-blur-xl border border-border/50 shadow-premium">
          <div className="flex items-center gap-4">
             <Clock className="h-5 w-5 text-primary/40" />
             <h2 className="text-xl font-black tracking-tighter italic">Période <span className="text-primary">d&apos;Analyse</span></h2>
          </div>
          <DashboardFilters />
       </section>
+
+      {/* Strategic Navigation */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+        <Link 
+          href={filteredBoutiqueId ? `/dashboard/analyses?boutiqueId=${filteredBoutiqueId}` : "/dashboard/analyses"}
+          className="group relative h-44 overflow-hidden rounded-[3.5rem] border border-indigo-500/20 bg-indigo-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/10"
+        >
+           <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
+              <TrendingUp className="h-24 w-24 text-indigo-500" />
+           </div>
+           <div className="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                 <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 mb-4 shadow-sm group-hover:rotate-6 transition-transform">
+                    <TrendingUp className="h-6 w-6" />
+                 </div>
+                 <h3 className="text-2xl font-black tracking-tighter">Analyses</h3>
+                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-widest leading-none mt-2 italic uppercase">Performances du réseau</p>
+              </div>
+           </div>
+        </Link>
+
+        <Link 
+          href={filteredBoutiqueId ? `/dashboard/comptabilite?boutiqueId=${filteredBoutiqueId}` : "/dashboard/comptabilite"}
+          className="group relative h-44 overflow-hidden rounded-[3.5rem] border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10"
+        >
+           <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
+              <DollarSign className="h-24 w-24 text-emerald-500" />
+           </div>
+           <div className="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                 <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-4 shadow-sm group-hover:rotate-6 transition-transform">
+                    <DollarSign className="h-6 w-6" />
+                 </div>
+                 <h3 className="text-2xl font-black tracking-tighter">Comptabilité</h3>
+                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-widest leading-none mt-2 italic uppercase">Transactions & Flux</p>
+              </div>
+           </div>
+        </Link>
+
+        <Link 
+          href="/dashboard/clients"
+          className="group relative h-44 overflow-hidden rounded-[3.5rem] border border-amber-500/20 bg-amber-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10"
+        >
+           <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
+              <Users className="h-24 w-24 text-amber-500" />
+           </div>
+           <div className="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                 <div className="h-12 w-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 mb-4 shadow-sm group-hover:rotate-6 transition-transform">
+                    <Users className="h-6 w-6" />
+                 </div>
+                 <h3 className="text-2xl font-black tracking-tighter">Clients</h3>
+                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-widest leading-none mt-2 italic uppercase">Gestion du répertoire</p>
+              </div>
+           </div>
+        </Link>
+      </section>
+
 
       {/* GLOBAL HUD - Multi-store Hub (Admin ONLY) */}
       {isGlobalScope && boutiques && boutiques.length > 0 && (
@@ -364,6 +422,7 @@ export default async function DashboardPage(props: {
           description={role === "employee" ? "Total de mes ventes aujourd'hui" : "CA total enregistré sur la période"}
           trend={revenueTrend}
           delay={100}
+          href={filteredBoutiqueId ? `/dashboard/comptabilite?boutiqueId=${filteredBoutiqueId}` : "/dashboard/comptabilite"}
         />
         <PremiumStatCard
           title="Volume Commandes"
@@ -372,6 +431,7 @@ export default async function DashboardPage(props: {
           description="Nombre total de transactions"
           trend={ordersTrend}
           delay={200}
+          href={filteredBoutiqueId ? `/dashboard/analyses?boutiqueId=${filteredBoutiqueId}` : "/dashboard/analyses"}
         />
         <PremiumStatCard
           title="CA du Jour"
@@ -380,6 +440,7 @@ export default async function DashboardPage(props: {
           description="Performance globale aujourd'hui"
           trend={revenueTrend}
           delay={300}
+          href={filteredBoutiqueId ? `/dashboard/comptabilite?range=today&boutiqueId=${filteredBoutiqueId}` : "/dashboard/comptabilite?range=today"}
         />
         <PremiumStatCard
           title={isGlobalScope ? "Réseau de Vente" : "Point de Vente"}
@@ -387,6 +448,7 @@ export default async function DashboardPage(props: {
           iconName="Store"
           description={isGlobalScope ? "Points de vente actifs" : "Boutique d'affectation actuelle"}
           delay={400}
+          href={isGlobalScope ? "/dashboard/stores" : undefined}
         />
       </section>
 

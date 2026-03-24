@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { 
   LucideIcon, 
   TrendingUp, 
@@ -34,6 +35,7 @@ interface PremiumStatCardProps {
   alert?: boolean;
   gradient?: string;
   className?: string;
+  href?: string;
 }
 
 export function PremiumStatCard({
@@ -46,10 +48,11 @@ export function PremiumStatCard({
   alert = false,
   gradient,
   className,
+  href,
 }: PremiumStatCardProps) {
   const Icon = IconMap[iconName];
 
-  return (
+  const content = (
     <div
       className={cn(
         "group relative overflow-hidden rounded-[3rem] border border-border/50 bg-card/80 backdrop-blur-xl p-8 transition-all duration-500 hover:shadow-premium-hover hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-8",
@@ -99,7 +102,7 @@ export function PremiumStatCard({
         </div>
 
         <div className="flex flex-col">
-          <p className="text-[11px] font-black text-muted-foreground/50 tracking-widest">{title}</p>
+          <p className="text-[11px] font-black text-muted-foreground/50 tracking-widest uppercase">{title}</p>
           <p className="text-3xl font-black tracking-tighter tabular-nums leading-none mt-1">{value}</p>
         </div>
         <p className="text-xs font-semibold text-muted-foreground leading-relaxed mt-1">
@@ -108,4 +111,14 @@ export function PremiumStatCard({
       </div>
     </div>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="block w-full">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }

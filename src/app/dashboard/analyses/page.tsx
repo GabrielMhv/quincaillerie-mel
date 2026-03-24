@@ -69,14 +69,11 @@ export default async function AnalysesPage(props: {
     <div className="space-y-12 pb-24 animate-in fade-in duration-1000">
       <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">
-           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 text-[10px] font-black tracking-widest italic">
-            <TrendingUp className="h-3.5 w-3.5" /> Intelligence Analytique
-          </div>
           <h1 className="text-5xl font-black tracking-tighter leading-tight">
             Analyses de <span className="text-gradient leading-relaxed">Performance</span>
           </h1>
           <p className="text-lg text-muted-foreground font-medium italic">
-            Visualisez les tendances et la distribution de vos ventes
+            Suivi des ventes et distribution par catégorie
           </p>
         </div>
         <DashboardFilters />

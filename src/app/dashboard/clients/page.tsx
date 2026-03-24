@@ -54,34 +54,24 @@ export default async function ClientsPage(props: {
     <div className="space-y-12 pb-24 animate-in fade-in duration-1000">
       <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">
-           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black tracking-widest italic">
-            <Users className="h-3.5 w-3.5" /> Réseau de Fidélité
-          </div>
           <h1 className="text-5xl font-black tracking-tighter leading-tight">
             Gestion des <span className="text-gradient leading-relaxed">Clients</span>
           </h1>
-          <p className="text-lg text-muted-foreground font-medium italic">
-            Analysez la valeur et l&apos;engagement de vos acheteurs
+          <p className="text-lg text-muted-foreground font-medium">
+            Liste et analyse de la valeur de vos clients
           </p>
         </div>
       </section>
 
       {/* Main List Area */}
       <section className="rounded-[4rem] border border-border/50 bg-card/40 backdrop-blur-xl shadow-premium overflow-hidden">
-        <div className="p-10 border-b border-border/50 bg-muted/20 flex flex-col md:flex-row justify-between items-center gap-6">
-           <div className="relative group w-full md:w-96">
+        <div className="p-10 border-b border-border/50 bg-muted/20">
+           <div className="relative group w-full max-w-md">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/40 group-focus-within:text-primary transition-all" />
               <input 
-                placeholder="Rechercher un client..." 
+                placeholder="Rechercher par nom ou téléphone..." 
                 className="w-full h-14 pl-14 pr-6 bg-background rounded-2xl border-none font-bold text-sm focus:ring-4 focus:ring-primary/10 transition-all shadow-inner"
               />
-           </div>
-           
-           <div className="flex items-center gap-4">
-              <div className="px-6 py-3 rounded-2xl bg-primary/10 border border-primary/20 flex items-center gap-3">
-                 <Sparkles className="h-4 w-4 text-primary" />
-                 <span className="text-xs font-black tracking-tighter text-primary">Intelligence Client Active</span>
-              </div>
            </div>
         </div>
 

@@ -46,19 +46,6 @@ export function DashboardFilters() {
           </button>
         ))}
       </div>
-
-      <div className="hidden sm:flex items-center gap-4 px-6 py-3 rounded-2xl bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-sm group cursor-pointer hover:border-primary/20 transition-all">
-        <Calendar className="h-4 w-4 text-primary/40 group-hover:text-primary transition-colors" />
-        <span className="text-xs font-bold tracking-tight text-muted-foreground group-hover:text-primary transition-colors italic">
-          Plage personnalisée
-        </span>
-        <ChevronDown className="h-3 w-3 opacity-30 group-hover:opacity-100 transition-all" />
-      </div>
-
-      <div className="ml-auto flex items-center gap-2 group cursor-help px-4 py-2 rounded-full border border-dashed border-primary/10 hover:border-primary/30 transition-all">
-         <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-         <span className="text-[10px] font-black tracking-widest text-muted-foreground/60 italic lowercase">Données en direct</span>
-      </div>
     </div>
   );
 }

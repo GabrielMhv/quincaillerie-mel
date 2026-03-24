@@ -49,13 +49,10 @@ export default async function ComptabilitePage(props: {
     <div className="space-y-12 pb-24 animate-in fade-in duration-1000">
       <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">
-           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-[10px] font-black tracking-widest italic">
-            <DollarSign className="h-3.5 w-3.5" /> Flux Monétaires
-          </div>
           <h1 className="text-5xl font-black tracking-tighter leading-tight">
             Journal de <span className="text-gradient leading-relaxed">Comptabilité</span>
           </h1>
-          <p className="text-lg text-muted-foreground font-medium italic">
+          <p className="text-lg text-muted-foreground font-medium">
             Gestion financière et rapports de transactions
           </p>
         </div>
@@ -71,7 +68,7 @@ export default async function ComptabilitePage(props: {
                   <Wallet className="h-7 w-7" />
                </div>
                <div>
-                  <h3 className="text-sm font-black tracking-widest text-emerald-100/60 italic lowercase">Total C.A. Brut</h3>
+                  <h3 className="text-[10px] font-black tracking-widest text-emerald-100/60 uppercase">Chiffre d&apos;Affaires Brut</h3>
                   <p className="text-4xl font-black text-white tracking-tighter">{formatCurrency(totalRevenue)}</p>
                </div>
             </div>
@@ -84,7 +81,7 @@ export default async function ComptabilitePage(props: {
                   <Receipt className="h-7 w-7" />
                </div>
                <div>
-                  <h3 className="text-sm font-black tracking-widest text-orange-100/60 italic lowercase">Provisions Taxes (18%)</h3>
+                  <h3 className="text-[10px] font-black tracking-widest text-orange-100/60 uppercase">TVA Estimée (18%)</h3>
                   <p className="text-4xl font-black text-white tracking-tighter">{formatCurrency(totalTaxes)}</p>
                </div>
             </div>
@@ -97,7 +94,7 @@ export default async function ComptabilitePage(props: {
                   <PiggyBank className="h-7 w-7" />
                </div>
                <div>
-                  <h3 className="text-sm font-black tracking-widest text-indigo-100/60 italic lowercase">C.A. Net Estimé</h3>
+                  <h3 className="text-[10px] font-black tracking-widest text-indigo-100/60 uppercase">Chiffre d&apos;Affaires Net</h3>
                   <p className="text-4xl font-black text-white tracking-tighter">{formatCurrency(netRevenue)}</p>
                </div>
             </div>
