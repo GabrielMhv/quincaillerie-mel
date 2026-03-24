@@ -102,7 +102,7 @@ export function PremiumStatCard({
         </div>
 
         <div className="flex flex-col">
-          <p className="text-[11px] font-black text-muted-foreground/50 tracking-widest uppercase">{title}</p>
+          <p className="text-[12px] font-bold text-muted-foreground/60 tracking-tight">{title}</p>
           <p className="text-3xl font-black tracking-tighter tabular-nums leading-none mt-1">{value}</p>
         </div>
         <p className="text-xs font-semibold text-muted-foreground leading-relaxed mt-1">

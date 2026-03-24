@@ -25,7 +25,7 @@ import {
   SparkAreaChart,
 } from "@/components/dashboard/dashboard-charts";
 import { PremiumStatCard } from "@/components/dashboard/premium-stat-card";
-import { format, subDays, startOfDay } from "date-fns";
+import { format, subDays, startOfDay, subHours } from "date-fns";
 import { fr } from "date-fns/locale";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -185,20 +185,24 @@ export default async function DashboardPage(props: {
     });
   }
 
-  // --- REVENUE OVER TIME (Last 7 Days) ---
-  const last7Days = Array.from({ length: 7 }, (_, i) => {
-    const d = subDays(new Date(), 6 - i);
+  // --- REVENUE OVER TIME (Dynamic Samples) ---
+  const samples = range === "today" ? 12 : 7;
+  const timeData = Array.from({ length: samples }, (_, i) => {
+    const d = range === "today" 
+      ? subHours(new Date(), samples - 1 - i)
+      : subDays(new Date(), samples - 1 - i);
+      
     return {
-      dateStr: d.toISOString().split("T")[0],
-      display: format(d, "EEE d", { locale: fr }),
+      isoPrefix: d.toISOString().substring(0, range === "today" ? 13 : 10),
+      display: format(d, range === "today" ? "HH:mm" : "EEE d", { locale: fr }),
     };
   });
 
-  const revenueData = last7Days.map((day) => {
-    const dailyTotal = validOrders
-      .filter((o) => o.created_at.startsWith(day.dateStr))
+  const revenueData = timeData.map((t) => {
+    const total = validOrders
+      .filter((o) => o.created_at.startsWith(t.isoPrefix))
       .reduce((sum, o) => sum + Number(o.total), 0);
-    return { date: day.display, total: dailyTotal };
+    return { date: t.display, total };
   });
 
   // --- TOP PRODUCTS ---
@@ -329,7 +333,7 @@ export default async function DashboardPage(props: {
                     <TrendingUp className="h-6 w-6" />
                  </div>
                  <h3 className="text-2xl font-black tracking-tighter">Analyses</h3>
-                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-widest leading-none mt-2 italic uppercase">Performances du réseau</p>
+                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-tight leading-none mt-2">Performances du réseau</p>
               </div>
            </div>
         </Link>
@@ -347,7 +351,7 @@ export default async function DashboardPage(props: {
                     <DollarSign className="h-6 w-6" />
                  </div>
                  <h3 className="text-2xl font-black tracking-tighter">Comptabilité</h3>
-                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-widest leading-none mt-2 italic uppercase">Transactions & Flux</p>
+                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-tight leading-none mt-2">Transactions & Flux</p>
               </div>
            </div>
         </Link>
@@ -365,7 +369,7 @@ export default async function DashboardPage(props: {
                     <Users className="h-6 w-6" />
                  </div>
                  <h3 className="text-2xl font-black tracking-tighter">Clients</h3>
-                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-widest leading-none mt-2 italic uppercase">Gestion du répertoire</p>
+                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-tight leading-none mt-2">Gestion du répertoire</p>
               </div>
            </div>
         </Link>
@@ -460,7 +464,7 @@ export default async function DashboardPage(props: {
               <h3 className="text-3xl font-black tracking-tighter">
                 Analyse des <span className="text-primary">Ventes</span>
               </h3>
-              <p className="text-xs font-bold text-muted-foreground mt-1 tracking-widest uppercase">
+              <p className="text-xs font-bold text-muted-foreground mt-1 tracking-tight">
                 {revenueTrend > 0 ? `Tendances positives : +${revenueTrend}%` : revenueTrend < 0 ? `Baisse observée : ${revenueTrend}%` : "Activité stable"} sur la période
               </p>
             </div>
@@ -473,9 +477,9 @@ export default async function DashboardPage(props: {
               )}
             >
               <TrendingUp className="h-4 w-4" />
-              <span className="text-[10px] font-black tracking-widest">
-                {revenueTrend >= 0 ? "En hausse" : "En baisse"}
-              </span>
+               <span className="text-[11px] font-bold tracking-tight">
+                {revenueTrend > 0 ? `En hausse (${revenueTrend}%)` : revenueTrend < 0 ? `En baisse (${revenueTrend}%)` : "Stable"}
+               </span>
             </div>
           </div>
           
@@ -484,7 +488,7 @@ export default async function DashboardPage(props: {
           ) : (
             <div className="h-[250px] w-full flex flex-col items-center justify-center space-y-4 opacity-50 bg-muted/20 rounded-3xl border border-dashed border-border text-center">
                <TrendingUp className="h-10 w-10 text-muted-foreground" />
-               <p className="text-[10px] font-black tracking-widest uppercase">Aucune transaction enregistrée <br/> sur cette période</p>
+               <p className="text-[11px] font-bold text-muted-foreground/60 tracking-tight">Aucune transaction enregistrée sur cette période</p>
             </div>
           )}
         </div>

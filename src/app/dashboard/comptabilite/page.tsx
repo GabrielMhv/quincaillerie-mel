@@ -4,6 +4,7 @@ import { DollarSign, Star, TrendingUp, Sparkles, FileText, Download, Target, Wal
 import { format, subDays, startOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
+import { ExportButtons } from "@/components/dashboard/export-buttons";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
@@ -68,7 +69,7 @@ export default async function ComptabilitePage(props: {
                   <Wallet className="h-7 w-7" />
                </div>
                <div>
-                  <h3 className="text-[10px] font-black tracking-widest text-emerald-100/60 uppercase">Chiffre d&apos;Affaires Brut</h3>
+                  <h3 className="text-[11px] font-bold text-emerald-100/70 tracking-tight">Chiffre d&apos;Affaires Brut</h3>
                   <p className="text-4xl font-black text-white tracking-tighter">{formatCurrency(totalRevenue)}</p>
                </div>
             </div>
@@ -81,7 +82,7 @@ export default async function ComptabilitePage(props: {
                   <Receipt className="h-7 w-7" />
                </div>
                <div>
-                  <h3 className="text-[10px] font-black tracking-widest text-orange-100/60 uppercase">TVA Estimée (18%)</h3>
+                  <h3 className="text-[11px] font-bold text-orange-100/70 tracking-tight">TVA Estimée (18%)</h3>
                   <p className="text-4xl font-black text-white tracking-tighter">{formatCurrency(totalTaxes)}</p>
                </div>
             </div>
@@ -94,7 +95,7 @@ export default async function ComptabilitePage(props: {
                   <PiggyBank className="h-7 w-7" />
                </div>
                <div>
-                  <h3 className="text-[10px] font-black tracking-widest text-indigo-100/60 uppercase">Chiffre d&apos;Affaires Net</h3>
+                  <h3 className="text-[11px] font-bold text-indigo-100/70 tracking-tight">Chiffre d&apos;Affaires Net</h3>
                   <p className="text-4xl font-black text-white tracking-tighter">{formatCurrency(netRevenue)}</p>
                </div>
             </div>
@@ -109,14 +110,7 @@ export default async function ComptabilitePage(props: {
                </div>
                <h3 className="text-xl font-black tracking-tighter">Historique des Flux <span className="text-muted-foreground/40 text-sm ml-2 italic">({validOrders.length} transactions)</span></h3>
             </div>
-            <div className="flex gap-4">
-               <button className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-border/50 text-xs font-black tracking-widest hover:bg-primary hover:text-white transition-all">
-                  <Download className="h-4 w-4" /> PDF
-               </button>
-               <button className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-border/50 text-xs font-black tracking-widest hover:bg-primary hover:text-white transition-all">
-                  <Download className="h-4 w-4" /> CSV
-               </button>
-            </div>
+             <ExportButtons data={validOrders} />
          </div>
 
          <div className="max-w-full overflow-x-auto custom-scrollbar">
@@ -166,7 +160,7 @@ export default async function ComptabilitePage(props: {
                <div className="h-20 w-20 rounded-[2rem] bg-rose-500/10 flex items-center justify-center text-rose-600 mx-auto">
                   <TrendingUp className="h-10 w-10 rotate-180" />
                </div>
-               <p className="text-xl font-black tracking-tighter italic">Aucune transaction trouvée sur cette période</p>
+               <p className="text-xl font-bold tracking-tight">Aucune transaction trouvée sur cette période</p>
             </div>
          )}
       </div>

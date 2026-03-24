@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatCurrency, cn } from "@/lib/utils";
 import { TrendingUp, Sparkles, PieChart as PieIcon, LineChart as LineIcon, Search, Calendar } from "lucide-react";
-import { format, subDays, startOfDay } from "date-fns";
+import { format, subDays, startOfDay, subHours } from "date-fns";
 import { fr } from "date-fns/locale";
 import { AreaRevenueChart, CategoryPieChart } from "@/components/dashboard/dashboard-charts";
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
+import { ExportButtons } from "@/components/dashboard/export-buttons";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default async function AnalysesPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -38,19 +40,24 @@ export default async function AnalysesPage(props: {
   const { data: orders } = await ordersQuery;
   const validOrders = orders || [];
 
-  // 1. Revenue over time (Last 7 samples based on range)
-  const samples = range === "today" ? 12 : 7; // Hours if today, days if 7d/30d
+  // 1. Revenue over time (Last 12 samples based on range)
+  const samples = range === "today" ? 12 : 7;
   const timeData = Array.from({ length: samples }, (_, i) => {
-    const d = subDays(new Date(), samples - 1 - i);
+    // If today, samples are hours. If 7d/30d, samples are days.
+    const d = range === "today" 
+      ? subHours(new Date(), samples - 1 - i)
+      : subDays(new Date(), samples - 1 - i);
+      
     return {
       dateStr: d.toISOString().split("T")[0],
       display: format(d, range === "today" ? "HH:mm" : "EEE d", { locale: fr }),
+      fullIso: d.toISOString().substring(0, range === "today" ? 13 : 10)
     };
   });
 
   const revenueSeries = timeData.map(t => {
     const total = validOrders
-      .filter(o => o.created_at.startsWith(t.dateStr))
+      .filter(o => o.created_at.startsWith(t.fullIso))
       .reduce((s, o) => s + Number(o.total), 0);
     return { date: t.display, total };
   });
@@ -72,7 +79,7 @@ export default async function AnalysesPage(props: {
           <h1 className="text-5xl font-black tracking-tighter leading-tight">
             Analyses de <span className="text-gradient leading-relaxed">Performance</span>
           </h1>
-          <p className="text-lg text-muted-foreground font-medium italic">
+          <p className="text-lg text-muted-foreground font-medium tracking-tight mt-2">
             Suivi des ventes et distribution par catégorie
           </p>
         </div>
@@ -100,7 +107,7 @@ export default async function AnalysesPage(props: {
                ) : (
                   <div className="h-full w-full flex flex-col items-center justify-center space-y-4 opacity-30 border border-dashed rounded-[2rem]">
                      <TrendingUp className="h-12 w-12" />
-                     <p className="text-sm font-black tracking-widest uppercase italic">Aucun revenu sur cette période</p>
+                     <p className="text-sm font-bold tracking-tight text-muted-foreground/60 leading-none">Aucun revenu sur cette période</p>
                   </div>
                )}
             </div>
@@ -126,7 +133,7 @@ export default async function AnalysesPage(props: {
                ) : (
                   <div className="h-48 w-full flex flex-col items-center justify-center space-y-4 opacity-30 border border-dashed rounded-[2rem]">
                      <PieIcon className="h-10 w-10" />
-                     <p className="text-xs font-black tracking-widest uppercase italic uppercase text-center">Données de catégories <br/> indisponibles</p>
+                     <p className="text-xs font-bold tracking-tight text-muted-foreground/60 leading-tight text-center">Données de catégories <br/> indisponibles</p>
                   </div>
                )}
             </div>
