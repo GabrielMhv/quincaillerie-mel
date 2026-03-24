@@ -11,7 +11,7 @@ export default async function ComptabilitePage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = await props.searchParams;
-  const range = (searchParams.range as string) || "7d";
+  const range = (searchParams.range as string) || "today";
   const boutiqueSwitcherId = searchParams.boutiqueId as string | undefined;
 
   const supabase = await createClient();

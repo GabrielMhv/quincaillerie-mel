@@ -10,7 +10,7 @@ export default async function AnalysesPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = await props.searchParams;
-  const range = (searchParams.range as string) || "7d";
+  const range = (searchParams.range as string) || "today";
   const boutiqueSwitcherId = searchParams.boutiqueId as string | undefined;
 
   const supabase = await createClient();
@@ -95,7 +95,14 @@ export default async function AnalysesPage(props: {
                </div>
             </div>
             <div className="h-[450px] w-full pt-4">
-               <AreaRevenueChart data={revenueSeries} />
+               {revenueSeries.some(s => s.total > 0) ? (
+                  <AreaRevenueChart data={revenueSeries} />
+               ) : (
+                  <div className="h-full w-full flex flex-col items-center justify-center space-y-4 opacity-30 border border-dashed rounded-[2rem]">
+                     <TrendingUp className="h-12 w-12" />
+                     <p className="text-sm font-black tracking-widest uppercase italic">Aucun revenu sur cette période</p>
+                  </div>
+               )}
             </div>
          </div>
 
@@ -114,7 +121,14 @@ export default async function AnalysesPage(props: {
                </div>
             </div>
             <div className="flex-1 flex items-center justify-center pt-4">
-               <CategoryPieChart data={categoryData} />
+               {categoryData.length > 0 ? (
+                  <CategoryPieChart data={categoryData} />
+               ) : (
+                  <div className="h-48 w-full flex flex-col items-center justify-center space-y-4 opacity-30 border border-dashed rounded-[2rem]">
+                     <PieIcon className="h-10 w-10" />
+                     <p className="text-xs font-black tracking-widest uppercase italic uppercase text-center">Données de catégories <br/> indisponibles</p>
+                  </div>
+               )}
             </div>
             <div className="grid grid-cols-2 gap-4 pt-4">
                {categoryData.slice(0, 4).map((c, i) => (

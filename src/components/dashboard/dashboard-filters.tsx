@@ -13,7 +13,7 @@ export function DashboardFilters() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   
-  const currentRange = searchParams.get("range") || "7d";
+  const currentRange = searchParams.get("range") || "today";
   const boutiqueId = searchParams.get("boutiqueId");
 
   const ranges = [

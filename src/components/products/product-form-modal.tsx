@@ -220,7 +220,7 @@ export function ProductFormModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price">Prix unitaire (€) *</Label>
+              <Label htmlFor="price">Prix unitaire (FCFA) *</Label>
               <Input
                 id="price"
                 name="price"

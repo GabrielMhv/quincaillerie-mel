@@ -5,11 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "XAF",
+  return amount.toLocaleString("fr-FR", {
     minimumFractionDigits: 0,
-  }).format(amount)
+    maximumFractionDigits: 0,
+  }) + " FCFA";
 }
 
 export function formatDate(dateStr: string): string {

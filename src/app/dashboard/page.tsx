@@ -95,7 +95,7 @@ export default async function DashboardPage(props: {
     currentBoutiqueName = "Réseau (Global)";
   }
 
-  const range = (searchParams.range as string) || "7d";
+  const range = (searchParams.range as string) || "today";
 
   // Calculate Date Filters
   let dateFilter: string | null = null;
@@ -460,8 +460,8 @@ export default async function DashboardPage(props: {
               <h3 className="text-3xl font-black tracking-tighter">
                 Analyse des <span className="text-primary">Ventes</span>
               </h3>
-              <p className="text-xs font-bold text-muted-foreground mt-1 tracking-widest">
-                Cycle hebdomadaire
+              <p className="text-xs font-bold text-muted-foreground mt-1 tracking-widest uppercase">
+                {revenueTrend > 0 ? `Tendances positives : +${revenueTrend}%` : revenueTrend < 0 ? `Baisse observée : ${revenueTrend}%` : "Activité stable"} sur la période
               </p>
             </div>
             <div
@@ -479,7 +479,14 @@ export default async function DashboardPage(props: {
             </div>
           </div>
           
-          <SparkAreaChart data={sparklineData} labels={sparklineLabels} height={250} />
+          {sparklineData.length > 0 ? (
+            <SparkAreaChart data={sparklineData} labels={sparklineLabels} height={250} />
+          ) : (
+            <div className="h-[250px] w-full flex flex-col items-center justify-center space-y-4 opacity-50 bg-muted/20 rounded-3xl border border-dashed border-border text-center">
+               <TrendingUp className="h-10 w-10 text-muted-foreground" />
+               <p className="text-[10px] font-black tracking-widest uppercase">Aucune transaction enregistrée <br/> sur cette période</p>
+            </div>
+          )}
         </div>
 
         <div className="p-10 rounded-[4rem] bg-card/80 backdrop-blur-xl border border-border/50 shadow-premium">

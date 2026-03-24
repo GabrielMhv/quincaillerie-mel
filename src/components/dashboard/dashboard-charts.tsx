@@ -41,11 +41,11 @@ export function RevenueChart({ data }: RevenueChartProps) {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `${value}€`}
+          tickFormatter={(value) => `${value} FCFA`}
         />
         <Tooltip
           contentStyle={{ backgroundColor: isDark ? '#111' : '#fff', border: '1px solid #333' }}
-          formatter={(value: any) => [`${value} €`, "Chiffre d'affaires"]}
+          formatter={(value: any) => [formatCurrency(Number(value)), "Chiffre d'affaires"]}
         />
         <Line 
           type="monotone" 
@@ -258,7 +258,7 @@ export function AreaRevenueChart({ data }: { data: { date: string; total: number
             fontSize={12}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `${value}€`}
+            tickFormatter={(value) => `${value} FCFA`}
             dx={-10}
           />
           <Tooltip
