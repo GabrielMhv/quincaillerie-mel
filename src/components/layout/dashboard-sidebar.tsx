@@ -1,14 +1,12 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/providers/auth-provider";
 import { cn } from "@/lib/utils";
 import {
-  BarChart3,
   Box,
   LayoutDashboard,
-  LucideIcon,
   Package,
   Settings,
   ShoppingCart,
@@ -29,13 +27,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-interface NavItem {
-  title: string;
-  href: string;
-  icon: LucideIcon;
-  roles: string[];
-}
 
 export function DashboardSidebar() {
   const pathname = usePathname();
@@ -122,7 +113,12 @@ export function DashboardSidebar() {
       icon: Users,
       roles: ["admin"],
     },
-    { title: "Équipe", href: "/dashboard/team", icon: ShieldCheck, roles: ["admin"] },
+    {
+      title: "Équipe",
+      href: "/dashboard/team",
+      icon: ShieldCheck,
+      roles: ["admin"],
+    },
     {
       title: "Paramètres",
       href: "/dashboard/settings",

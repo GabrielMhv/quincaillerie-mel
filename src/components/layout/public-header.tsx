@@ -39,7 +39,10 @@ export function PublicHeader() {
   const { boutiques, selectedBoutique, setSelectedBoutique, isLoading } =
     useBoutique();
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const canAccessDashboard = isAdmin || isManager || isEmployee;
