@@ -68,9 +68,10 @@ export function CategoryFormModal({ category }: CategoryFormModalProps) {
       if (!category) {
         setName("");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error saving category:", error);
-      toast.error(error.message || "Erreur lors de l'enregistrement");
+      const message = error instanceof Error ? error.message : "Erreur lors de l'enregistrement";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -92,7 +93,7 @@ export function CategoryFormModal({ category }: CategoryFormModalProps) {
           )
         }
       />
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>

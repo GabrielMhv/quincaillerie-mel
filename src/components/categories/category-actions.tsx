@@ -18,7 +18,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export function CategoryDeleteButton({ id, disabled }: { id: string; disabled?: boolean }) {
+export function CategoryDeleteButton({
+  id,
+  disabled,
+}: {
+  id: string;
+  disabled?: boolean;
+}) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -30,10 +36,10 @@ export function CategoryDeleteButton({ id, disabled }: { id: string; disabled?: 
       if (error) throw error;
       toast.success("Catégorie supprimée avec succès");
       router.refresh();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error("Échec de la suppression", { 
-        description: "Cette catégorie contient peut-être déjà des produits." 
+      toast.error("Échec de la suppression", {
+        description: "Cette catégorie contient peut-être déjà des produits.",
       });
     } finally {
       setLoading(false);
@@ -42,30 +48,34 @@ export function CategoryDeleteButton({ id, disabled }: { id: string; disabled?: 
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger 
+      <AlertDialogTrigger
         render={
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="text-destructive hover:bg-destructive/10"
             disabled={disabled}
             title={disabled ? "Impossible de supprimer une catégorie contenant des produits" : "Supprimer"}
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
           </Button>
-        } 
+        }
       />
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
           <AlertDialogDescription>
-            Cette action est irréversible. Cela supprimera définitivement cette catégorie. 
-            Assurez-vous qu'aucun produit n'est actuellement lié à cette catégorie.
+            Cette action est irréversible. Cela supprimera définitivement cette
+            catégorie. Assurez-vous qu&apos;aucun produit n&apos;est
+            actuellement lié à cette catégorie.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Annuler</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogAction
+            onClick={handleDelete}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
             Supprimer
           </AlertDialogAction>
         </AlertDialogFooter>
