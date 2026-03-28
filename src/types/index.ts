@@ -57,6 +57,8 @@ export interface Order {
   client_name: string;
   phone: string;
   address?: string;
+  latitude?: number;
+  longitude?: number;
   source: OrderSource;
   referred_employee_name?: string;
   total: number;

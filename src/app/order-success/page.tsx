@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from "react";
 import PublicLayout from "@/components/layout/public-layout";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Download, Package, ArrowRight, Sparkles, Store, MapPin, Zap } from "lucide-react";
+import { CheckCircle2, Download, Package, ArrowRight, Sparkles, Store, MapPin, Zap, Globe } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatCurrency, cn } from "@/lib/utils";
@@ -20,7 +20,7 @@ export default function OrderSuccessPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = use(props.searchParams);
-  const orderId = searchParams.orderId as string;
+  const orderId = (searchParams.id || searchParams.orderId) as string;
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const clearCart = useCartStore((state) => state.clearCart);
@@ -65,7 +65,7 @@ export default function OrderSuccessPage(props: {
           <h1 className="text-4xl font-black tracking-tighter">Commande introuvable</h1>
           <p className="mt-4 text-muted-foreground font-medium">Une erreur est survenue lors du chargement de votre commande.</p>
           <Link href="/products" className="mt-8 inline-block">
-            <Button size="lg" className="rounded-full px-12 h-14 font-black uppercase tracking-widest text-xs">Retour au catalogue</Button>
+            <Button size="lg" className="rounded-full px-12 h-14 font-black tracking-tight text-xs">Retour au catalogue</Button>
           </Link>
         </div>
       </PublicLayout>
@@ -97,7 +97,7 @@ export default function OrderSuccessPage(props: {
                 <span className="text-gradient decoration-indigo-500">Confiance !</span>
               </h1>
               <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
-                Votre commande <span className="text-foreground font-black tracking-tighter decoration-primary decoration-4 underline-offset-4">#{order.id.slice(0, 8).toUpperCase()}</span> a été transmise à notre équipe logistique.
+                Votre commande <span className="text-foreground font-black tracking-tighter decoration-primary decoration-4 underline-offset-4">#{order.id.slice(0, 8)}</span> a été transmise à notre équipe logistique.
               </p>
             </div>
           </div>
@@ -118,7 +118,17 @@ export default function OrderSuccessPage(props: {
                         <MapPin className="h-4 w-4 text-primary" />
                         <p className="font-bold tracking-tight">{order.client_name}</p>
                      </div>
-                     <p className="text-xs text-muted-foreground font-medium">{order.client_phone}</p>
+                     <p className="text-xs text-muted-foreground font-medium">{order.phone}</p>
+                     {order.latitude && order.longitude && (
+                        <a 
+                          href={`https://www.google.com/maps/search/?api=1&query=${order.latitude},${order.longitude}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors mt-2"
+                        >
+                           <Globe className="h-3 w-3" /> Voir ma position sur la carte
+                        </a>
+                     )}
                   </div>
 
                   <div className="space-y-4 text-center lg:text-left">

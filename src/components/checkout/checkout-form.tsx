@@ -12,9 +12,18 @@ import { toast } from "sonner";
 import { Loader2, Zap, ShieldCheck, Landmark } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { OrderSource } from "@/types";
+import { LocationPicker } from "./location-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function CheckoutForm() {
   const { items, getTotal, clearCart, boutiqueId } = useCartStore();
+  const [employees, setEmployees] = useState<{ id: string; name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -22,12 +31,25 @@ export function CheckoutForm() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // Fetch employees for referral selection
+    async function fetchEmployees() {
+      const { data } = await supabase
+        .from("users")
+        .select("id, name")
+        .in("role", ["employee", "manager", "admin"])
+        .order("name");
+      if (data) setEmployees(data);
+    }
+    fetchEmployees();
+  }, [supabase]);
 
   const [formData, setFormData] = useState({
     client_name: "",
     phone: "",
     address: "",
+    latitude: undefined as number | undefined,
+    longitude: undefined as number | undefined,
     source: "" as OrderSource,
     referred_employee_name: "",
   });
@@ -54,6 +76,8 @@ export function CheckoutForm() {
           client_name: formData.client_name,
           phone: formData.phone,
           address: formData.address,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
           source: formData.source,
           referred_employee_name: formData.source === "employe" ? formData.referred_employee_name : null,
           total: getTotal(),
@@ -113,7 +137,7 @@ export function CheckoutForm() {
         
         <div className="grid gap-8 sm:grid-cols-2">
           <div className="space-y-3">
-            <Label htmlFor="client_name" className="text-[10px] font-black uppercase tracking-widest opacity-60 ml-1">Nom complet *</Label>
+            <Label htmlFor="client_name" className="text-[10px] font-black tracking-tight opacity-60 ml-1">Nom complet *</Label>
             <Input
               id="client_name"
               required
@@ -125,7 +149,7 @@ export function CheckoutForm() {
           </div>
           
           <div className="space-y-3">
-            <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-widest opacity-60 ml-1">Numéro de téléphone *</Label>
+            <Label htmlFor="phone" className="text-[10px] font-black tracking-tight opacity-60 ml-1">Numéro de téléphone *</Label>
             <Input
               id="phone"
               type="tel"
@@ -138,15 +162,29 @@ export function CheckoutForm() {
           </div>
         </div>
 
-        <div className="space-y-3">
-          <Label htmlFor="address" className="text-[10px] font-black uppercase tracking-widest opacity-60 ml-1">Adresse de livraison (Optionnelle)</Label>
-          <Input
-            id="address"
-            placeholder="Quartier, Rue, Immeuble..."
-            className="h-14 rounded-2xl bg-secondary/30 border-none px-6 font-medium focus-visible:ring-primary/40"
-            value={formData.address}
-            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-          />
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <Label htmlFor="address" className="text-[10px] font-black tracking-tight opacity-60 ml-1">Adresse de livraison (Optionnelle)</Label>
+            <Input
+              id="address"
+              placeholder="Quartier, Rue, Immeuble..."
+              className="h-14 rounded-2xl bg-secondary/30 border-none px-6 font-medium focus-visible:ring-primary/40"
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-[10px] font-black tracking-tight opacity-60 ml-1">Localisation GPS (Recommandé)</Label>
+            <LocationPicker 
+              onLocationSelect={(lat, lng, addr) => setFormData({ 
+                ...formData, 
+                latitude: lat, 
+                longitude: lng,
+                address: addr || formData.address 
+              })}
+            />
+          </div>
         </div>
       </div>
 
@@ -184,15 +222,27 @@ export function CheckoutForm() {
 
         {formData.source === "employe" && (
           <div className="mt-6 space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
-            <Label htmlFor="referred_employee_name" className="text-[10px] font-black uppercase tracking-widest opacity-60 ml-1">Nom du collaborateur *</Label>
-            <Input
-              id="referred_employee_name"
-              required
-              placeholder="Saisissez le nom complet..."
-              className="h-14 rounded-2xl bg-secondary/30 border-none px-6 font-medium focus-visible:ring-primary/40"
+            <Label htmlFor="referred_employee_name" className="text-[10px] font-black tracking-tight opacity-60 ml-1">Sélectionner le collaborateur *</Label>
+            <Select 
+              onValueChange={(value) => setFormData({ ...formData, referred_employee_name: value || "" })}
               value={formData.referred_employee_name}
-              onChange={(e) => setFormData({ ...formData, referred_employee_name: e.target.value })}
-            />
+            >
+              <SelectTrigger className="h-14 w-full rounded-2xl bg-secondary/30 border-none px-6 font-medium focus-visible:ring-primary/40">
+                <SelectValue placeholder="Choisir un employé..." />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-none shadow-2xl bg-card/95 backdrop-blur-xl">
+                 {employees.map((emp) => (
+                   <SelectItem key={emp.id} value={emp.name || ""} className="capitalize py-3 px-6 cursor-pointer focus:bg-primary/10">
+                     {emp.name}
+                   </SelectItem>
+                 ))}
+                 {employees.length === 0 && (
+                   <div className="p-4 text-xs text-muted-foreground italic text-center">
+                     Aucun collaborateur trouvé
+                   </div>
+                 )}
+              </SelectContent>
+            </Select>
           </div>
         )}
       </div>
@@ -200,11 +250,11 @@ export function CheckoutForm() {
       <div className="pt-8 border-t border-border/50 space-y-10">
         <div className="glass-card rounded-[2.5rem] p-8 space-y-4">
           <div className="flex justify-between items-center text-muted-foreground">
-            <span className="text-[11px] font-black uppercase tracking-widest opacity-40">Récapitulatif Articles ({items.length})</span>
+            <span className="text-[11px] font-black tracking-tight opacity-40">Récapitulatif articles ({items.length})</span>
             <span className="font-bold tabular-nums">{formatCurrency(getTotal())}</span>
           </div>
           <div className="flex justify-between items-end border-t border-border/20 pt-4">
-            <span className="text-xs font-black uppercase tracking-widest text-primary">Montant à régler</span>
+            <span className="text-xs font-black tracking-tight text-primary">Montant à régler</span>
             <span className="text-4xl font-black tracking-tighter tabular-nums decoration-primary decoration-4 underline-offset-8 underline">{formatCurrency(getTotal())}</span>
           </div>
         </div>
