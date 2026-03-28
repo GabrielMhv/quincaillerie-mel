@@ -100,7 +100,7 @@ export default async function HomePage(props: {
                   <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     15k+
                   </p>
-                  <p className="text-[11px] font-bold text-slate-400 tracking-widest">
+                  <p className="text-[11px] font-bold text-slate-400 tracking-tight">
                     Clients servis
                   </p>
                 </div>
@@ -109,7 +109,7 @@ export default async function HomePage(props: {
                   <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     2.5k
                   </p>
-                  <p className="text-[11px] font-bold text-slate-400 tracking-widest">
+                  <p className="text-[11px] font-bold text-slate-400 tracking-tight">
                     Références
                   </p>
                 </div>
@@ -118,7 +118,7 @@ export default async function HomePage(props: {
                   <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     02
                   </p>
-                  <p className="text-[11px] font-bold text-slate-400 tracking-widest">
+                  <p className="text-[11px] font-bold text-slate-400 tracking-tight">
                     Points de vente
                   </p>
                 </div>
@@ -158,8 +158,8 @@ export default async function HomePage(props: {
                   <p className="text-[13px] font-black tracking-tighter text-slate-900 dark:text-white leading-none">
                     Stock Disponible
                   </p>
-                  <p className="text-[10px] font-bold text-slate-400 tracking-widest">
-                    Lomė, Ségbé, Sanguera
+                  <p className="text-[10px] font-bold text-slate-400 tracking-tight">
+                    Lomé, Ségbé, Sanguera
                   </p>
                 </div>
               </div>
@@ -173,7 +173,7 @@ export default async function HomePage(props: {
           {/* Core Specializations (Categories Cards) */}
           <section className="mb-24 lg:mb-48 space-y-10 lg:space-y-16">
             <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700 px-4">
-              <p className="text-[11px] font-black tracking-[0.3em] text-primary uppercase">
+              <p className="text-[11px] font-black tracking-tight text-primary">
                 Expertise Sectorielle
               </p>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
@@ -257,7 +257,7 @@ export default async function HomePage(props: {
           <section className="mb-24 lg:mb-48 space-y-10 lg:space-y-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
               <div className="space-y-4">
-                <p className="text-[11px] font-black tracking-[0.3em] text-primary uppercase">
+                <p className="text-[11px] font-black tracking-tight text-primary">
                   Collections Vedettes
                 </p>
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
@@ -298,7 +298,7 @@ export default async function HomePage(props: {
 
               <div className="relative z-10 p-8 md:p-12 lg:p-24 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
                 <div className="space-y-8 lg:space-y-10 lg:w-3/5 text-center lg:text-left">
-                  <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/10 text-white/90 text-[10px] font-black tracking-widest backdrop-blur-md border border-white/10">
+                  <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/10 text-white/90 text-[10px] font-black tracking-tight backdrop-blur-md border border-white/10">
                     <Landmark className="h-4 w-4 text-emerald-400" /> Partenaire
                     des grands projets
                   </div>
@@ -345,7 +345,7 @@ export default async function HomePage(props: {
                       <p className="text-2xl sm:text-3xl font-black tracking-tighter text-white">
                         {stat.label}
                       </p>
-                      <p className="text-[10px] font-bold text-slate-500 tracking-widest uppercase line-clamp-1">
+                      <p className="text-[10px] font-bold text-slate-500 tracking-tight line-clamp-1">
                         {stat.sub}
                       </p>
                     </div>
