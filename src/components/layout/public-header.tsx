@@ -58,7 +58,7 @@ export function PublicHeader() {
             <span className="font-black text-2xl tracking-tighter text-gradient leading-none">
               {settings.name}
               <br />
-              <span className="text-[10px] tracking-widest opacity-60 font-bold text-blue-400">
+              <span className="text-[10px] tracking-tight opacity-60 font-bold text-blue-400">
                 {settings.description.substring(0, 30)}...
               </span>
             </span>
@@ -128,7 +128,7 @@ export function PublicHeader() {
                       className="glass border-border/50 rounded-4xl p-3 shadow-2xl animate-in fade-in zoom-in duration-200 min-w-[320px]"
                     >
                       <div className="px-4 py-3 mb-2">
-                        <p className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-1">
+                        <p className="text-[10px] font-bold text-primary tracking-tight mb-1">
                           Nos points de vente
                         </p>
                         <p className="text-[11px] text-muted-foreground font-medium">
@@ -270,7 +270,7 @@ export function PublicHeader() {
         >
           <div className="space-y-12">
             <div className="space-y-6">
-              <h4 className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase opacity-60">
+              <h4 className="text-[10px] font-bold tracking-tight text-primary opacity-60">
                 Histoire & Expertise
               </h4>
               <nav className="flex flex-col gap-6 text-3xl font-black tracking-tighter">
@@ -303,7 +303,7 @@ export function PublicHeader() {
 
             <div className="space-y-8">
               <div className="flex items-center justify-between">
-                <h4 className="text-[10px] font-bold tracking-[0.3em] text-primary uppercase opacity-60">
+                <h4 className="text-[10px] font-bold tracking-tight text-primary opacity-60">
                   Points de vente
                 </h4>
                 <div className="h-px flex-1 bg-border/20 ml-6" />
@@ -339,7 +339,7 @@ export function PublicHeader() {
                     <div>
                       <p
                         className={cn(
-                          "text-[10px] font-bold uppercase tracking-widest mb-1",
+                          "text-[10px] font-bold tracking-tight mb-1",
                           selectedBoutique?.id === b.id
                             ? "text-white/60"
                             : "text-muted-foreground opacity-50",
@@ -411,7 +411,7 @@ export function PublicHeader() {
                 <span className="font-black text-2xl tracking-tighter block leading-none">
                   {settings.name}
                 </span>
-                <span className="text-[10px] font-bold tracking-[0.2em] text-blue-500">
+                <span className="text-[10px] font-bold tracking-tight text-blue-500">
                   {settings.address.split("•")[0].trim()}
                 </span>
               </div>

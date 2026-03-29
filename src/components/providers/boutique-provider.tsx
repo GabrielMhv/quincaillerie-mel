@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 interface Boutique {
@@ -22,9 +22,11 @@ export function BoutiqueProvider({ children }: { children: React.ReactNode }) {
   const [selectedBoutique, setSelectedBoutiqueState] = useState<Boutique | null>(null);
   const [boutiques, setBoutiques] = useState<Boutique[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClient();
+  const supabaseRef = useRef(createClient());
 
   useEffect(() => {
+    const supabase = supabaseRef.current;
+
     async function initBoutiques() {
       try {
         const { data, error } = await supabase
@@ -59,7 +61,7 @@ export function BoutiqueProvider({ children }: { children: React.ReactNode }) {
     }
 
     initBoutiques();
-  }, [supabase]);
+  }, []); // stable ref — runs once on mount
 
   const setSelectedBoutique = (boutique: Boutique | null) => {
     setSelectedBoutiqueState(boutique);

@@ -69,29 +69,33 @@ export function CheckoutForm() {
     setIsLoading(true);
 
     try {
+      // Generate order ID client-side to avoid needing SELECT permission after INSERT
+      const orderId = crypto.randomUUID();
+
       // 1. Create the order
-      const { data: orderData, error: orderError } = await supabase
+      const { error: orderError } = await supabase
         .from("orders")
         .insert({
+          id: orderId,
           client_name: formData.client_name,
           phone: formData.phone,
-          address: formData.address,
-          latitude: formData.latitude,
-          longitude: formData.longitude,
-          source: formData.source,
-          referred_employee_name: formData.source === "employe" ? formData.referred_employee_name : null,
+          address: formData.address || null,
+          latitude: formData.latitude ?? null,
+          longitude: formData.longitude ?? null,
+          source: formData.source || null,
+          referred_employee_name: formData.source === "employe" && formData.referred_employee_name
+            ? formData.referred_employee_name
+            : null,
           total: getTotal(),
           boutique_id: boutiqueId,
           status: "pending",
-        })
-        .select()
-        .single();
+        });
 
       if (orderError) throw orderError;
 
       // 2. Create order items
       const orderItemsToInsert = items.map((item) => ({
-        order_id: orderData.id,
+        order_id: orderId,
         product_id: item.product.id,
         quantity: item.quantity,
         price: item.product.price,
@@ -106,17 +110,19 @@ export function CheckoutForm() {
       // SUCCESS
       clearCart();
       toast.success("Commande validée avec succès !");
-      router.push(`/order-success?id=${orderData.id}`);
+      router.push(`/order-success?id=${orderId}`);
       
     } catch (error: any) {
-      console.error('Checkout error detail:', {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
-      });
-      toast.error(`Erreur lors de la commande : ${error.message || "Erreur inconnue"}`, {
-        description: error.hint || "Veuillez vérifier les informations saisies."
+      // Supabase errors have non-enumerable properties, extract manually
+      const msg = error?.message ?? (typeof error === 'string' ? error : 'Erreur inconnue');
+      const hint = error?.hint ?? '';
+      const code = error?.code ?? '';
+      const detail = error?.details ?? '';
+      // Log every accessible property
+      console.error('Checkout error:', error);
+      console.error('  → message:', msg, '| code:', code, '| hint:', hint, '| details:', detail);
+      toast.error(`Erreur lors de la commande : ${msg}`, {
+        description: hint || detail || `Code: ${code || 'inconnu'}`
       });
     } finally {
       setIsLoading(false);

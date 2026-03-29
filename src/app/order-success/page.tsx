@@ -33,11 +33,14 @@ export default function OrderSuccessPage(props: {
           .from("orders")
           .select("*, order_items(*, products(*)), boutique:boutiques(name)")
           .eq("id", orderId)
-          .single();
+          .maybeSingle();
 
+        if (error) {
+          console.error("Order fetch error:", error?.message, "| code:", error?.code);
+        }
         if (data) {
           setOrder(data);
-          clearCart(); // Clear the cart once we confirm success
+          clearCart();
         }
         setLoading(false);
       };
