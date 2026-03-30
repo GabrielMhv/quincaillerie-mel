@@ -94,6 +94,8 @@ CREATE TABLE public.orders (
   employee_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
   handler_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
   boutique_id UUID REFERENCES public.boutiques(id) ON DELETE CASCADE NOT NULL,
+  is_scheduled BOOLEAN DEFAULT FALSE,
+  scheduled_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

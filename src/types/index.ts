@@ -65,6 +65,8 @@ export interface Order {
   status: OrderStatus;
   employee_id?: string;
   boutique_id: string;
+  is_scheduled?: boolean;
+  scheduled_at?: string;
   created_at: string;
   order_items?: OrderItem[];
   boutique?: Boutique;

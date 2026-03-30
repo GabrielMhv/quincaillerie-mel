@@ -20,6 +20,7 @@ import {
   Sparkles,
   Zap,
   Clock,
+  CheckCircle2,
 } from "lucide-react";
 import {
   SparkAreaChart,
@@ -597,8 +598,9 @@ export default async function DashboardPage(props: {
                 );
               })}
               {lowStockProducts.length === 0 && (
-                <div className="py-20 text-center text-[10px] font-black tracking-widest opacity-30">
-                  Stock optimisé ✅
+                <div className="py-20 text-center space-y-4 opacity-30">
+                   <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500" />
+                   <div className="text-[10px] font-black tracking-widest uppercase">Stock optimisé</div>
                 </div>
               )}
             </div>

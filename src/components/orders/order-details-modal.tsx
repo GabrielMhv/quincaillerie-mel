@@ -56,6 +56,11 @@ export function OrderDetailsModal({ order, isOpen, onOpenChange }: OrderDetailsM
                  >
                    {order.status === "completed" ? "Livrée" : order.status === "pending" ? "En attente" : "Annulée"}
                  </Badge>
+                 {order.is_scheduled && (
+                   <Badge variant="outline" className="ml-2 rounded-2xl px-6 py-2 text-[10px] font-black tracking-tight border-2 border-primary/20 bg-primary/5 text-primary">
+                     Programmé
+                   </Badge>
+                 )}
               </div>
             </DialogHeader>
 
@@ -108,15 +113,16 @@ export function OrderDetailsModal({ order, isOpen, onOpenChange }: OrderDetailsM
                        </h4>
                        <div className="grid grid-cols-2 gap-4">
                           {[
-                            { icon: Calendar, label: "Date", value: formatDate(order.created_at) },
-                            { icon: Store, label: "Boutique", value: order.boutique?.name || "N/A" },
-                            { icon: ShoppingBag, label: "Source", value: order.source?.replace("_", " ") },
-                          ].map((item, i) => (
-                            <div key={i} className="flex flex-col gap-1">
-                              <p className="text-[8px] font-bold text-muted-foreground/40 tracking-tight">{item.label}</p>
-                              <p className="font-black text-[11px] capitalize">{item.value}</p>
-                            </div>
-                          ))}
+                             { icon: Calendar, label: "Date", value: formatDate(order.created_at) },
+                             { icon: Store, label: "Boutique", value: order.boutique?.name || "N/A" },
+                             { icon: ShoppingBag, label: "Source", value: order.source?.replace("_", " ") },
+                             ...(order.is_scheduled ? [{ icon: Calendar, label: "Retrait prévu", value: formatDate(order.scheduled_at) }] : []),
+                           ].map((item, i) => (
+                             <div key={i} className="flex flex-col gap-1">
+                               <p className="text-[8px] font-bold text-muted-foreground/40 tracking-tight">{item.label}</p>
+                               <p className="font-black text-[11px] capitalize">{item.value}</p>
+                             </div>
+                           ))}
                        </div>
                        {order.referred_employee_name && (
                          <div className="p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/10 flex items-center gap-3">

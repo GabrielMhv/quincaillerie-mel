@@ -52,6 +52,8 @@ export function CheckoutForm() {
     longitude: undefined as number | undefined,
     source: "" as OrderSource,
     referred_employee_name: "",
+    is_scheduled: false,
+    scheduled_at: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -89,6 +91,8 @@ export function CheckoutForm() {
           total: getTotal(),
           boutique_id: boutiqueId,
           status: "pending",
+          is_scheduled: formData.is_scheduled,
+          scheduled_at: formData.is_scheduled ? formData.scheduled_at : null,
         });
 
       if (orderError) throw orderError;
@@ -191,6 +195,74 @@ export function CheckoutForm() {
               })}
             />
           </div>
+        </div>
+      </div>
+
+      <div className="space-y-8 pt-8 border-t border-border/50">
+        <div className="flex items-center gap-4">
+           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <Zap className="h-5 w-5" />
+           </div>
+           <h2 className="text-2xl font-black tracking-tighter">Retrait & Logistique</h2>
+        </div>
+
+        <div className="space-y-6">
+          <RadioGroup
+            defaultValue="immediate"
+            onValueChange={(value) => setFormData({ ...formData, is_scheduled: value === "scheduled" })}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          >
+            <div className="relative">
+              <RadioGroupItem value="immediate" id="immediate" className="peer sr-only" />
+              <Label 
+                htmlFor="immediate" 
+                className="flex items-center justify-between p-6 h-20 rounded-3xl bg-secondary/30 border-2 border-transparent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
+              >
+                <div className="space-y-1">
+                  <p className="font-black tracking-tight text-sm">Vente immédiate</p>
+                  <p className="text-[10px] font-bold text-muted-foreground opacity-60">Récupération sous 24h</p>
+                </div>
+                <div className="h-6 w-6 rounded-full border-2 border-primary/20 peer-data-[state=checked]:border-primary transition-all flex items-center justify-center">
+                   <div className="h-3 w-3 rounded-full bg-primary scale-0 peer-data-[state=checked]:scale-100 transition-transform" />
+                </div>
+              </Label>
+            </div>
+
+            <div className="relative">
+              <RadioGroupItem value="scheduled" id="scheduled" className="peer sr-only" />
+              <Label 
+                htmlFor="scheduled" 
+                className="flex items-center justify-between p-6 h-20 rounded-3xl bg-secondary/30 border-2 border-transparent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 cursor-pointer transition-all"
+              >
+                <div className="space-y-1">
+                  <p className="font-black tracking-tight text-sm">Passer à l&apos;avance</p>
+                  <p className="text-[10px] font-bold text-muted-foreground opacity-60">Retrait à une date choisie</p>
+                </div>
+                <div className="h-6 w-6 rounded-full border-2 border-primary/20 peer-data-[state=checked]:border-primary transition-all flex items-center justify-center">
+                   <div className="h-3 w-3 rounded-full bg-primary scale-0 peer-data-[state=checked]:scale-100 transition-transform" />
+                </div>
+              </Label>
+            </div>
+          </RadioGroup>
+
+          {formData.is_scheduled && (
+            <div className="p-8 rounded-[2.5rem] bg-primary/5 border border-primary/10 space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+               <div className="space-y-3">
+                  <Label htmlFor="scheduled_at" className="text-[10px] font-black tracking-tight opacity-60 ml-1 uppercase">Date & Heure de retrait prévue *</Label>
+                  <Input 
+                    id="scheduled_at"
+                    type="datetime-local"
+                    required
+                    className="h-14 rounded-2xl bg-white dark:bg-card border-none px-6 font-bold tracking-tight text-sm focus-visible:ring-primary/40 appearance-none"
+                    value={formData.scheduled_at}
+                    onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
+                  />
+                  <p className="text-[10px] font-bold text-muted-foreground opacity-40 italic ml-1">
+                    Nos équipes prépareront votre commande pour cette échéance.
+                  </p>
+               </div>
+            </div>
+          )}
         </div>
       </div>
 
