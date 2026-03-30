@@ -49,17 +49,19 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-100 w-full border-b border-white/10 dark:border-white/5 bg-background/60 backdrop-blur-2xl">
-      <div className="container mx-auto flex h-20 items-center justify-between px-6">
-        <div className="flex items-center gap-10">
+      <div className="container mx-auto flex h-20 items-center justify-between px-3 sm:px-6">
+        <div className="flex items-center gap-4 lg:gap-10">
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="p-2.5 rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
               <Store className="h-6 w-6 text-primary" />
             </div>
-            <span className="font-black text-2xl tracking-tighter text-gradient leading-none">
+            <span className="font-black text-xl sm:text-2xl tracking-tighter text-gradient leading-none">
               {settings.name}
-              <br />
-              <span className="text-[10px] tracking-tight opacity-60 font-bold text-blue-400">
-                {settings.description.substring(0, 30)}...
+              <span className="hidden sm:inline">
+                <br />
+                <span className="text-[9px] sm:text-[10px] tracking-tight opacity-60 font-bold text-blue-400 inline-block">
+                  {settings.description.substring(0, 30)}...
+                </span>
               </span>
             </span>
           </Link>
@@ -165,11 +167,11 @@ export function PublicHeader() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full h-11 w-11 hover:bg-primary/10 text-primary transition-colors relative"
+              className="rounded-full h-10 w-10 sm:h-11 sm:w-11 hover:bg-primary/10 text-primary transition-colors relative"
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               aria-label="Changer de thème"
             >
@@ -184,7 +186,7 @@ export function PublicHeader() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative rounded-full h-11 w-11 hover:bg-primary/10 group"
+                className="relative rounded-full h-10 w-10 sm:h-11 sm:w-11 hover:bg-primary/10 group"
               >
                 <ShoppingCart className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
                 {cartItemCount > 0 && (
@@ -235,7 +237,7 @@ export function PublicHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden rounded-full h-11 w-11 hover:bg-muted"
+              className="lg:hidden rounded-full h-10 w-10 sm:h-11 sm:w-11 hover:bg-muted"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -251,7 +253,7 @@ export function PublicHeader() {
       {/* Mobile Menu */}
       <div
         className={cn(
-          "fixed inset-0 top-20 z-50 h-[calc(100vh-80px)] w-full overflow-hidden transition-all duration-500 md:hidden",
+          "fixed inset-0 top-20 z-50 h-[calc(100vh-80px)] w-full overflow-hidden transition-all duration-500 lg:hidden",
           mobileMenuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none",
@@ -264,52 +266,20 @@ export function PublicHeader() {
 
         <div
           className={cn(
-            "relative z-20 h-full w-full max-w-112.5 ml-auto bg-card border-l border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] p-8 sm:p-12 flex flex-col transition-transform duration-500 overflow-y-auto",
+            "relative z-20 h-full w-full max-w-sm sm:max-w-md ml-auto bg-background/95 backdrop-blur-3xl border-l border-white/10 shadow-2xl p-6 sm:p-10 flex flex-col transition-transform duration-500 overflow-y-auto",
             mobileMenuOpen ? "translate-x-0" : "translate-x-full",
           )}
         >
           <div className="space-y-12">
-            <div className="space-y-6">
-              <h4 className="text-[10px] font-bold tracking-tight text-primary opacity-60">
-                Histoire & Expertise
-              </h4>
-              <nav className="flex flex-col gap-6 text-3xl font-black tracking-tighter">
-                <Link
-                  href="/products"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="hover:text-primary transition-all flex items-center justify-between group"
-                >
-                  <span>Catalogue</span>
-                  <ChevronDown className="h-5 w-5 -rotate-90 opacity-20 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
-                </Link>
-                <Link
-                  href="/about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="hover:text-primary transition-all flex items-center justify-between group"
-                >
-                  <span>L&apos;histoire</span>
-                  <ChevronDown className="h-5 w-5 -rotate-90 opacity-20 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
-                </Link>
-                <Link
-                  href="/contact"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="hover:text-primary transition-all flex items-center justify-between group"
-                >
-                  <span>Contact</span>
-                  <ChevronDown className="h-5 w-5 -rotate-90 opacity-20 group-hover:opacity-100 group-hover:translate-x-2 transition-all" />
-                </Link>
+              <nav className="flex flex-col gap-6 text-2xl font-black tracking-tighter pt-4">
+                <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-all">Catalogue</Link>
+                <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-all">L&apos;histoire</Link>
+                <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-all">Contact</Link>
               </nav>
-            </div>
 
-            <div className="space-y-8">
-              <div className="flex items-center justify-between">
-                <h4 className="text-[10px] font-bold tracking-tight text-primary opacity-60">
-                  Points de vente
-                </h4>
-                <div className="h-px flex-1 bg-border/20 ml-6" />
-              </div>
-
-              <div className="grid gap-4">
+            <div className="pt-6 space-y-4">
+              <h4 className="text-[10px] font-bold tracking-tight text-primary opacity-60 uppercase">Points de vente</h4>
+              <div className="flex flex-col gap-2">
                 {boutiques.map((b) => (
                   <button
                     key={b.id}
@@ -318,45 +288,17 @@ export function PublicHeader() {
                       setTimeout(() => setMobileMenuOpen(false), 200);
                     }}
                     className={cn(
-                      "relative w-full p-6 h-28 rounded-[2.5rem] text-left transition-all overflow-hidden flex flex-col justify-end group",
+                      "flex items-center justify-between p-4 rounded-2xl transition-all border",
                       selectedBoutique?.id === b.id
-                        ? "bg-primary text-white shadow-2xl shadow-primary/20 ring-4 ring-primary/10"
-                        : "bg-secondary/40 hover:bg-secondary/80 border border-white/5",
+                        ? "bg-primary/10 border-primary/20 text-primary"
+                        : "bg-secondary/40 border-transparent hover:bg-secondary/80 text-foreground"
                     )}
                   >
-                    <div className="absolute top-6 right-6">
-                      <div
-                        className={cn(
-                          "h-10 w-10 rounded-full flex items-center justify-center transition-all",
-                          selectedBoutique?.id === b.id
-                            ? "bg-white/20"
-                            : "bg-primary/10 text-primary group-hover:scale-110",
-                        )}
-                      >
-                        <MapPin className="h-5 w-5" />
-                      </div>
+                    <div className="flex items-center gap-3">
+                      <MapPin className={cn("h-5 w-5", selectedBoutique?.id === b.id ? "text-primary" : "text-muted-foreground")} />
+                      <p className="text-sm font-bold truncate">{b.name}</p>
                     </div>
-                    <div>
-                      <p
-                        className={cn(
-                          "text-[10px] font-bold tracking-tight mb-1",
-                          selectedBoutique?.id === b.id
-                            ? "text-white/60"
-                            : "text-muted-foreground opacity-50",
-                        )}
-                      >
-                        Boutique{" "}
-                        {b.name.includes("Ségbé") ? "Ségbé" : "Sanguera"}
-                      </p>
-                      <p className="text-xl font-black tracking-tighter truncate w-full pr-12">
-                        {b.name}
-                      </p>
-                    </div>
-                    {selectedBoutique?.id === b.id && (
-                      <div className="absolute bottom-6 right-6">
-                        <CheckCircle2 className="h-6 w-6 text-white animate-in zoom-in" />
-                      </div>
-                    )}
+                    {selectedBoutique?.id === b.id && <CheckCircle2 className="h-5 w-5" />}
                   </button>
                 ))}
               </div>
@@ -371,7 +313,7 @@ export function PublicHeader() {
                       onClick={() => setMobileMenuOpen(false)}
                       className="w-full inline-block"
                     >
-                      <Button className="w-full h-18 rounded-[2.5rem] font-bold tracking-tight text-xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
+                      <Button className="w-full h-14 sm:h-16 rounded-[2.5rem] font-bold tracking-tight text-lg sm:text-xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
                         Console de Gestion{" "}
                         <ChevronDown className="-rotate-90 h-5 w-5" />
                       </Button>
@@ -379,7 +321,7 @@ export function PublicHeader() {
                   )}
                   <Button
                     variant="ghost"
-                    className="w-full h-18 rounded-[2.5rem] font-bold text-rose-500 hover:bg-rose-500/10"
+                    className="w-full h-14 sm:h-16 rounded-[2.5rem] font-bold text-rose-500 hover:bg-rose-500/10 text-sm sm:text-base"
                     onClick={() => {
                       signOut();
                       setMobileMenuOpen(false);
@@ -394,7 +336,7 @@ export function PublicHeader() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full inline-block"
                 >
-                  <Button className="w-full h-18 rounded-[2.5rem] font-bold tracking-tight text-xl shadow-xl shadow-primary/20">
+                  <Button className="w-full h-14 sm:h-16 rounded-[2.5rem] font-bold tracking-tight text-lg sm:text-xl shadow-xl shadow-primary/20">
                     Se connecter à l&apos;espace pro
                   </Button>
                 </Link>
@@ -402,25 +344,6 @@ export function PublicHeader() {
             </div>
           </div>
 
-          <div className="mt-auto space-y-6 pt-16">
-            <div className="flex items-center gap-4">
-              <div className="p-4 bg-primary/10 rounded-2xl">
-                <Store className="h-8 w-8 text-primary" />
-              </div>
-              <div>
-                <span className="font-black text-2xl tracking-tighter block leading-none">
-                  {settings.name}
-                </span>
-                <span className="text-[10px] font-bold tracking-tight text-blue-500">
-                  {settings.address.split("•")[0].trim()}
-                </span>
-              </div>
-            </div>
-            <p className="text-[9px] font-medium tracking-tight opacity-20 max-w-50">
-              &copy; {new Date().getFullYear()} {settings.name}. Tous droits
-              réservés. Digital Edition.
-            </p>
-          </div>
         </div>
       </div>
     </header>

@@ -92,14 +92,14 @@ export default function OrderSuccessPage(props: {
             </div>
             
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-[10px] font-bold tracking-tight leading-none">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-[10px] font-bold tracking-tight leading-none mx-auto">
                  <Zap className="h-3 w-3" /> Confirmation reçue
               </div>
-              <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-tight">
-                Merci pour votre <br />
+              <h1 className="text-4xl sm:text-7xl md:text-8xl font-black tracking-tighter leading-tight mx-auto px-4">
+                Merci pour votre <br className="hidden sm:block" />
                 <span className="text-gradient decoration-indigo-500">Confiance !</span>
               </h1>
-              <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed px-6">
                 Votre commande <span className="text-foreground font-black tracking-tighter decoration-primary decoration-4 underline-offset-4">#{order.id.slice(0, 8)}</span> a été transmise à notre équipe logistique.
               </p>
             </div>
@@ -107,8 +107,8 @@ export default function OrderSuccessPage(props: {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
             {/* Order Summary Card */}
-            <div className="lg:col-span-12 glass-card rounded-[3.5rem] overflow-hidden p-2 shadow-premium">
-               <div className="p-8 lg:p-12 bg-white/40 dark:bg-card/40 rounded-[3rem] border border-white/20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+            <div className="lg:col-span-12 glass-card rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden p-1.5 md:p-2 shadow-premium">
+               <div className="p-6 sm:p-10 lg:p-12 bg-white/40 dark:bg-card/40 rounded-[2.25rem] md:rounded-[3rem] border border-white/20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
                   <div className="space-y-4 text-center lg:text-left">
                      <div className="text-[10px] font-bold tracking-tight text-muted-foreground opacity-60">Récapitulatif</div>
                      <p className="text-3xl font-black tracking-tighter tabular-nums">{formatCurrency(order.total)}</p>
@@ -155,7 +155,7 @@ export default function OrderSuccessPage(props: {
             </div>
 
             {/* Tracking Note */}
-            <div className="lg:col-span-12 p-10 rounded-[3.5rem] bg-indigo-900 border border-white/10 text-white shadow-2xl relative overflow-hidden group">
+            <div className="lg:col-span-12 p-6 sm:p-10 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] bg-indigo-900 border border-white/10 text-white shadow-2xl relative overflow-hidden group">
                <div className="absolute top-0 right-0 w-full h-full bg-premium-grid opacity-10 pointer-events-none" />
                <div className="absolute -bottom-20 -right-20 h-64 w-64 bg-primary/20 rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700" />
                

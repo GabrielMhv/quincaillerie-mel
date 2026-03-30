@@ -15,8 +15,8 @@ interface OrderPDFLinkProps {
 export function OrderPDFLink({ order }: OrderPDFLinkProps) {
   const generatePDF = () => {
     const doc = new jsPDF();
-    const date = format(new Date(order.created_at), "dd MMMM yyyy 'à' HH:mm", { locale: fr });
-    const orderRef = `#${order.id.slice(0, 8).toUpperCase()}`;
+    const date = order.created_at ? format(new Date(order.created_at), "dd MMMM yyyy 'à' HH:mm", { locale: fr }) : format(new Date(), "dd MMMM yyyy 'à' HH:mm", { locale: fr });
+    const orderRef = `#${(order.id || "").slice(0, 8).toUpperCase()}`;
 
     // Header - Brand
     doc.setFont("helvetica", "bold");

@@ -75,8 +75,8 @@ export default function ContactPage() {
     <PublicLayout>
       <div className="relative min-h-screen pb-32 overflow-hidden bg-slate-50 dark:bg-slate-950">
         {/* Advanced Decorative Elements */}
-        <div className="absolute top-0 right-[-10%] w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] -z-10 animate-pulse pointer-events-none" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[150px] -z-10 pointer-events-none opacity-50" />
+        <div className="hidden lg:block absolute top-0 right-[-10%] w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] -z-10 animate-pulse pointer-events-none" />
+        <div className="hidden lg:block absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[150px] -z-10 pointer-events-none opacity-50" />
         <div className="absolute inset-0 bg-premium-grid opacity-[0.03] dark:opacity-[0.07] pointer-events-none" />
 
         <div className="container mx-auto px-4 md:px-6 pt-12 md:pt-20 lg:pt-32 space-y-20 md:space-y-32 relative z-10">
@@ -100,7 +100,7 @@ export default function ContactPage() {
 
             {/* Side Labels / Info */}
             <div className="lg:col-span-4 space-y-6 md:space-y-8 lg:sticky lg:top-32">
-              <div className="space-y-3 md:space-y-4 mb-8 md:mb-12">
+              <div className="space-y-3 md:space-y-4 mb-8 md:mb-12 text-center lg:text-left">
                  <h2 className="text-[9px] md:text-[10px] font-black tracking-widest text-primary opacity-60">Canaux de communication</h2>
                  <p className="text-2xl md:text-3xl font-black tracking-tighter">Toujours à vos côtés.</p>
               </div>
@@ -149,14 +149,14 @@ export default function ContactPage() {
                            <CheckCircle2 className="h-14 w-14 text-primary" />
                         </div>
                         <div className="space-y-6">
-                           <h2 className="text-5xl font-black tracking-tighter leading-none">C&apos;est parfait !</h2>
+                           <h2 className="text-4xl md:text-5xl font-black tracking-tighter leading-none">C&apos;est parfait !</h2>
                            <p className="text-xl text-muted-foreground font-medium leading-relaxed">
                               Votre message a traversé le réseau avec succès. L&apos;un de nos managers reviendra vers vous incessamment.
                            </p>
                         </div>
                         <Button 
                           onClick={() => setSubmitted(false)}
-                          className="rounded-full px-12 h-16 bg-white dark:bg-slate-800 border border-primary/20 text-primary hover:bg-primary hover:text-white font-black tracking-tighter text-lg shadow-xl shadow-primary/5 transition-all"
+                          className="rounded-full px-6 md:px-12 h-14 md:h-16 bg-white dark:bg-slate-800 border border-primary/20 text-primary hover:bg-primary hover:text-white font-black tracking-tighter text-sm md:text-lg shadow-xl shadow-primary/5 transition-all w-full sm:w-auto"
                         >
                           Rédiger un autre message
                         </Button>
@@ -213,7 +213,7 @@ export default function ContactPage() {
                         </Button>
                       </div>
 
-                      <div className="flex items-center justify-center gap-6 pt-6 opacity-30 group-hover:opacity-60 transition-opacity">
+                      <div className="hidden lg:flex items-center justify-center gap-6 pt-6 opacity-30 group-hover:opacity-60 transition-opacity">
                          <div className="h-px w-12 bg-slate-400" />
                          <span className="text-[9px] font-black tracking-[0.5em] text-slate-500">Service certifié excellence</span>
                          <div className="h-px w-12 bg-slate-400" />

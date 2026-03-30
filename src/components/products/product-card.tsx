@@ -82,7 +82,7 @@ export function ProductCard({ product, selectedBoutiqueId, delay = 0, priority =
         )}
 
         {/* Hover Action Overlay */}
-        <div className="absolute inset-x-3 bottom-3 translate-y-6 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 ease-out">
+        <div className="absolute inset-x-3 bottom-3 translate-y-0 opacity-100 lg:translate-y-6 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 transition-all duration-700 ease-out z-10">
           <Button 
             disabled={isOutOfStock}
             onClick={handleAddToCart}
@@ -110,7 +110,7 @@ export function ProductCard({ product, selectedBoutiqueId, delay = 0, priority =
           </p>
         </div>
 
-        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute bottom-4 left-4 right-4 bg-white/90 dark:bg-card/90 backdrop-blur-sm p-3 rounded-xl border border-slate-100 dark:border-white/5 shadow-lg transform translate-y-2 group-hover:translate-y-0 z-20">
+        <p className="hidden lg:block text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute bottom-4 left-4 right-4 bg-white/90 dark:bg-card/90 backdrop-blur-sm p-3 rounded-xl border border-slate-100 dark:border-white/5 shadow-lg transform translate-y-2 group-hover:translate-y-0 z-20">
           {product.description || "Aucune description supplémentaire."}
         </p>
         

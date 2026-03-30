@@ -90,7 +90,7 @@ export default function AuthLayout({
             {/* Background decorative glow for form */}
             <div className="absolute -inset-4 bg-primary/5 rounded-[4rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000 -z-10" />
 
-            <div className="bg-white/70 dark:bg-white/3 backdrop-blur-3xl rounded-[3.5rem] p-10 lg:p-14 shadow-3xl border border-white dark:border-white/10">
+            <div className="bg-white/70 dark:bg-white/3 backdrop-blur-3xl rounded-[2.5rem] md:rounded-[3.5rem] p-6 lg:p-14 shadow-3xl border border-white dark:border-white/10">
               <div className="relative z-10">{children}</div>
             </div>
           </div>

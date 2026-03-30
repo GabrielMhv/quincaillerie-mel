@@ -52,11 +52,11 @@ export default function CartPage() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
         <div className="container mx-auto px-6 pt-12 lg:pt-24 space-y-16 relative z-10">
-          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-tight leading-none">
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700 text-center lg:text-left">
+            <div className="hidden lg:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-tight leading-none">
               <Sparkles className="h-3 w-3" /> Sélection La Championne
             </div>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-tight">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-tight mx-auto lg:mx-0">
               Votre <span className="text-gradient">Panier.</span>
             </h1>
           </div>
@@ -67,9 +67,9 @@ export default function CartPage() {
               {items.map((item, i) => (
                 <div 
                    key={`${item.product.id}-${item.boutique_id}`} 
-                   className="group relative glass-card rounded-[3.5rem] p-2 hover:shadow-premium-hover transition-all duration-500 hover:-translate-y-1"
+                   className="group relative glass-card rounded-[2rem] md:rounded-[3.5rem] p-1.5 md:p-2 hover:shadow-premium-hover transition-all duration-500 hover:-translate-y-1"
                 >
-                   <div className="bg-white/40 dark:bg-card/40 rounded-[3rem] border border-white/10 p-6 flex flex-col sm:flex-row items-center gap-8">
+                   <div className="bg-white/40 dark:bg-card/40 rounded-[1.75rem] md:rounded-[3rem] border border-white/10 p-4 md:p-6 flex flex-col sm:flex-row items-center gap-6 md:gap-8">
                       <div className="relative h-28 w-28 flex-shrink-0 overflow-hidden rounded-[2rem] bg-secondary/30 shadow-inner group">
                         <Image
                           src={item.product.image_url || "/placeholder-product.jpg"}
@@ -153,13 +153,13 @@ export default function CartPage() {
 
                   <div className="pt-6">
                     <Link href="/checkout" className="w-full">
-                      <Button className="w-full h-18 text-md font-bold tracking-tight rounded-2xl shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3">
-                        Procéder au paiement <Zap className="h-5 w-5 fill-white" />
+                      <Button className="w-full h-14 md:h-18 text-base font-bold tracking-tight rounded-2xl shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3">
+                        Commander <Zap className="h-4 w-4 fill-white" />
                       </Button>
                     </Link>
                   </div>
                   
-                  <p className="text-[9px] font-bold tracking-tight text-center opacity-30">
+                  <p className="hidden md:block text-[9px] font-bold tracking-tight text-center opacity-30">
                     Ets La Championne Ségbé & Sanguera
                   </p>
                 </div>

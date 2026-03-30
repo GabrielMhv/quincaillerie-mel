@@ -72,29 +72,29 @@ export default function AboutPage() {
     <PublicLayout>
       <div className="relative min-h-screen pb-32 overflow-hidden bg-slate-50 dark:bg-slate-950">
         {/* Advanced Background Elements */}
-        <div className="absolute top-0 right-[-10%] w-200 h-200 bg-primary/10 rounded-full blur-[150px] -z-10 animate-pulse pointer-events-none" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-150 h-150 bg-blue-500/10 rounded-full blur-[150px] -z-10 pointer-events-none opacity-50" />
+        <div className="hidden lg:block absolute top-0 right-[-10%] w-[800px] h-[800px] bg-primary/10 rounded-full blur-[150px] -z-10 animate-pulse pointer-events-none" />
+        <div className="hidden lg:block absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[150px] -z-10 pointer-events-none opacity-50" />
         <div className="absolute inset-0 bg-premium-grid opacity-[0.03] dark:opacity-[0.07] pointer-events-none" />
 
         <div className="container mx-auto px-4 md:px-6 pt-12 md:pt-20 lg:pt-32 space-y-24 md:space-y-40 relative z-10">
           {/* Main Hero / Heritage Section */}
           <section className="flex flex-col lg:grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-            <div className="lg:col-span-7 space-y-8 md:space-y-10 animate-in fade-in slide-in-from-left-12 duration-1000">
-              <div className="inline-flex items-center gap-2 md:gap-3 px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 backdrop-blur-xl text-primary text-[9px] md:text-[11px] font-black tracking-widest leading-none shadow-sm">
+            <div className="lg:col-span-7 space-y-8 md:space-y-10 animate-in fade-in slide-in-from-left-12 duration-1000 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 md:gap-3 px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/10 backdrop-blur-xl text-primary text-[9px] md:text-[11px] font-black tracking-widest leading-none shadow-sm mx-auto lg:mx-0">
                 <History className="h-4 w-4" /> 5 ans au service des bâtisseurs
               </div>
-              <h1 className="text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter leading-[0.9] md:leading-[0.85] text-slate-900 dark:text-white">
+              <h1 className="text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter leading-[0.9] md:leading-[0.85] text-slate-900 dark:text-white mx-auto lg:mx-0">
                 La quincaillerie <br className="hidden md:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-500 to-primary bg-[length:200%_auto] animate-gradient">
                   La Championne.
                 </span>
               </h1>
-              <p className="text-lg md:text-xl lg:text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-relaxed">
+              <p className="text-lg md:text-xl lg:text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
                 Votre partenaire de confiance pour tout l&apos;outillage
                 professionnel et les matériaux de construction de qualité à
                 Ségbé et Sanguera.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4 w-full">
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 sm:gap-6 pt-4 w-full">
                 <Link href="/products" className="shrink-0 w-full sm:w-auto">
                   <Button
                     size="lg"
@@ -139,7 +139,7 @@ export default function AboutPage() {
               </div>
 
               {/* Floating Medallion */}
-              <div className="absolute -bottom-6 md:-bottom-10 -right-4 md:-right-10 glass p-6 md:p-10 rounded-[2rem] md:rounded-[4rem] shadow-4xl border-white/40 dark:border-white/10 animate-in slide-in-from-bottom-8 duration-700 delay-700 hover:-rotate-6 transition-transform text-center flex flex-col items-center z-20">
+              <div className="hidden lg:flex absolute -bottom-10 -right-10 glass p-10 rounded-[4rem] shadow-4xl border-white/40 dark:border-white/10 animate-in slide-in-from-bottom-8 duration-700 delay-700 hover:-rotate-6 transition-transform text-center flex-col items-center z-20">
                 <div className="flex items-center gap-2 md:gap-4 mb-1 md:mb-2">
                   <Star className="h-6 w-6 md:h-8 md:w-8 text-amber-400 fill-amber-400" />
                   <span className="text-4xl md:text-5xl font-black tracking-tighter text-slate-800 dark:text-white">
@@ -154,8 +154,8 @@ export default function AboutPage() {
           </section>
 
           {/* Large Stats Grid */}
-          <section className="relative p-1 md:p-2 rounded-[2rem] md:rounded-[5rem] bg-white/20 dark:bg-white/5 backdrop-blur-3xl border border-white/40 dark:border-white/10 shadow-3xl animate-in fade-in duration-1000 mt-20">
-            <div className="grid grid-cols-2 gap-8 md:gap-12 lg:grid-cols-4 p-6 md:p-12 lg:p-20">
+          <section className="relative p-1 md:p-2 rounded-[2rem] md:rounded-[5rem] bg-white/20 dark:bg-white/5 backdrop-blur-3xl border border-white/40 dark:border-white/10 shadow-3xl animate-in fade-in duration-1000 mt-12 md:mt-20">
+            <div className="grid grid-cols-2 gap-6 md:gap-12 lg:grid-cols-4 p-4 md:p-12 lg:p-20">
               {stats.map((stat, i) => (
                 <div
                   key={i}
@@ -221,24 +221,24 @@ export default function AboutPage() {
             <section className="relative rounded-[2rem] md:rounded-[6rem] p-1 md:p-2 bg-gradient-to-br from-indigo-950 to-slate-950 shadow-4xl group overflow-hidden mt-16 md:mt-24 mb-16 md:mb-20">
               <div className="absolute inset-0 bg-premium-grid opacity-20 pointer-events-none" />
               <div className="relative z-10 p-6 md:p-12 lg:p-24 flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
-                <div className="flex-1 space-y-8 md:space-y-12 animate-in fade-in slide-in-from-left-12 duration-1000">
-                  <div className="inline-flex items-center gap-2 md:gap-3 px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/10 text-emerald-400 text-[9px] md:text-[10px] font-black tracking-[0.2em] backdrop-blur-xl border border-white/10">
+                <div className="flex-1 space-y-8 md:space-y-12 animate-in fade-in slide-in-from-left-12 duration-1000 text-center lg:text-left">
+                  <div className="inline-flex items-center gap-2 md:gap-3 px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/10 text-emerald-400 text-[9px] md:text-[10px] font-black tracking-[0.2em] backdrop-blur-xl border border-white/10 mx-auto lg:mx-0">
                     <Zap className="h-3.5 w-3.5 md:h-4 md:w-4" /> Toujours plus loin
                   </div>
-                  <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white leading-[1] md:leading-[0.9]">
+                  <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white leading-[1] md:leading-[0.9] mx-auto lg:mx-0">
                     Une offre <br className="hidden md:block" />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-500">
                       sans compromis.
                     </span>
                   </h2>
-                  <p className="text-lg md:text-xl lg:text-2xl text-white/50 font-medium leading-relaxed max-w-xl">
+                  <p className="text-lg md:text-xl lg:text-2xl text-white/50 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
                   Que vous soyez un professionnel du bâtiment ou un bricoleur
                   passionné, La Championne a tout ce qu&apos;il vous faut.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
                   {categories.map((cat, i) => (
-                    <div key={i} className="flex items-center gap-5 group/item">
-                      <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-blue-400 group-hover/item:bg-blue-400 group-hover/item:text-white group-hover/item:scale-110 transition-all duration-500">
+                    <div key={i} className="flex items-center justify-center lg:justify-start gap-5 group/item">
+                      <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-blue-400 group-hover/item:bg-blue-400 group-hover/item:text-white group-hover/item:scale-110 transition-all duration-500 shrink-0">
                         <cat.icon className="h-6 w-6" />
                       </div>
                       <span className="text-white/80 text-xl font-bold tracking-tight group-hover/item:text-white transition-colors">
@@ -247,7 +247,7 @@ export default function AboutPage() {
                     </div>
                   ))}
                 </div>
-                  <Link href="/products" className="inline-block w-full sm:w-auto mt-4 md:mt-0">
+                  <Link href="/products" className="inline-block w-full sm:w-auto mt-6 md:mt-0">
                     <Button className="w-full sm:w-auto rounded-[2rem] px-8 md:px-10 h-14 md:h-16 bg-primary hover:bg-primary/80 text-white font-black tracking-tighter text-base md:text-lg shadow-xl transition-all active:scale-95">
                       Découvrir tout le matériel
                     </Button>

@@ -55,22 +55,22 @@ export default async function HomePage(props: {
         <div className="container mx-auto px-6 lg:px-12 relative z-10 pt-10 lg:pt-32 pb-24 lg:pb-40 overflow-hidden md:overflow-visible">
           {/* High-Impact Hero Section */}
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 mb-32 lg:mb-48">
-            <div className="lg:w-3/5 space-y-8 lg:space-y-12 animate-in fade-in slide-in-from-left-12 duration-1000">
+            <div className="lg:w-3/5 space-y-8 lg:space-y-12 animate-in fade-in slide-in-from-left-12 duration-1000 text-center lg:text-left">
               <div className="space-y-6">
-                <h1 className="text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter leading-[0.85] text-slate-900 dark:text-white">
+                <h1 className="text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter leading-[0.85] text-slate-900 dark:text-white mx-auto lg:mx-0">
                   Tout pour <br />
                   <span className="text-transparent bg-clip-text bg-linear-to-r from-primary via-blue-500 to-indigo-500 bg-size-[200%_auto] animate-gradient">
                     vos chantiers.
                   </span>
                 </h1>
-                <p className="text-lg md:text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-relaxed">
+                <p className="text-lg md:text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
                   L&apos;outillage professionnel et les matériaux de
                   construction qu&apos;il vous faut à Ségbé et Sanguera. Plus de
                   2500 références en stock pour les pros et les particuliers.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-6 w-full">
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 sm:gap-6 pt-6 w-full">
                 <Link
                   href={
                     boutiqueId
@@ -95,7 +95,7 @@ export default async function HomePage(props: {
               </div>
 
               {/* Stats Bar */}
-              <div className="flex flex-wrap items-center gap-6 md:gap-10 pt-8 mt-4 border-t border-slate-200 dark:border-white/5 max-w-xl justify-between sm:justify-start">
+              <div className="flex flex-wrap items-center gap-6 md:gap-10 pt-8 mt-4 border-t border-slate-200 dark:border-white/5 max-w-xl justify-center lg:justify-start mx-auto lg:mx-0">
                 <div className="space-y-1">
                   <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     15k+
@@ -150,22 +150,18 @@ export default async function HomePage(props: {
               </div>
 
               {/* Floating elements with depth */}
-              <div className="absolute -bottom-6 md:-bottom-12 -left-4 md:-left-12 glass p-5 md:p-8 rounded-4xl md:rounded-[3rem] shadow-3xl flex items-center gap-4 md:gap-6 animate-bounce-slow border-white/40 dark:border-white/10 z-20">
+              <div className="hidden lg:flex absolute -bottom-6 -left-4 md:-bottom-12 md:-left-12 glass p-4 md:p-8 rounded-3xl md:rounded-[3rem] shadow-3xl items-center gap-3 md:gap-6 border-white/40 dark:border-white/10 z-20">
                 <div className="h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                   <CheckCircle2 className="h-6 w-6 md:h-8 md:w-8" />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[13px] font-black tracking-tighter text-slate-900 dark:text-white leading-none">
+                  <p className="text-[12px] md:text-[13px] font-black tracking-tighter text-slate-900 dark:text-white leading-none">
                     Stock Disponible
                   </p>
-                  <p className="text-[10px] font-bold text-slate-400 tracking-tight">
+                  <p className="text-[9px] md:text-[10px] font-bold text-slate-400 tracking-tight">
                     Lomé, Ségbé, Sanguera
                   </p>
                 </div>
-              </div>
-
-              <div className="absolute -top-8 -right-8 h-24 w-24 rounded-4xl bg-indigo-600 flex items-center justify-center text-white shadow-2xl animate-pulse shadow-indigo-600/30">
-                <Wrench className="h-10 w-10" />
               </div>
             </div>
           </div>
@@ -254,7 +250,7 @@ export default async function HomePage(props: {
           </section>
 
           {/* Featured Collections Overlay */}
-          <section className="mb-24 lg:mb-48 space-y-10 lg:space-y-16">
+          <section className="hidden lg:block mb-24 lg:mb-48 space-y-10 lg:space-y-16">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
               <div className="space-y-4">
                 <p className="text-[11px] font-black tracking-tight text-primary">
@@ -319,14 +315,14 @@ export default async function HomePage(props: {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full sm:w-auto rounded-full px-8 md:px-12 h-14 md:h-20 border-white/20 text-white hover:bg-white/10 font-bold tracking-tight text-base md:text-xl backdrop-blur-sm"
+                      className="w-full sm:w-auto rounded-full px-8 md:px-12 h-16 md:h-20 border-2 border-slate-200 dark:border-white/10 font-bold tracking-tight text-base md:text-lg hover:bg-white dark:hover:bg-white/5 hover:border-primary/50 transition-all"
                     >
                       Nous contacter
                     </Button>
                   </div>
                 </div>
 
-                <div className="lg:w-1/3 grid grid-cols-2 gap-4 md:gap-6 w-full opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-1000 delay-300">
+                <div className="hidden lg:grid lg:w-1/3 grid-cols-2 gap-4 md:gap-6 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 delay-300">
                   {[
                     { icon: Package, label: "2500+", sub: "Stock Global" },
                     { icon: Hammer, label: "Pro", sub: "Gamme Outillage" },
