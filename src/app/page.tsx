@@ -11,7 +11,6 @@ import {
   Layers,
   Package,
   Headphones,
-  Wrench,
   Hammer,
 } from "lucide-react";
 import Image from "next/image";

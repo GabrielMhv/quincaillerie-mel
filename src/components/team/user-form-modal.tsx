@@ -25,7 +25,13 @@ interface Boutique {
 
 interface UserEditorProps {
   boutiques: Boutique[];
-  userToEdit?: any;
+  userToEdit?: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    boutique_id: string | null;
+  };
 }
 
 export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
@@ -49,7 +55,7 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
         const result = await createTeamMember(formData);
         if (result.error) {
           if (result.error.includes("SERVICE_ROLE")) {
-             throw new Error("Clé SERVICE_ROLE manquante dans .env.local");
+            throw new Error("Clé SERVICE_ROLE manquante dans .env.local");
           }
           throw new Error(result.error);
         }
@@ -68,12 +74,17 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
         if (error) throw error;
         toast.success("Profil mis à jour avec succès");
       }
-      
+
       setOpen(false);
       router.refresh();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      toast.error("Erreur", { description: err.message });
+      toast.error("Erreur", {
+        description:
+          err instanceof Error
+            ? err.message
+            : "Une erreur inconnue est survenue",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +93,9 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {userToEdit ? (
-        <DialogTrigger render={<Button variant="outline" size="sm" />}>Gérer</DialogTrigger>
+        <DialogTrigger render={<Button variant="outline" size="sm" />}>
+          Gérer
+        </DialogTrigger>
       ) : (
         <DialogTrigger render={<Button className="gap-2" />}>
           <Plus className="h-4 w-4" />
@@ -91,38 +104,54 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
       )}
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{userToEdit ? "Modifier l'accès" : "Inviter un membre"}</DialogTitle>
+          <DialogTitle>
+            {userToEdit ? "Modifier l'accès" : "Inviter un membre"}
+          </DialogTitle>
           <DialogDescription>
-             Attriibuez le rôle et la boutique d'affectation pour {userToEdit ? "ce membre" : "le nouvel employé"}.
+            Attriibuez le rôle et la boutique d'affectation pour{" "}
+            {userToEdit ? "ce membre" : "le nouvel employé"}.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">
             <Label htmlFor="name">Nom / Prénom</Label>
-            <Input id="name" name="name" defaultValue={userToEdit?.name} required />
+            <Input
+              id="name"
+              name="name"
+              defaultValue={userToEdit?.name}
+              required
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input 
+            <Input
               id="email"
-              name="email" 
-              type="email" 
-              defaultValue={userToEdit?.email} 
-              disabled={!!userToEdit} 
-              className={userToEdit ? "bg-muted" : ""} 
-              required 
+              name="email"
+              type="email"
+              defaultValue={userToEdit?.email}
+              disabled={!!userToEdit}
+              className={userToEdit ? "bg-muted" : ""}
+              required
             />
             {userToEdit && (
-              <p className="text-xs text-muted-foreground">L'email ne peut être modifié que par l'utilisateur.</p>
+              <p className="text-xs text-muted-foreground">
+                L'email ne peut être modifié que par l'utilisateur.
+              </p>
             )}
           </div>
 
           {!userToEdit && (
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe provisoire</Label>
-              <Input id="password" name="password" type="password" placeholder="********" required />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="********"
+                required
+              />
             </div>
           )}
 
@@ -150,14 +179,22 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
             >
               <option value="">Aucune affectation</option>
               {boutiques.map((b) => (
-                <option key={b.id} value={b.id}>{b.name}</option>
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
               ))}
             </select>
-            <p className="text-xs text-muted-foreground">Indispensable pour limiter l'accès à une seule boutique.</p>
+            <p className="text-xs text-muted-foreground">
+              Indispensable pour limiter l'accès à une seule boutique.
+            </p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Annuler
             </Button>
             <Button type="submit" disabled={isLoading}>

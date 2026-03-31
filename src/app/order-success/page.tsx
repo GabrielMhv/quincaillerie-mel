@@ -109,8 +109,8 @@ export default function OrderSuccessPage(props: {
     <PublicLayout>
       <div className="relative min-h-screen py-24 overflow-hidden">
         {/* Background elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-125 h-125 bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-125 h-125 bg-emerald-500/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="mx-auto max-w-4xl text-center mb-16 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -139,7 +139,8 @@ export default function OrderSuccessPage(props: {
                 a été transmise à notre équipe logistique.
                 {order.is_scheduled && (
                   <span className="flex items-center mt-4 p-4 rounded-2xl bg-primary/5 text-primary border border-primary/10 text-sm font-bold animate-pulse">
-                    <Calendar className="h-4 w-4 mr-2" /> Retrait le : {formatDate(order.scheduled_at)}
+                    <Calendar className="h-4 w-4 mr-2" /> Retrait le :{" "}
+                    {formatDate(order.scheduled_at)}
                   </span>
                 )}
               </p>
@@ -233,14 +234,18 @@ export default function OrderSuccessPage(props: {
                       : "Votre livraison est en route."}
                   </h3>
                   <p className="text-lg text-white/70 font-medium leading-relaxed max-w-xl">
-                    {order.is_scheduled
-                      ? (
-                        <span className="flex items-center gap-2">
-                          <Calendar className="h-5 w-5 shrink-0" />
-                          <span>Nos équipes prépareront vos articles pour le {formatDate(order.scheduled_at)}. Merci de vous munir de votre numéro de commande.</span>
+                    {order.is_scheduled ? (
+                      <span className="flex items-center gap-2">
+                        <Calendar className="h-5 w-5 shrink-0" />
+                        <span>
+                          Nos équipes prépareront vos articles pour le{" "}
+                          {formatDate(order.scheduled_at)}. Merci de vous munir
+                          de votre numéro de commande.
                         </span>
-                      )
-                      : "Un agent logistique vous contactera sous 24h pour confirmer l'horaire précis de passage à l'adresse indiquée."}
+                      </span>
+                    ) : (
+                      "Un agent logistique vous contactera sous 24h pour confirmer l'horaire précis de passage à l'adresse indiquée."
+                    )}
                   </p>
                 </div>
                 <Link href="/products" className="shrink-0 w-full md:w-auto">

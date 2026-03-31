@@ -1,30 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
   DollarSign,
   Package,
-  ShoppingBag,
   Store as StoreIcon,
   Users,
   TrendingUp,
-  AlertTriangle,
   ArrowRight,
-  ShoppingCart,
-  Sparkles,
   Zap,
   Clock,
   CheckCircle2,
 } from "lucide-react";
-import {
-  SparkAreaChart,
-} from "@/components/dashboard/dashboard-charts";
+import { SparkAreaChart } from "@/components/dashboard/dashboard-charts";
 import { PremiumStatCard } from "@/components/dashboard/premium-stat-card";
 import { format, subDays, startOfDay, subHours } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -61,7 +48,7 @@ export default async function DashboardPage(props: {
   // If client, redirect to profile or shop (safeguard)
   if (role === "client") {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+      <div className="flex flex-col items-center justify-center h-150 gap-4">
         <h1 className="text-2xl font-bold">
           Bienvenue sur votre espace personnel
         </h1>
@@ -76,10 +63,18 @@ export default async function DashboardPage(props: {
   }
 
   const isGlobalScope = role === "admin" && !boutiqueSwitcherId;
-  const filteredBoutiqueId = !isGlobalScope ? (role === "admin" ? boutiqueSwitcherId : profile?.boutique_id) : null;
+  const filteredBoutiqueId = !isGlobalScope
+    ? role === "admin"
+      ? boutiqueSwitcherId
+      : profile?.boutique_id
+    : null;
 
   // Strict enforcement: if non-admin tries to use a different boutiqueId in URL, redirect or force their own
-  if (role !== "admin" && boutiqueSwitcherId && boutiqueSwitcherId !== profile?.boutique_id) {
+  if (
+    role !== "admin" &&
+    boutiqueSwitcherId &&
+    boutiqueSwitcherId !== profile?.boutique_id
+  ) {
     // Hidden enforcement: we use profile?.boutique_id anyway but let's be clean
   }
 
@@ -136,7 +131,10 @@ export default async function DashboardPage(props: {
     0,
   );
 
-  const { data: categories } = await supabase.from("categories").select("*").order("name");
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("*")
+    .order("name");
 
   // Today's metrics
   const today = startOfDay(new Date());
@@ -150,8 +148,10 @@ export default async function DashboardPage(props: {
     (sum, order) => sum + Number(order.total),
     0,
   );
-  
-  const yesterdayOrdersList = validOrders.filter((o) => o.created_at >= yesterdayIsoStart && o.created_at < yesterdayIsoEnd);
+
+  const yesterdayOrdersList = validOrders.filter(
+    (o) => o.created_at >= yesterdayIsoStart && o.created_at < yesterdayIsoEnd,
+  );
   const yesterdayRevenue = yesterdayOrdersList.reduce(
     (sum, order) => sum + Number(order.total),
     0,
@@ -173,9 +173,12 @@ export default async function DashboardPage(props: {
   );
 
   // Team Performance (for Manager/Admin)
-  const teamSales: Record<string, { name: string; total: number; count: number }> = {};
+  const teamSales: Record<
+    string,
+    { name: string; total: number; count: number }
+  > = {};
   if (role === "admin" || role === "manager") {
-    todayOrders.forEach(order => {
+    todayOrders.forEach((order) => {
       const empId = order.employee_id;
       const empName = order.employee?.name || "Anonyme";
       if (!teamSales[empId]) {
@@ -189,10 +192,11 @@ export default async function DashboardPage(props: {
   // --- REVENUE OVER TIME (Dynamic Samples) ---
   const samples = range === "today" ? 12 : 7;
   const timeData = Array.from({ length: samples }, (_, i) => {
-    const d = range === "today" 
-      ? subHours(new Date(), samples - 1 - i)
-      : subDays(new Date(), samples - 1 - i);
-      
+    const d =
+      range === "today"
+        ? subHours(new Date(), samples - 1 - i)
+        : subDays(new Date(), samples - 1 - i);
+
     return {
       isoPrefix: d.toISOString().substring(0, range === "today" ? 13 : 10),
       display: format(d, range === "today" ? "HH:mm" : "EEE d", { locale: fr }),
@@ -208,8 +212,14 @@ export default async function DashboardPage(props: {
 
   // --- TOP PRODUCTS ---
   const productSales: Record<string, { name: string; quantity: number }> = {};
-  validOrders.forEach((order: any) => {
-    order.order_items?.forEach((item: any) => {
+  validOrders.forEach((order) => {
+    (
+      order.order_items as {
+        product_id: string;
+        quantity: number;
+        products: { name: string } | null;
+      }[]
+    )?.forEach((item) => {
       const pName = item.products?.name || "Inconnu";
       if (!productSales[item.product_id]) {
         productSales[item.product_id] = { name: pName, quantity: 0 };
@@ -226,22 +236,28 @@ export default async function DashboardPage(props: {
   const boutiqueSales: Record<string, number> = {};
   if (isGlobalScope) {
     validOrders.forEach((order) => {
-      const bName = (order as any).boutique?.name || "Autre";
+      const bName =
+        (order.boutique as unknown as { name: string })?.name || "Autre";
       boutiqueSales[bName] = (boutiqueSales[bName] || 0) + Number(order.total);
-    }
-    );
+    });
   }
 
   // --- RECENT ORDERS ---
   const recentOrders = [...validOrders]
     .sort(
-      (a: any, b: any) =>
+      (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     )
     .slice(0, 5);
 
   // --- LOW STOCK ALERTS ---
-  let lowStockProducts: any[] = [];
+  let lowStockProducts: {
+    quantity: number;
+    products:
+      | { name: string; min_stock_alert: number }
+      | { name: string; min_stock_alert: number }[]
+      | null;
+  }[] = [];
   if (role === "admin" || role === "manager") {
     const stockQuery = supabase
       .from("stocks")
@@ -253,7 +269,14 @@ export default async function DashboardPage(props: {
     }
 
     const { data: stockData } = await stockQuery;
-    lowStockProducts = (stockData || [])
+    lowStockProducts = (stockData || []) as {
+      quantity: number;
+      products:
+        | { name: string; min_stock_alert: number }
+        | { name: string; min_stock_alert: number }[]
+        | null;
+    }[];
+    lowStockProducts = lowStockProducts
       .filter((s) => {
         const prod = Array.isArray(s.products) ? s.products[0] : s.products;
         return s.quantity <= (prod?.min_stock_alert || 5);
@@ -269,19 +292,22 @@ export default async function DashboardPage(props: {
     hoursNow < 12 ? "Bonjour" : hoursNow < 18 ? "Bon après-midi" : "Bonsoir";
 
   return (
-    <div className="space-y-16 pb-20 max-w-[1600px] mx-auto animate-in fade-in duration-1000">
+    <div className="space-y-16 pb-20 max-w-7xl mx-auto animate-in fade-in duration-1000">
       {/* Hero Section */}
       <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-          <div className="space-y-4">
-            <h1 className="text-6xl font-black tracking-tighter leading-tight animate-in slide-in-from-left duration-700">
-              {greeting}, <span className="text-gradient leading-relaxed">{profile?.name || "Admin"}</span>
-            </h1>
-            <p className="text-xl text-muted-foreground/80 font-medium max-w-2xl leading-relaxed">
-              {isGlobalScope 
-                ? "Heureux de vous revoir. Voici l'état global de votre réseau de boutiques aujourd'hui."
-                : `Heureux de vous revoir. Voici les performances de la boutique ${currentBoutiqueName} aujourd'hui.`}
-            </p>
-          </div>
+        <div className="space-y-4">
+          <h1 className="text-6xl font-black tracking-tighter leading-tight animate-in slide-in-from-left duration-700">
+            {greeting},{" "}
+            <span className="text-gradient leading-relaxed">
+              {profile?.name || "Admin"}
+            </span>
+          </h1>
+          <p className="text-xl text-muted-foreground/80 font-medium max-w-2xl leading-relaxed">
+            {isGlobalScope
+              ? "Heureux de vous revoir. Voici l'état global de votre réseau de boutiques aujourd'hui."
+              : `Heureux de vous revoir. Voici les performances de la boutique ${currentBoutiqueName} aujourd'hui.`}
+          </p>
+        </div>
 
         <div className="flex gap-4 h-fit">
           <Link
@@ -291,129 +317,175 @@ export default async function DashboardPage(props: {
                 : "/dashboard/pos"
             }
           >
-            <Button
-              className="rounded-full px-12 h-20 bg-primary text-white font-black tracking-tight text-lg shadow-3xl hover:scale-105 active:scale-95 transition-all group overflow-hidden"
-            >
+            <Button className="rounded-full px-12 h-20 bg-primary text-white font-black tracking-tight text-lg shadow-3xl hover:scale-105 active:scale-95 transition-all group overflow-hidden">
               Effectuer une Vente
               <Zap className="ml-3 h-5 w-5 fill-current" />
             </Button>
           </Link>
-          
+
           {(role === "admin" || role === "manager") && (
-             <ProductFormModal 
-               categories={categories || []} 
-               userRole={role}
-               userBoutiqueId={profile.boutique_id}
-               boutiques={boutiques || []}
-             />
+            <ProductFormModal
+              categories={categories || []}
+              userRole={role}
+              userBoutiqueId={profile.boutique_id}
+              boutiques={boutiques || []}
+            />
           )}
         </div>
       </section>
 
       {/* Filter Section */}
       <section className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 rounded-[3rem] bg-card/40 backdrop-blur-xl border border-border/50 shadow-premium">
-         <div className="flex items-center gap-4">
-            <Clock className="h-5 w-5 text-primary/40" />
-            <h2 className="text-xl font-black tracking-tighter italic">Période <span className="text-primary">d&apos;Analyse</span></h2>
-         </div>
-         <DashboardFilters />
+        <div className="flex items-center gap-4">
+          <Clock className="h-5 w-5 text-primary/40" />
+          <h2 className="text-xl font-black tracking-tighter italic">
+            Période <span className="text-primary">d&apos;Analyse</span>
+          </h2>
+        </div>
+        <DashboardFilters />
       </section>
 
       {/* Strategic Navigation */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-        <Link 
-          href={filteredBoutiqueId ? `/dashboard/analyses?boutiqueId=${filteredBoutiqueId}` : "/dashboard/analyses"}
+        <Link
+          href={
+            filteredBoutiqueId
+              ? `/dashboard/analyses?boutiqueId=${filteredBoutiqueId}`
+              : "/dashboard/analyses"
+          }
           className="group relative h-44 overflow-hidden rounded-[3.5rem] border border-indigo-500/20 bg-indigo-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/10"
         >
-           <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
-              <TrendingUp className="h-24 w-24 text-indigo-500" />
-           </div>
-           <div className="relative z-10 flex flex-col h-full justify-between">
-              <div>
-                 <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 mb-4 shadow-sm group-hover:rotate-6 transition-transform">
-                    <TrendingUp className="h-6 w-6" />
-                 </div>
-                 <h3 className="text-2xl font-black tracking-tighter">Analyses</h3>
-                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-tight leading-none mt-2">Performances du réseau</p>
+          <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
+            <TrendingUp className="h-24 w-24 text-indigo-500" />
+          </div>
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div>
+              <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 mb-4 shadow-sm group-hover:rotate-6 transition-transform">
+                <TrendingUp className="h-6 w-6" />
               </div>
-           </div>
+              <h3 className="text-2xl font-black tracking-tighter">Analyses</h3>
+              <p className="text-[10px] font-bold text-muted-foreground/40 tracking-tight leading-none mt-2">
+                Performances du réseau
+              </p>
+            </div>
+          </div>
         </Link>
 
-        <Link 
-          href={filteredBoutiqueId ? `/dashboard/comptabilite?boutiqueId=${filteredBoutiqueId}` : "/dashboard/comptabilite"}
+        <Link
+          href={
+            filteredBoutiqueId
+              ? `/dashboard/comptabilite?boutiqueId=${filteredBoutiqueId}`
+              : "/dashboard/comptabilite"
+          }
           className="group relative h-44 overflow-hidden rounded-[3.5rem] border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10"
         >
-           <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
-              <DollarSign className="h-24 w-24 text-emerald-500" />
-           </div>
-           <div className="relative z-10 flex flex-col h-full justify-between">
-              <div>
-                 <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-4 shadow-sm group-hover:rotate-6 transition-transform">
-                    <DollarSign className="h-6 w-6" />
-                 </div>
-                 <h3 className="text-2xl font-black tracking-tighter">Comptabilité</h3>
-                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-tight leading-none mt-2">Transactions & Flux</p>
+          <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
+            <DollarSign className="h-24 w-24 text-emerald-500" />
+          </div>
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div>
+              <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-4 shadow-sm group-hover:rotate-6 transition-transform">
+                <DollarSign className="h-6 w-6" />
               </div>
-           </div>
+              <h3 className="text-2xl font-black tracking-tighter">
+                Comptabilité
+              </h3>
+              <p className="text-[10px] font-bold text-muted-foreground/40 tracking-tight leading-none mt-2">
+                Transactions & Flux
+              </p>
+            </div>
+          </div>
         </Link>
 
-        <Link 
+        <Link
           href="/dashboard/clients"
           className="group relative h-44 overflow-hidden rounded-[3.5rem] border border-amber-500/20 bg-amber-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10"
         >
-           <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
-              <Users className="h-24 w-24 text-amber-500" />
-           </div>
-           <div className="relative z-10 flex flex-col h-full justify-between">
-              <div>
-                 <div className="h-12 w-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 mb-4 shadow-sm group-hover:rotate-6 transition-transform">
-                    <Users className="h-6 w-6" />
-                 </div>
-                 <h3 className="text-2xl font-black tracking-tighter">Clients</h3>
-                 <p className="text-[10px] font-bold text-muted-foreground/40 tracking-tight leading-none mt-2">Gestion du répertoire</p>
+          <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
+            <Users className="h-24 w-24 text-amber-500" />
+          </div>
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div>
+              <div className="h-12 w-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 mb-4 shadow-sm group-hover:rotate-6 transition-transform">
+                <Users className="h-6 w-6" />
               </div>
-           </div>
+              <h3 className="text-2xl font-black tracking-tighter">Clients</h3>
+              <p className="text-[10px] font-bold text-muted-foreground/40 tracking-tight leading-none mt-2">
+                Gestion du répertoire
+              </p>
+            </div>
+          </div>
         </Link>
       </section>
-
 
       {/* GLOBAL HUD - Multi-store Hub (Admin ONLY) */}
       {isGlobalScope && boutiques && boutiques.length > 0 && (
         <section className="space-y-8">
-           <div className="flex items-center gap-4">
-              <h3 className="text-2xl font-black tracking-tighter">Accès <span className="text-primary">Boutiques</span></h3>
-              <div className="h-px flex-1 bg-border/50" />
-           </div>
-           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {boutiques.map((b: { id: string; name: string; address: string }, index: number) => {
-              const bOrders = validOrders.filter((o: any) => o.boutique_id === b.id);
-              const bRevenue = bOrders.reduce((s: number, o: any) => s + Number(o.total), 0);
-              return (
-                <Link key={b.id} href={`/dashboard?boutiqueId=${b.id}`}>
-                  <div className="group relative overflow-hidden rounded-[3rem] border border-border/50 bg-card/40 backdrop-blur-xl p-8 transition-all duration-500 hover:shadow-premium-hover hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-8" style={{ animationDelay: `${index * 100}ms` }}>
-                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
-                      <StoreIcon className="h-20 w-20 text-primary" />
-                    </div>
-                    <div className="relative z-10 space-y-6">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-black tracking-widest text-primary mb-1">{b.address}</span>
-                        <h4 className="text-2xl font-black tracking-tighter">{b.name}</h4>
+          <div className="flex items-center gap-4">
+            <h3 className="text-2xl font-black tracking-tighter">
+              Accès <span className="text-primary">Boutiques</span>
+            </h3>
+            <div className="h-px flex-1 bg-border/50" />
+          </div>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {boutiques.map(
+              (
+                b: { id: string; name: string; address: string },
+                index: number,
+              ) => {
+                interface Order {
+                  boutique_id: string;
+                  total: string | number;
+                }
+                const bOrders = validOrders.filter(
+                  (o: unknown) => (o as Order).boutique_id === b.id,
+                ) as unknown[] as Order[];
+                const bRevenue = bOrders.reduce(
+                  (s: number, o: Order) => s + Number(o.total),
+                  0,
+                );
+                return (
+                  <Link key={b.id} href={`/dashboard?boutiqueId=${b.id}`}>
+                    <div
+                      className="group relative overflow-hidden rounded-[3rem] border border-border/50 bg-card/40 backdrop-blur-xl p-8 transition-all duration-500 hover:shadow-premium-hover hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-8"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+                        <StoreIcon className="h-20 w-20 text-primary" />
                       </div>
-                      <div className="flex justify-between items-end">
-                        <div>
-                          <p className="text-[10px] font-black text-muted-foreground/60 tracking-widest">Revenu Total</p>
-                          <p className="text-xl font-black">{formatCurrency(bRevenue)}</p>
+                      <div className="relative z-10 space-y-6">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-black tracking-widest text-primary mb-1">
+                            {b.address}
+                          </span>
+                          <h4 className="text-2xl font-black tracking-tighter">
+                            {b.name}
+                          </h4>
                         </div>
-                        <div className="text-right">
-                          <p className="text-[10px] font-black text-muted-foreground/60 tracking-widest">Ventes</p>
-                          <p className="text-xl font-black">{bOrders.length}</p>
+                        <div className="flex justify-between items-end">
+                          <div>
+                            <p className="text-[10px] font-black text-muted-foreground/60 tracking-widest">
+                              Revenu Total
+                            </p>
+                            <p className="text-xl font-black">
+                              {formatCurrency(bRevenue)}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[10px] font-black text-muted-foreground/60 tracking-widest">
+                              Ventes
+                            </p>
+                            <p className="text-xl font-black">
+                              {bOrders.length}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
+                  </Link>
+                );
+              },
+            )}
           </div>
         </section>
       )}
@@ -422,12 +494,22 @@ export default async function DashboardPage(props: {
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <PremiumStatCard
           title={role === "employee" ? "Mon CA du Jour" : "Chiffre d'Affaires"}
-          value={formatCurrency(role === "employee" ? myTodayRevenue : totalRevenue)}
+          value={formatCurrency(
+            role === "employee" ? myTodayRevenue : totalRevenue,
+          )}
           iconName="DollarSign"
-          description={role === "employee" ? "Total de mes ventes aujourd'hui" : "CA total enregistré sur la période"}
+          description={
+            role === "employee"
+              ? "Total de mes ventes aujourd'hui"
+              : "CA total enregistré sur la période"
+          }
           trend={revenueTrend}
           delay={100}
-          href={filteredBoutiqueId ? `/dashboard/comptabilite?boutiqueId=${filteredBoutiqueId}` : "/dashboard/comptabilite"}
+          href={
+            filteredBoutiqueId
+              ? `/dashboard/comptabilite?boutiqueId=${filteredBoutiqueId}`
+              : "/dashboard/comptabilite"
+          }
         />
         <PremiumStatCard
           title="Volume Commandes"
@@ -436,7 +518,11 @@ export default async function DashboardPage(props: {
           description="Nombre total de transactions"
           trend={ordersTrend}
           delay={200}
-          href={filteredBoutiqueId ? `/dashboard/analyses?boutiqueId=${filteredBoutiqueId}` : "/dashboard/analyses"}
+          href={
+            filteredBoutiqueId
+              ? `/dashboard/analyses?boutiqueId=${filteredBoutiqueId}`
+              : "/dashboard/analyses"
+          }
         />
         <PremiumStatCard
           title="CA du Jour"
@@ -445,13 +531,25 @@ export default async function DashboardPage(props: {
           description="Performance globale aujourd'hui"
           trend={revenueTrend}
           delay={300}
-          href={filteredBoutiqueId ? `/dashboard/comptabilite?range=today&boutiqueId=${filteredBoutiqueId}` : "/dashboard/comptabilite?range=today"}
+          href={
+            filteredBoutiqueId
+              ? `/dashboard/comptabilite?range=today&boutiqueId=${filteredBoutiqueId}`
+              : "/dashboard/comptabilite?range=today"
+          }
         />
         <PremiumStatCard
           title={isGlobalScope ? "Réseau de Vente" : "Point de Vente"}
-          value={isGlobalScope ? `${boutiques?.length || 0} Boutiques` : currentBoutiqueName}
+          value={
+            isGlobalScope
+              ? `${boutiques?.length || 0} Boutiques`
+              : currentBoutiqueName
+          }
           iconName="Store"
-          description={isGlobalScope ? "Points de vente actifs" : "Boutique d'affectation actuelle"}
+          description={
+            isGlobalScope
+              ? "Points de vente actifs"
+              : "Boutique d'affectation actuelle"
+          }
           delay={400}
           href={isGlobalScope ? "/dashboard/stores" : undefined}
         />
@@ -466,7 +564,12 @@ export default async function DashboardPage(props: {
                 Analyse des <span className="text-primary">Ventes</span>
               </h3>
               <p className="text-xs font-bold text-muted-foreground mt-1 tracking-tight">
-                {revenueTrend > 0 ? `Tendances positives : +${revenueTrend}%` : revenueTrend < 0 ? `Baisse observée : ${revenueTrend}%` : "Activité stable"} sur la période
+                {revenueTrend > 0
+                  ? `Tendances positives : +${revenueTrend}%`
+                  : revenueTrend < 0
+                    ? `Baisse observée : ${revenueTrend}%`
+                    : "Activité stable"}{" "}
+                sur la période
               </p>
             </div>
             <div
@@ -474,22 +577,32 @@ export default async function DashboardPage(props: {
                 "flex items-center gap-2 px-4 py-2 rounded-xl transition-transform group-hover:scale-110",
                 revenueTrend >= 0
                   ? "bg-emerald-500/10 text-emerald-600"
-                  : "bg-rose-500/10 text-rose-600"
+                  : "bg-rose-500/10 text-rose-600",
               )}
             >
               <TrendingUp className="h-4 w-4" />
-               <span className="text-[11px] font-bold tracking-tight">
-                {revenueTrend > 0 ? `En hausse (${revenueTrend}%)` : revenueTrend < 0 ? `En baisse (${revenueTrend}%)` : "Stable"}
-               </span>
+              <span className="text-[11px] font-bold tracking-tight">
+                {revenueTrend > 0
+                  ? `En hausse (${revenueTrend}%)`
+                  : revenueTrend < 0
+                    ? `En baisse (${revenueTrend}%)`
+                    : "Stable"}
+              </span>
             </div>
           </div>
-          
+
           {sparklineData.length > 0 ? (
-            <SparkAreaChart data={sparklineData} labels={sparklineLabels} height={250} />
+            <SparkAreaChart
+              data={sparklineData}
+              labels={sparklineLabels}
+              height={250}
+            />
           ) : (
-            <div className="h-[250px] w-full flex flex-col items-center justify-center space-y-4 opacity-50 bg-muted/20 rounded-3xl border border-dashed border-border text-center">
-               <TrendingUp className="h-10 w-10 text-muted-foreground" />
-               <p className="text-[11px] font-bold text-muted-foreground/60 tracking-tight">Aucune transaction enregistrée sur cette période</p>
+            <div className="h-62.5 w-full flex flex-col items-center justify-center space-y-4 opacity-50 bg-muted/20 rounded-3xl border border-dashed border-border text-center">
+              <TrendingUp className="h-10 w-10 text-muted-foreground" />
+              <p className="text-[11px] font-bold text-muted-foreground/60 tracking-tight">
+                Aucune transaction enregistrée sur cette période
+              </p>
             </div>
           )}
         </div>
@@ -502,7 +615,7 @@ export default async function DashboardPage(props: {
             {topProductsData.map((p, i) => (
               <div key={i} className="space-y-2 group">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-black text-foreground truncate max-w-[150px] group-hover:text-primary transition-colors">
+                  <span className="text-sm font-black text-foreground truncate max-w-37.5 group-hover:text-primary transition-colors">
                     {p.name}
                   </span>
                   <span className="text-[10px] font-black text-primary">
@@ -522,7 +635,9 @@ export default async function DashboardPage(props: {
             {topProductsData.length === 0 && (
               <div className="py-20 text-center opacity-30">
                 <Package className="h-12 w-12 mx-auto mb-4" />
-                <p className="text-xs font-black tracking-widest text-center">Aucune donnée</p>
+                <p className="text-xs font-black tracking-widest text-center">
+                  Aucune donnée
+                </p>
               </div>
             )}
           </div>
@@ -536,7 +651,13 @@ export default async function DashboardPage(props: {
             <h3 className="text-3xl font-black tracking-tighter">
               Transactions <span className="text-primary">Récentes</span>
             </h3>
-            <Link href={filteredBoutiqueId ? `/dashboard/orders?boutiqueId=${filteredBoutiqueId}` : "/dashboard/orders"}>
+            <Link
+              href={
+                filteredBoutiqueId
+                  ? `/dashboard/orders?boutiqueId=${filteredBoutiqueId}`
+                  : "/dashboard/orders"
+              }
+            >
               <button className="text-[10px] font-black tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                 Tout voir <ArrowRight className="h-3 w-3" />
               </button>
@@ -552,13 +673,17 @@ export default async function DashboardPage(props: {
                   {inv.client_name[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black truncate">{inv.client_name}</p>
+                  <p className="text-sm font-black truncate">
+                    {inv.client_name}
+                  </p>
                   <p className="text-[10px] text-muted-foreground font-bold tracking-widest">
                     Boutique: {inv.boutique?.name}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-black">{formatCurrency(inv.total)}</p>
+                  <p className="text-lg font-black">
+                    {formatCurrency(inv.total)}
+                  </p>
                   <p className="text-[9px] font-black text-emerald-600 tracking-widest">
                     Confirmé
                   </p>
@@ -580,16 +705,29 @@ export default async function DashboardPage(props: {
             </h3>
             <div className="space-y-4">
               {lowStockProducts.map((a, i) => {
-                const prod = Array.isArray(a.products) ? a.products[0] : a.products;
+                const prod = Array.isArray(a.products)
+                  ? a.products[0]
+                  : a.products;
                 return (
-                  <div key={i} className="p-6 rounded-3xl bg-rose-500/5 border border-rose-500/10 flex items-center justify-between group">
+                  <div
+                    key={i}
+                    className="p-6 rounded-3xl bg-rose-500/5 border border-rose-500/10 flex items-center justify-between group"
+                  >
                     <div className="min-w-0">
-                      <p className="text-sm font-black truncate">{prod?.name}</p>
+                      <p className="text-sm font-black truncate">
+                        {prod?.name}
+                      </p>
                       <p className="text-[10px] font-bold text-rose-600 tracking-tighter">
                         {a.quantity} unités restantes
                       </p>
                     </div>
-                    <Link href={filteredBoutiqueId ? `/dashboard/stocks?boutiqueId=${filteredBoutiqueId}` : "/dashboard/stocks"}>
+                    <Link
+                      href={
+                        filteredBoutiqueId
+                          ? `/dashboard/stocks?boutiqueId=${filteredBoutiqueId}`
+                          : "/dashboard/stocks"
+                      }
+                    >
                       <button className="p-3 rounded-2xl bg-card border border-border/50 text-muted-foreground hover:text-rose-600 transition-all group-hover:scale-110">
                         <ArrowRight className="h-5 w-5" />
                       </button>
@@ -599,8 +737,10 @@ export default async function DashboardPage(props: {
               })}
               {lowStockProducts.length === 0 && (
                 <div className="py-20 text-center space-y-4 opacity-30">
-                   <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500" />
-                   <div className="text-[10px] font-black tracking-widest uppercase">Stock optimisé</div>
+                  <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500" />
+                  <div className="text-[10px] font-black tracking-widest uppercase">
+                    Stock optimisé
+                  </div>
                 </div>
               )}
             </div>
@@ -611,23 +751,32 @@ export default async function DashboardPage(props: {
               Staff <span className="text-primary">Performance</span>
             </h3>
             <div className="space-y-4">
-               {Object.entries(teamSales).slice(0, 3).map(([id, stats]) => (
-                <div key={id} className="p-5 rounded-3xl bg-secondary/30 flex items-center justify-between group">
-                  <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black">
-                      {stats.name.charAt(0)}
+              {Object.entries(teamSales)
+                .slice(0, 3)
+                .map(([id, stats]) => (
+                  <div
+                    key={id}
+                    className="p-5 rounded-3xl bg-secondary/30 flex items-center justify-between group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black">
+                        {stats.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="text-sm font-black truncate">
+                          {stats.name}
+                        </p>
+                        <p className="text-[10px] font-black tracking-widest opacity-60 italic">
+                          {stats.count} commandes
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-black truncate">{stats.name}</p>
-                      <p className="text-[10px] font-black tracking-widest opacity-60 italic">
-                        {stats.count} commandes
-                      </p>
-                    </div>
+                    <p className="text-sm font-black text-primary">
+                      {formatCurrency(stats.total)}
+                    </p>
                   </div>
-                  <p className="text-sm font-black text-primary">{formatCurrency(stats.total)}</p>
-                </div>
-              ))}
-               {Object.keys(teamSales).length === 0 && (
+                ))}
+              {Object.keys(teamSales).length === 0 && (
                 <p className="py-10 text-center text-[10px] font-black tracking-widest opacity-30 italic">
                   Aucune vente d&apos;équipe
                 </p>

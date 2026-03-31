@@ -111,7 +111,8 @@ export default function SettingsPage() {
             <span className="text-gradient leading-relaxed">Système</span>
           </h1>
           <p className="text-lg text-muted-foreground font-medium italic">
-            Pilotez l&apos;identité et les paramètres globaux de votre plateforme
+            Pilotez l&apos;identité et les paramètres globaux de votre
+            plateforme
           </p>
         </div>
       </section>
@@ -124,7 +125,9 @@ export default function SettingsPage() {
             </h3>
             <div className="px-5 py-2 rounded-2xl bg-primary/10 border border-primary/20 flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-xs font-black tracking-widest text-primary italic">Diffusion Globale</span>
+              <span className="text-xs font-black tracking-widest text-primary italic">
+                Diffusion Globale
+              </span>
             </div>
           </div>
 
@@ -135,26 +138,42 @@ export default function SettingsPage() {
                 <h4 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <Building2 className="h-5 w-5 text-primary/60" /> Marque
                 </h4>
-                <p className="text-sm text-muted-foreground font-medium italic">Le nom et la vision de votre établissement.</p>
+                <p className="text-sm text-muted-foreground font-medium italic">
+                  Le nom et la vision de votre établissement.
+                </p>
               </div>
               <div className="lg:col-span-2 space-y-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="name" className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1">NOM DE L&apos;ENTREPRISE</Label>
+                  <Label
+                    htmlFor="name"
+                    className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
+                  >
+                    NOM DE L&apos;ENTREPRISE
+                  </Label>
                   <Input
                     id="name"
                     value={settings.name}
-                    onChange={(e) => setSettings({ ...settings, name: e.target.value })}
+                    onChange={(e) =>
+                      setSettings({ ...settings, name: e.target.value })
+                    }
                     placeholder="Ex: Ets La Championne"
                     className="h-14 px-6 rounded-2xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold text-lg"
                     required
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="description" className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1">DESCRIPTION STRATÉGIQUE</Label>
+                  <Label
+                    htmlFor="description"
+                    className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
+                  >
+                    DESCRIPTION STRATÉGIQUE
+                  </Label>
                   <Textarea
                     id="description"
                     value={settings.description}
-                    onChange={(e) => setSettings({ ...settings, description: e.target.value })}
+                    onChange={(e) =>
+                      setSettings({ ...settings, description: e.target.value })
+                    }
                     placeholder="Ex: Votre partenaire pour tous vos travaux."
                     className="min-h-[120px] px-6 py-4 rounded-3xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-medium leading-relaxed italic"
                   />
@@ -170,44 +189,67 @@ export default function SettingsPage() {
                 <h4 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <Globe className="h-5 w-5 text-primary/60" /> Présence
                 </h4>
-                <p className="text-sm text-muted-foreground font-medium italic">Comment vos clients peuvent vous joindre.</p>
+                <p className="text-sm text-muted-foreground font-medium italic">
+                  Comment vos clients peuvent vous joindre.
+                </p>
               </div>
               <div className="lg:col-span-2 grid md:grid-cols-2 gap-8">
                 <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1">EMAIL DE CONTACT</Label>
+                  <Label
+                    htmlFor="email"
+                    className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
+                  >
+                    EMAIL DE CONTACT
+                  </Label>
                   <div className="relative">
                     <Mail className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
                     <Input
                       id="email"
                       type="email"
                       value={settings.email}
-                      onChange={(e) => setSettings({ ...settings, email: e.target.value })}
+                      onChange={(e) =>
+                        setSettings({ ...settings, email: e.target.value })
+                      }
                       placeholder="contact@example.com"
                       className="h-14 pl-14 pr-6 rounded-2xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold"
                     />
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="phone" className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1">LIGNE TÉLÉPHONIQUE</Label>
+                  <Label
+                    htmlFor="phone"
+                    className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
+                  >
+                    LIGNE TÉLÉPHONIQUE
+                  </Label>
                   <div className="relative">
                     <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
                     <Input
                       id="phone"
                       value={settings.phone}
-                      onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
+                      onChange={(e) =>
+                        setSettings({ ...settings, phone: e.target.value })
+                      }
                       placeholder="+228 00 00 00 00"
                       className="h-14 pl-14 pr-6 rounded-2xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold"
                     />
                   </div>
                 </div>
                 <div className="md:col-span-2 grid gap-2">
-                  <Label htmlFor="address" className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1">ADRESSE DU SIÈGE SOCIAL</Label>
+                  <Label
+                    htmlFor="address"
+                    className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
+                  >
+                    ADRESSE DU SIÈGE SOCIAL
+                  </Label>
                   <div className="relative">
                     <MapPin className="absolute left-5 top-5 h-4 w-4 text-muted-foreground/40" />
                     <Textarea
                       id="address"
                       value={settings.address}
-                      onChange={(e) => setSettings({ ...settings, address: e.target.value })}
+                      onChange={(e) =>
+                        setSettings({ ...settings, address: e.target.value })
+                      }
                       placeholder="Ex: Lomé, Togo"
                       className="min-h-[100px] pl-14 pr-6 py-4 rounded-3xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold"
                     />
@@ -222,58 +264,89 @@ export default function SettingsPage() {
             <div className="grid lg:grid-cols-3 gap-10">
               <div className="space-y-2">
                 <h4 className="text-xl font-black tracking-tight flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary/60" /> Réseaux Sociaux
+                  <Sparkles className="h-5 w-5 text-primary/60" /> Réseaux
+                  Sociaux
                 </h4>
-                <p className="text-sm text-muted-foreground font-medium italic">Votre visibilité sur les plateformes digitales.</p>
+                <p className="text-sm text-muted-foreground font-medium italic">
+                  Votre visibilité sur les plateformes digitales.
+                </p>
               </div>
               <div className="lg:col-span-2 grid md:grid-cols-2 gap-8">
                 <div className="grid gap-2">
-                  <Label htmlFor="facebook" className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1">FACEBOOK URL</Label>
+                  <Label
+                    htmlFor="facebook"
+                    className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
+                  >
+                    FACEBOOK URL
+                  </Label>
                   <div className="relative">
                     <Globe className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
                     <Input
                       id="facebook"
                       value={settings.facebook}
-                      onChange={(e) => setSettings({ ...settings, facebook: e.target.value })}
+                      onChange={(e) =>
+                        setSettings({ ...settings, facebook: e.target.value })
+                      }
                       placeholder="https://facebook.com/..."
                       className="h-14 pl-14 pr-6 rounded-2xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold"
                     />
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="instagram" className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1">INSTAGRAM URL</Label>
+                  <Label
+                    htmlFor="instagram"
+                    className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
+                  >
+                    INSTAGRAM URL
+                  </Label>
                   <div className="relative">
                     <Globe className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
                     <Input
                       id="instagram"
                       value={settings.instagram}
-                      onChange={(e) => setSettings({ ...settings, instagram: e.target.value })}
+                      onChange={(e) =>
+                        setSettings({ ...settings, instagram: e.target.value })
+                      }
                       placeholder="https://instagram.com/..."
                       className="h-14 pl-14 pr-6 rounded-2xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold"
                     />
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="whatsapp" className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1">WHATSAPP URL / NUMÉRO</Label>
+                  <Label
+                    htmlFor="whatsapp"
+                    className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
+                  >
+                    WHATSAPP URL / NUMÉRO
+                  </Label>
                   <div className="relative">
                     <MessageCircle className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
                     <Input
                       id="whatsapp"
                       value={settings.whatsapp}
-                      onChange={(e) => setSettings({ ...settings, whatsapp: e.target.value })}
+                      onChange={(e) =>
+                        setSettings({ ...settings, whatsapp: e.target.value })
+                      }
                       placeholder="https://wa.me/228..."
                       className="h-14 pl-14 pr-6 rounded-2xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold"
                     />
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="linkedin" className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1">LINKEDIN URL</Label>
+                  <Label
+                    htmlFor="linkedin"
+                    className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
+                  >
+                    LINKEDIN URL
+                  </Label>
                   <div className="relative">
                     <Globe className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
                     <Input
                       id="linkedin"
                       value={settings.linkedin}
-                      onChange={(e) => setSettings({ ...settings, linkedin: e.target.value })}
+                      onChange={(e) =>
+                        setSettings({ ...settings, linkedin: e.target.value })
+                      }
                       placeholder="https://linkedin.com/..."
                       className="h-14 pl-14 pr-6 rounded-2xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold"
                     />
@@ -284,10 +357,10 @@ export default function SettingsPage() {
           </div>
 
           <div className="p-10 border-t border-border/50 bg-muted/30 flex justify-end">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={saving}
-              className="h-16 px-10 rounded-[2rem] bg-primary text-primary-foreground font-black tracking-tighter text-lg hover:scale-105 transition-all shadow-[0_20px_40px_-15px_rgba(var(--primary),0.3)]"
+              className="h-16 px-10 rounded-4xl bg-primary text-primary-foreground font-black tracking-tighter text-lg hover:scale-105 transition-all shadow-[0_20px_40px_-15px_rgba(var(--primary),0.3)]"
             >
               {saving ? (
                 <>

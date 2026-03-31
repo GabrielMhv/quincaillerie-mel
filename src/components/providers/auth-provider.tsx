@@ -39,21 +39,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return data as User;
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: any, session: any) => {
-        if (session) {
-          const profile = await fetchProfile(session.user.id);
-          setUser(profile);
-        } else {
-          setUser(null);
-        }
-        setLoading(false);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session) {
+        const profile = await fetchProfile(session.user.id);
+        setUser(profile);
+      } else {
+        setUser(null);
       }
-    );
+      setLoading(false);
+    });
 
-    supabase.auth
-      .getSession()
-      .then(({ data }: any) => {
+    supabase.auth.getSession().then(({ data }) => {
       const session = data?.session;
       if (session) {
         fetchProfile(session.user.id).then((profile) => {
@@ -73,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       // Faster: do both concurrently (or at least start signOut and redirect)
-      supabase.auth.signOut(); 
+      supabase.auth.signOut();
       window.location.href = "/";
     } catch (error) {
       window.location.href = "/";

@@ -97,10 +97,15 @@ export default async function AnalysesPage(props: {
   // 2. Category Distribution
   const categoryStats: Record<string, number> = {};
   validOrders.forEach((order) => {
-    order.order_items?.forEach((item: any) => {
-      const catName = item.products?.categories?.name || "Sans catégorie";
-      categoryStats[catName] = (categoryStats[catName] || 0) + item.quantity;
-    });
+    order.order_items?.forEach(
+      (item: {
+        products?: { categories?: { name: string } };
+        quantity: number;
+      }) => {
+        const catName = item.products?.categories?.name || "Sans catégorie";
+        categoryStats[catName] = (categoryStats[catName] || 0) + item.quantity;
+      },
+    );
   });
   const categoryData = Object.entries(categoryStats)
     .map(([name, value]) => ({ name, value }))
@@ -155,11 +160,11 @@ export default async function AnalysesPage(props: {
               </p>
             </div>
           </div>
-          <div className="h-[450px] w-full pt-4">
+          <div className="h-112.5 w-full pt-4">
             {revenueSeries.some((s) => s.total > 0) ? (
               <AreaRevenueChart data={revenueSeries} />
             ) : (
-              <div className="h-full w-full flex flex-col items-center justify-center space-y-4 opacity-30 border border-dashed rounded-[2rem]">
+              <div className="h-full w-full flex flex-col items-center justify-center space-y-4 opacity-30 border border-dashed rounded-4xl">
                 <TrendingUp className="h-12 w-12" />
                 <p className="text-sm font-bold tracking-tight text-muted-foreground/60 leading-none">
                   Aucun revenu sur cette période
@@ -191,7 +196,7 @@ export default async function AnalysesPage(props: {
             {categoryData.length > 0 ? (
               <CategoryPieChart data={categoryData} />
             ) : (
-              <div className="h-48 w-full flex flex-col items-center justify-center space-y-4 opacity-30 border border-dashed rounded-[2rem]">
+              <div className="h-48 w-full flex flex-col items-center justify-center space-y-4 opacity-30 border border-dashed rounded-4xl">
                 <PieIcon className="h-10 w-10" />
                 <p className="text-xs font-bold tracking-tight text-muted-foreground/60 leading-tight text-center">
                   Données de catégories <br /> indisponibles

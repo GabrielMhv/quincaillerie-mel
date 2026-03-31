@@ -58,7 +58,7 @@ export default async function DashboardProductsPage(props: {
   // Fetch boutique name if filtered
   let currentBoutiqueName = "";
   if (boutiqueSwitcherId) {
-    const boutique = boutiques?.find((b: any) => b.id === boutiqueSwitcherId);
+    const boutique = boutiques?.find((b) => b.id === boutiqueSwitcherId);
     currentBoutiqueName = boutique?.name || "";
   }
 
@@ -147,10 +147,10 @@ export default async function DashboardProductsPage(props: {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/20">
-              {products?.map((product: any) => (
+              {products?.map((product) => (
                 <tr
                   key={product.id}
-                  className="group hover:bg-primary/[0.02] transition-colors h-24"
+                  className="group hover:bg-primary/2 transition-colors h-24"
                 >
                   <td className="px-8">
                     <div className="flex items-center gap-4">

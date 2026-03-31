@@ -84,9 +84,13 @@ export function StoreFormModal({ store }: StoreFormModalProps) {
       if (!store) {
         setFormData({ name: "", address: "" });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error saving store:", error);
-      toast.error(error.message || "Erreur lors de l'enregistrement");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de l'enregistrement",
+      );
     } finally {
       setLoading(false);
     }
@@ -108,7 +112,7 @@ export function StoreFormModal({ store }: StoreFormModalProps) {
           )
         }
       />
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>

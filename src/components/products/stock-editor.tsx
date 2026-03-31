@@ -16,7 +16,13 @@ interface StockEditorProps {
   disabled?: boolean;
 }
 
-export function StockEditor({ initialStock, productId, boutiqueId, onStockUpdated, disabled }: StockEditorProps) {
+export function StockEditor({
+  initialStock,
+  productId,
+  boutiqueId,
+  onStockUpdated,
+  disabled,
+}: StockEditorProps) {
   const [quantity, setQuantity] = useState(initialStock);
   const [isUpdating, setIsUpdating] = useState(false);
   const supabase = createClient();
@@ -43,17 +49,15 @@ export function StockEditor({ initialStock, productId, boutiqueId, onStockUpdate
           .from("stocks")
           .update({ quantity: newQuantity })
           .eq("id", existingStock.id);
-        
+
         if (updateError) throw updateError;
       } else {
         // Create new stock entry
-        const { error: insertError } = await supabase
-          .from("stocks")
-          .insert({
-            product_id: productId,
-            boutique_id: boutiqueId,
-            quantity: newQuantity,
-          });
+        const { error: insertError } = await supabase.from("stocks").insert({
+          product_id: productId,
+          boutique_id: boutiqueId,
+          quantity: newQuantity,
+        });
 
         if (insertError) throw insertError;
       }
@@ -62,9 +66,11 @@ export function StockEditor({ initialStock, productId, boutiqueId, onStockUpdate
       toast.success("Stock mis à jour");
       onStockUpdated?.();
       router.refresh();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Stock update error:", error);
-      toast.error("Erreur lors de la mise à jour", { description: error.message });
+      toast.error("Erreur lors de la mise à jour", {
+        description: error instanceof Error ? error.message : "Erreur inconnue",
+      });
       setQuantity(initialStock); // Revert UI
     } finally {
       setIsUpdating(false);

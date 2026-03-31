@@ -96,6 +96,12 @@ export function DashboardSidebar() {
       roles: ["admin"],
     },
     {
+      title: "Stocks",
+      href: "/dashboard/stocks",
+      icon: Store,
+      roles: ["admin"],
+    },
+    {
       title: "Catégories",
       href: "/dashboard/categories",
       icon: Tags,

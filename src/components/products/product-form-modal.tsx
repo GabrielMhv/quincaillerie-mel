@@ -36,21 +36,21 @@ interface ProductFormModalProps {
   token?: string; // Optional: To trigger a refresh if needed
 }
 
-export function ProductFormModal({ 
-  categories, 
-  productToEdit, 
-  userRole, 
-  userBoutiqueId, 
-  boutiques 
+export function ProductFormModal({
+  categories,
+  productToEdit,
+  userRole,
+  userBoutiqueId,
+  boutiques,
 }: ProductFormModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState(productToEdit?.image_url || "");
-  
+
   // Stock management state
   const [targetBoutique, setTargetBoutique] = useState<string | "all">(
-    userRole === "admin" ? "all" : (userBoutiqueId || "")
+    userRole === "admin" ? "all" : userBoutiqueId || "",
   );
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
@@ -63,28 +63,39 @@ export function ProductFormModal({
 
     // Fast check for Cloudinary Env config
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "quincaillerie_preset"; 
+    const uploadPreset =
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
+      "quincaillerie_preset";
 
     if (!cloudName) {
-      toast.error("Configuration Cloudinary manquante. Utilisez une URL image directement.");
+      toast.error(
+        "Configuration Cloudinary manquante. Utilisez une URL image directement.",
+      );
       return;
     }
 
     setIsUploading(true);
-    
+
     try {
       // Optmisation : Conversion en WebP avant upload
       const webpBlob = await convertToWebP(file);
-      const webpFile = new File([webpBlob], file.name.replace(/\.[^/.]+$/, "") + ".webp", { type: "image/webp" });
+      const webpFile = new File(
+        [webpBlob],
+        file.name.replace(/\.[^/.]+$/, "") + ".webp",
+        { type: "image/webp" },
+      );
 
       const formData = new FormData();
       formData.append("file", webpFile);
       formData.append("upload_preset", uploadPreset);
 
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
       if (!response.ok) throw new Error("Erreur d'upload Cloudinary");
 
@@ -124,7 +135,7 @@ export function ProductFormModal({
             image_url: imageUrl,
           })
           .eq("id", productToEdit.id);
-        
+
         if (error) throw error;
         toast.success("Produit mis à jour");
       } else {
@@ -153,7 +164,7 @@ export function ProductFormModal({
               stockInserts.push({
                 product_id: newProduct.id,
                 boutique_id: boutique.id,
-                quantity: quantities[boutique.id] || 0
+                quantity: quantities[boutique.id] || 0,
               });
             }
           } else {
@@ -163,7 +174,7 @@ export function ProductFormModal({
               stockInserts.push({
                 product_id: newProduct.id,
                 boutique_id: bId,
-                quantity: quantities[bId] || 0
+                quantity: quantities[bId] || 0,
               });
             }
           }
@@ -178,12 +189,14 @@ export function ProductFormModal({
 
         toast.success("Produit créé avec succès");
       }
-      
+
       setOpen(false);
       router.refresh();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      toast.error("Une erreur est survenue", { description: error.message });
+      toast.error("Une erreur est survenue", {
+        description: error instanceof Error ? error.message : "Erreur inconnue",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -192,18 +205,25 @@ export function ProductFormModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {productToEdit ? (
-        <DialogTrigger render={<Button variant="outline" size="sm" />}>Éditer</DialogTrigger>
+        <DialogTrigger render={<Button variant="outline" size="sm" />}>
+          Éditer
+        </DialogTrigger>
       ) : (
         <DialogTrigger render={<Button className="gap-2" />}>
           <Plus className="h-4 w-4" />
           Nouveau Produit
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-150 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{productToEdit ? "Modifier le produit" : "Ajouter un produit"}</DialogTitle>
+          <DialogTitle>
+            {productToEdit ? "Modifier le produit" : "Ajouter un produit"}
+          </DialogTitle>
           <DialogDescription>
-            {productToEdit ? "Modifiez les détails du produit ici." : "Créez un nouveau produit dans votre catalogue."} Cliquez sur enregistrer lorsque vous avez terminé.
+            {productToEdit
+              ? "Modifiez les détails du produit ici."
+              : "Créez un nouveau produit dans votre catalogue."}{" "}
+            Cliquez sur enregistrer lorsque vous avez terminé.
           </DialogDescription>
         </DialogHeader>
 
@@ -254,12 +274,12 @@ export function ProductFormModal({
               <div className="flex gap-4 items-start">
                 {imageUrl ? (
                   <div className="relative w-24 h-24 rounded-md overflow-hidden border">
-                    <Image 
-                      src={imageUrl} 
-                      alt="Aperçu" 
-                      fill 
+                    <Image
+                      src={imageUrl}
+                      alt="Aperçu"
+                      fill
                       sizes="96px"
-                      className="object-cover" 
+                      className="object-cover"
                     />
                     <Button
                       type="button"
@@ -277,16 +297,18 @@ export function ProductFormModal({
                   </div>
                 )}
                 <div className="flex-1 space-y-2">
-                  <Input 
-                    type="file" 
-                    accept="image/*" 
+                  <Input
+                    type="file"
+                    accept="image/*"
                     onChange={handleImageUpload}
                     disabled={isUploading}
                     className="cursor-pointer"
                   />
-                  <div className="text-xs text-muted-foreground">Ou collez une URL d'image existante :</div>
-                  <Input 
-                    value={imageUrl} 
+                  <div className="text-xs text-muted-foreground">
+                    Ou collez une URL d'image existante :
+                  </div>
+                  <Input
+                    value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     placeholder="https://..."
                   />
@@ -318,20 +340,32 @@ export function ProductFormModal({
             {!productToEdit && (
               <div className="space-y-4 col-span-2 border-t pt-4 mt-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-base font-semibold">Stock initial</Label>
+                  <Label className="text-base font-semibold">
+                    Stock initial
+                  </Label>
                   {userRole === "admin" && (
-                    <RadioGroup 
-                      value={targetBoutique} 
+                    <RadioGroup
+                      value={targetBoutique}
                       onValueChange={(val) => setTargetBoutique(val)}
                       className="flex gap-4"
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="all" id="all" />
-                        <Label htmlFor="all" className="font-normal cursor-pointer">Toutes les boutiques</Label>
+                        <Label
+                          htmlFor="all"
+                          className="font-normal cursor-pointer"
+                        >
+                          Toutes les boutiques
+                        </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="specific" id="specific" />
-                        <Label htmlFor="specific" className="font-normal cursor-pointer">Boutique spécifique</Label>
+                        <Label
+                          htmlFor="specific"
+                          className="font-normal cursor-pointer"
+                        >
+                          Boutique spécifique
+                        </Label>
                       </div>
                     </RadioGroup>
                   )}
@@ -339,16 +373,24 @@ export function ProductFormModal({
 
                 {userRole === "admin" && targetBoutique === "specific" && (
                   <div className="space-y-2">
-                    <Label htmlFor="boutique_select">Sélectionner la boutique</Label>
+                    <Label htmlFor="boutique_select">
+                      Sélectionner la boutique
+                    </Label>
                     <select
                       id="boutique_select"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       onChange={(e) => setTargetBoutique(e.target.value)}
-                      value={targetBoutique === "specific" ? "" : targetBoutique}
+                      value={
+                        targetBoutique === "specific" ? "" : targetBoutique
+                      }
                     >
-                      <option value="" disabled>Choisir une boutique...</option>
+                      <option value="" disabled>
+                        Choisir une boutique...
+                      </option>
                       {boutiques.map((b) => (
-                        <option key={b.id} value={b.id}>{b.name}</option>
+                        <option key={b.id} value={b.id}>
+                          {b.name}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -358,8 +400,14 @@ export function ProductFormModal({
                   {userRole === "admin" && targetBoutique === "all" ? (
                     <div className="grid grid-cols-2 gap-3">
                       {boutiques.map((boutique) => (
-                        <div key={boutique.id} className="space-y-1.5 p-3 rounded-lg border bg-muted/30">
-                          <Label htmlFor={`qty-${boutique.id}`} className="text-xs font-medium px-1">
+                        <div
+                          key={boutique.id}
+                          className="space-y-1.5 p-3 rounded-lg border bg-muted/30"
+                        >
+                          <Label
+                            htmlFor={`qty-${boutique.id}`}
+                            className="text-xs font-medium px-1"
+                          >
                             {boutique.name}
                           </Label>
                           <Input
@@ -368,42 +416,66 @@ export function ProductFormModal({
                             min="0"
                             placeholder="Quantité"
                             value={quantities[boutique.id] || ""}
-                            onChange={(e) => setQuantities({
-                              ...quantities,
-                              [boutique.id]: parseInt(e.target.value) || 0
-                            })}
+                            onChange={(e) =>
+                              setQuantities({
+                                ...quantities,
+                                [boutique.id]: parseInt(e.target.value) || 0,
+                              })
+                            }
                           />
                         </div>
                       ))}
                     </div>
-                  ) : (targetBoutique !== "specific" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="single-qty">
-                        Quantité en stock {userRole === "manager" ? `(Boutique: ${boutiques.find(b => b.id === userBoutiqueId)?.name})` : ""}
-                        {userRole === "admin" && ` (Boutique: ${boutiques.find(b => b.id === targetBoutique)?.name})`}
-                      </Label>
-                      <Input
-                        id="single-qty"
-                        type="number"
-                        min="0"
-                        placeholder="0"
-                        value={quantities[userRole === "admin" ? targetBoutique : (userBoutiqueId || "")] || ""}
-                        onChange={(e) => {
-                          const bId = userRole === "admin" ? targetBoutique : userBoutiqueId;
-                          if (bId && bId !== "specific" && bId !== "all") {
-                            setQuantities({ ...quantities, [bId]: parseInt(e.target.value) || 0 });
+                  ) : (
+                    targetBoutique !== "specific" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="single-qty">
+                          Quantité en stock{" "}
+                          {userRole === "manager"
+                            ? `(Boutique: ${boutiques.find((b) => b.id === userBoutiqueId)?.name})`
+                            : ""}
+                          {userRole === "admin" &&
+                            ` (Boutique: ${boutiques.find((b) => b.id === targetBoutique)?.name})`}
+                        </Label>
+                        <Input
+                          id="single-qty"
+                          type="number"
+                          min="0"
+                          placeholder="0"
+                          value={
+                            quantities[
+                              userRole === "admin"
+                                ? targetBoutique
+                                : userBoutiqueId || ""
+                            ] || ""
                           }
-                        }}
-                      />
-                    </div>
-                  ))}
+                          onChange={(e) => {
+                            const bId =
+                              userRole === "admin"
+                                ? targetBoutique
+                                : userBoutiqueId;
+                            if (bId && bId !== "specific" && bId !== "all") {
+                              setQuantities({
+                                ...quantities,
+                                [bId]: parseInt(e.target.value) || 0,
+                              });
+                            }
+                          }}
+                        />
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
             )}
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Annuler
             </Button>
             <Button type="submit" disabled={isLoading || isUploading}>

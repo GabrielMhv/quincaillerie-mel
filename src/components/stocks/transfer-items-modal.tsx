@@ -15,7 +15,12 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export function TransferItemsModal({ transferId }: { transferId: string }) {
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<
+    Array<{
+      quantity: number;
+      product?: { name: string; image_url: string | null };
+    }>
+  >([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const supabase = createClient();
@@ -26,35 +31,44 @@ export function TransferItemsModal({ transferId }: { transferId: string }) {
       // 1. Fetch parent record for single-item data
       const { data: parent } = await supabase
         .from("stock_transfers")
-        .select(`
+        .select(
+          `
           product_id,
           quantity,
           product:products(name, image_url)
-        `)
+        `,
+        )
         .eq("id", transferId)
         .single();
 
       // 2. Fetch child items for multi-item data
       const { data: children } = await supabase
         .from("stock_transfer_items")
-        .select(`
+        .select(
+          `
           quantity,
           product:products(name, image_url)
-        `)
+        `,
+        )
         .eq("transfer_id", transferId);
 
       const allItems = [];
       if (parent?.product_id && parent?.quantity) {
         allItems.push({
           quantity: parent.quantity,
-          product: parent.product
+          product: parent.product,
         });
       }
-      
+
       if (children && children.length > 0) {
-        children.forEach((item: any) => {
-          allItems.push(item);
-        });
+        children.forEach(
+          (item: {
+            quantity: number;
+            product?: { name: string; image_url: string | null };
+          }) => {
+            allItems.push(item);
+          },
+        );
       }
 
       setItems(allItems);
@@ -110,7 +124,7 @@ export function TransferItemsModal({ transferId }: { transferId: string }) {
               </p>
             </div>
           ) : (
-            <div className="rounded-[2rem] border border-border/50 overflow-hidden bg-background/30 backdrop-blur-xl">
+            <div className="rounded-4xl border border-border/50 overflow-hidden bg-background/30 backdrop-blur-xl">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-muted/30 h-14 border-b border-border/50 text-[10px] font-black text-muted-foreground/40 tracking-widest italic">
@@ -122,7 +136,7 @@ export function TransferItemsModal({ transferId }: { transferId: string }) {
                   {items.map((item, idx) => (
                     <tr
                       key={idx}
-                      className="h-16 group hover:bg-primary/[0.02] transition-colors"
+                      className="h-16 group hover:bg-primary/2 transition-colors"
                     >
                       <td className="px-6">
                         <div className="flex items-center gap-3">

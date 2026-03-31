@@ -48,7 +48,8 @@ export type OrderSource =
   | "ami"
   | "publicite"
   | "passage_boutique"
-  | "employe";
+  | "employe"
+  | "site_web";
 
 export type OrderStatus = "pending" | "completed" | "cancelled";
 
@@ -64,6 +65,7 @@ export interface Order {
   total: number;
   status: OrderStatus;
   employee_id?: string;
+  handler_id?: string | null;
   boutique_id: string;
   is_scheduled?: boolean;
   scheduled_at?: string;
@@ -71,6 +73,7 @@ export interface Order {
   order_items?: OrderItem[];
   boutique?: Boutique;
   employee?: User;
+  handler?: User;
 }
 
 export interface OrderItem {
@@ -92,11 +95,24 @@ export interface EmployeeReferral {
   order?: Order;
 }
 
-// Cart types (client-side only)
-export interface CartItem {
-  product: Product;
+export interface StockTransferRequest {
+  id: string;
+  source_boutique_id: string;
+  destination_boutique_id: string;
+  status: "pending" | "completed" | "cancelled";
+  created_at: string;
+  created_by?: string;
+  source_boutique?: Boutique;
+  destination_boutique?: Boutique;
+  items?: StockTransferItem[];
+}
+
+export interface StockTransferItem {
+  id: string;
+  transfer_id: string;
+  product_id: string;
   quantity: number;
-  boutique_id: string;
+  product?: Product;
 }
 
 // Dashboard stats types
