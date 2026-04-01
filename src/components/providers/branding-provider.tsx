@@ -37,25 +37,27 @@ const BrandingContext = createContext<BrandingContextType>({
   isLoading: true,
 });
 
-export function BrandingProvider({ 
+export function BrandingProvider({
   children,
-  initialSettings 
-}: { 
+  initialSettings,
+}: {
   children: React.ReactNode;
   initialSettings?: BrandingSettings;
 }) {
-  const [settings, setSettings] = useState<BrandingSettings>(initialSettings || defaultSettings);
+  const [settings, setSettings] = useState<BrandingSettings>(
+    initialSettings || defaultSettings,
+  );
   const [isLoading, setIsLoading] = useState(!initialSettings);
   const supabase = createClient();
 
   useEffect(() => {
-    // Si nous avons déjà des réglages initiaux, on peut sauter le fetch initial 
+    // Si nous avons déjà des réglages initiaux, on peut sauter le fetch initial
     // ou le faire en arrière-plan pour rafraîchir.
     if (initialSettings) return;
 
     async function fetchSettings() {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from("site_settings")
           .select("value")
           .eq("key", "branding")
