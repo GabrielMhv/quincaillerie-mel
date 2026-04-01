@@ -268,7 +268,7 @@ export function StockRequestTerminal({
                   <SelectItem
                     key={b.id}
                     value={b.id}
-                    className="font-bold text-sm py-4 cursor-pointer focus:bg-primary/10 transition-colors uppercase tracking-tight"
+                    className="font-bold text-sm py-4 cursor-pointer focus:bg-primary/10 transition-colors  tracking-tight"
                   >
                     {b.name}
                   </SelectItem>

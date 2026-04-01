@@ -172,7 +172,9 @@ export function PublicHeader() {
               variant="ghost"
               size="icon"
               className="rounded-full h-10 w-10 sm:h-11 sm:w-11 hover:bg-primary/10 text-primary transition-colors relative"
-              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              onClick={() =>
+                setTheme(resolvedTheme === "dark" ? "light" : "dark")
+              }
               aria-label="Changer de thème"
             >
               {mounted && resolvedTheme === "dark" ? (
@@ -271,14 +273,34 @@ export function PublicHeader() {
           )}
         >
           <div className="space-y-12">
-              <nav className="flex flex-col gap-6 text-2xl font-black tracking-tighter pt-4">
-                <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-all">Catalogue</Link>
-                <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-all">L&apos;histoire</Link>
-                <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-all">Contact</Link>
-              </nav>
+            <nav className="flex flex-col gap-6 text-2xl font-black tracking-tighter pt-4">
+              <Link
+                href="/products"
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:text-primary transition-all"
+              >
+                Catalogue
+              </Link>
+              <Link
+                href="/about"
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:text-primary transition-all"
+              >
+                L&apos;histoire
+              </Link>
+              <Link
+                href="/contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:text-primary transition-all"
+              >
+                Contact
+              </Link>
+            </nav>
 
             <div className="pt-6 space-y-4">
-              <h4 className="text-[10px] font-bold tracking-tight text-primary opacity-60 uppercase">Points de vente</h4>
+              <h4 className="text-[10px] font-bold tracking-tight text-primary opacity-60">
+                Points de vente
+              </h4>
               <div className="flex flex-col gap-2">
                 {boutiques.map((b) => (
                   <button
@@ -291,14 +313,23 @@ export function PublicHeader() {
                       "flex items-center justify-between p-4 rounded-2xl transition-all border",
                       selectedBoutique?.id === b.id
                         ? "bg-primary/10 border-primary/20 text-primary"
-                        : "bg-secondary/40 border-transparent hover:bg-secondary/80 text-foreground"
+                        : "bg-secondary/40 border-transparent hover:bg-secondary/80 text-foreground",
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <MapPin className={cn("h-5 w-5", selectedBoutique?.id === b.id ? "text-primary" : "text-muted-foreground")} />
+                      <MapPin
+                        className={cn(
+                          "h-5 w-5",
+                          selectedBoutique?.id === b.id
+                            ? "text-primary"
+                            : "text-muted-foreground",
+                        )}
+                      />
                       <p className="text-sm font-bold truncate">{b.name}</p>
                     </div>
-                    {selectedBoutique?.id === b.id && <CheckCircle2 className="h-5 w-5" />}
+                    {selectedBoutique?.id === b.id && (
+                      <CheckCircle2 className="h-5 w-5" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -343,7 +374,6 @@ export function PublicHeader() {
               )}
             </div>
           </div>
-
         </div>
       </div>
     </header>

@@ -158,7 +158,7 @@ export function OrderDetailsModal({
                               {
                                 icon: Calendar,
                                 label: "Retrait prévu",
-                                value: formatDate(order.scheduled_at),
+                                value: order.scheduled_at ? formatDate(order.scheduled_at) : "Non défini",
                               },
                             ]
                           : []),

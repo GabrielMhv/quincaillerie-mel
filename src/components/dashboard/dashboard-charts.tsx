@@ -52,7 +52,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
             backgroundColor: isDark ? "#111" : "#fff",
             border: "1px solid #333",
           }}
-          formatter={(value: number) => [
+          formatter={(value) => [
             formatCurrency(Number(value)),
             "Chiffre d'affaires",
           ]}
@@ -106,7 +106,7 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
             backgroundColor: isDark ? "#111" : "#fff",
             borderRadius: "8px",
           }}
-          formatter={(value: number) => [value, "Unités vendues"]}
+          formatter={(value) => [String(value), "Unités vendues"]}
         />
         <Bar
           dataKey="quantity"
@@ -150,7 +150,7 @@ export function BoutiqueSplitChart({ data }: BoutiqueSplitChartProps) {
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number) => [formatCurrency(Number(value)), "C.A."]}
+          formatter={(value) => [formatCurrency(Number(value)), "C.A."]}
           contentStyle={{
             backgroundColor: isDark ? "#111" : "#fff",
             borderRadius: "8px",
@@ -272,7 +272,7 @@ export function CategoryPieChart({
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number) => [`${value} ventes`, "Volume"]}
+          formatter={(value) => [`${value} ventes`, "Volume"]}
           contentStyle={{
             backgroundColor: isDark ? "#111" : "#fff",
             borderRadius: "1.5rem",
@@ -341,7 +341,7 @@ export function AreaRevenueChart({
             border: "none",
             boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)",
           }}
-          formatter={(value: number) => [
+          formatter={(value) => [
             formatCurrency(Number(value)),
             "Chiffre d'affaires",
           ]}

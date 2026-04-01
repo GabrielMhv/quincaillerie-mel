@@ -308,7 +308,7 @@ export function CheckoutForm() {
               <div className="space-y-3">
                 <Label
                   htmlFor="scheduled_at"
-                  className="text-[10px] font-black tracking-tight opacity-60 ml-1 uppercase"
+                  className="text-[10px] font-black tracking-tight opacity-60 ml-1"
                 >
                   Date & Heure de retrait prévue *
                 </Label>

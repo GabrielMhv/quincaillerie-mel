@@ -1,17 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatCurrency, formatDate, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { OrderStatusUpdater } from "@/components/orders/order-status-updater";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { FileText, Sparkles, History, ShoppingCart, User, Globe, MapPin, Eye } from "lucide-react";
+import { History, ShoppingCart, Filter } from "lucide-react";
 import { OrdersTable } from "@/components/orders/orders-table";
+import { OrderFilters } from "@/components/orders/order-filters";
 
 export default async function OrdersPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = await props.searchParams;
   const boutiqueSwitcherId = searchParams.boutiqueId as string | undefined;
+  const statusFilter = searchParams.status as string | undefined;
+  const startDate = searchParams.startDate as string | undefined;
+  const endDate = searchParams.endDate as string | undefined;
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -40,6 +40,18 @@ export default async function OrdersPage(props: {
 
   if (filteredBoutiqueId) {
     query = query.eq("boutique_id", filteredBoutiqueId);
+  }
+
+  if (statusFilter && statusFilter !== "all") {
+    query = query.eq("status", statusFilter);
+  }
+
+  if (startDate) {
+    query = query.gte("created_at", startDate);
+  }
+
+  if (endDate) {
+    query = query.lte("created_at", endDate);
   }
 
   // Fetch current boutique name for display if filtered
@@ -95,6 +107,20 @@ export default async function OrdersPage(props: {
               </div>
            </div>
         </div>
+      </section>
+
+      {/* Filter Section */}
+      <section className="rounded-[2.5rem] border border-border/50 bg-card/50 backdrop-blur-xl p-8 shadow-premium">
+        <div className="flex items-center gap-3 mb-8">
+           <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+              <Filter className="h-5 w-5" />
+           </div>
+           <div>
+              <h3 className="text-lg font-black tracking-tight">Filtrage Avancé</h3>
+              <p className="text-xs font-bold text-muted-foreground/60 italic">Affinez votre recherche par date et statut</p>
+           </div>
+        </div>
+        <OrderFilters />
       </section>
 
       {/* Main Content Area */}

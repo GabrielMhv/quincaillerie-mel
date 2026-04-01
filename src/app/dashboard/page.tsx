@@ -738,7 +738,7 @@ export default async function DashboardPage(props: {
               {lowStockProducts.length === 0 && (
                 <div className="py-20 text-center space-y-4 opacity-30">
                   <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500" />
-                  <div className="text-[10px] font-black tracking-widest uppercase">
+                  <div className="text-[10px] font-black tracking-widest">
                     Stock optimisé
                   </div>
                 </div>

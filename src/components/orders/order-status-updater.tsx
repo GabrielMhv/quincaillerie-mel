@@ -103,7 +103,7 @@ export function OrderStatusUpdater({
   if (handlerId === currentUserId) {
     return (
       <div className="flex flex-col items-end gap-1">
-        <span className="text-[10px] uppercase font-bold text-muted-foreground mr-1">
+        <span className="text-[10px] font-bold text-muted-foreground mr-1">
           Votre responsabilité
         </span>
         <Button

@@ -127,7 +127,7 @@ export default async function ClientsPage(props: {
                         <p className="text-lg font-black tracking-tight group-hover:text-primary transition-colors">
                           {c.name}
                         </p>
-                        <p className="text-[10px] font-black text-muted-foreground/40 tracking-widest uppercase italic">
+                        <p className="text-[10px] font-black text-muted-foreground/40 tracking-widest italic">
                           Client Régulier
                         </p>
                       </div>

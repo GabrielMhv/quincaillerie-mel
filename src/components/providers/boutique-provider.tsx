@@ -16,10 +16,13 @@ interface BoutiqueContextType {
   isLoading: boolean;
 }
 
-const BoutiqueContext = createContext<BoutiqueContextType | undefined>(undefined);
+const BoutiqueContext = createContext<BoutiqueContextType | undefined>(
+  undefined,
+);
 
 export function BoutiqueProvider({ children }: { children: React.ReactNode }) {
-  const [selectedBoutique, setSelectedBoutiqueState] = useState<Boutique | null>(null);
+  const [selectedBoutique, setSelectedBoutiqueState] =
+    useState<Boutique | null>(null);
   const [boutiques, setBoutiques] = useState<Boutique[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const supabaseRef = useRef(createClient());
@@ -41,7 +44,10 @@ export function BoutiqueProvider({ children }: { children: React.ReactNode }) {
         if (saved && data) {
           try {
             const parsed = JSON.parse(saved);
-            const exists = data.find((b: Boutique) => b.id === (typeof parsed === 'string' ? parsed : parsed.id));
+            const exists = data.find(
+              (b: Boutique) =>
+                b.id === (typeof parsed === "string" ? parsed : parsed.id),
+            );
             if (exists) {
               setSelectedBoutiqueState(exists);
             } else if (data.length > 0) {
@@ -73,7 +79,9 @@ export function BoutiqueProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <BoutiqueContext.Provider value={{ selectedBoutique, boutiques, setSelectedBoutique, isLoading }}>
+    <BoutiqueContext.Provider
+      value={{ selectedBoutique, boutiques, setSelectedBoutique, isLoading }}
+    >
       {children}
     </BoutiqueContext.Provider>
   );

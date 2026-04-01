@@ -47,7 +47,7 @@ export default function CartPage() {
             <Link href="/products" className="inline-block pt-4">
               <Button
                 size="lg"
-                className="rounded-full px-12 h-18 font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/30 hover:-translate-y-1 transition-all group"
+                className="rounded-full px-12 h-18 font-black tracking-widest text-xs shadow-2xl shadow-primary/30 hover:-translate-y-1 transition-all group"
               >
                 Continuer vos achats
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-2" />

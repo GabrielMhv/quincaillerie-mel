@@ -227,7 +227,7 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
             <button
               onClick={() => setSelectedCategoryId(null)}
               className={cn(
-                "px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all duration-300 shrink-0 whitespace-nowrap border italic",
+                "px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all duration-300 shrink-0 whitespace-nowrap border italic",
                 !selectedCategoryId
                   ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105"
                   : "bg-muted/50 text-muted-foreground hover:bg-muted border-border/50",
@@ -240,7 +240,7 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
                 key={cat.id}
                 onClick={() => setSelectedCategoryId(cat.id)}
                 className={cn(
-                  "px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase transition-all duration-300 shrink-0 whitespace-nowrap border italic",
+                  "px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all duration-300 shrink-0 whitespace-nowrap border italic",
                   selectedCategoryId === cat.id
                     ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105"
                     : "bg-muted/50 text-muted-foreground hover:bg-muted border-border/50",
@@ -345,7 +345,7 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
                 <h2 className="text-lg font-black tracking-tighter leading-none">
                   Ticket de caisse
                 </h2>
-                <p className="text-[10px] font-bold text-muted-foreground/60 tracking-widest uppercase mt-1">
+                <p className="text-[10px] font-bold text-muted-foreground/60 tracking-widest mt-1">
                   Session active
                 </p>
               </div>
@@ -375,7 +375,7 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
               <div className="h-20 w-20 rounded-[2.5rem] bg-muted/40 flex items-center justify-center">
                 <ShoppingCart className="h-8 w-8" />
               </div>
-              <p className="text-[10px] font-black tracking-widest uppercase text-center italic">
+              <p className="text-[10px] font-black tracking-widest text-center italic">
                 Le ticket est vide
               </p>
             </div>
@@ -446,7 +446,7 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
         <div className="p-8 border-t border-border/40 bg-muted/20">
           <div className="flex justify-between items-end mb-6">
             <div className="space-y-1">
-              <p className="text-[10px] font-black text-muted-foreground/60 tracking-widest uppercase">
+              <p className="text-[10px] font-black text-muted-foreground/60 tracking-widest">
                 Total à encaisser
               </p>
               <div className="flex items-baseline gap-2">
@@ -482,7 +482,7 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
 
           <div className="mt-4 flex items-center justify-center gap-2 opacity-30">
             <History className="h-3.5 w-3.5" />
-            <p className="text-[10px] font-black tracking-widest uppercase italic">
+            <p className="text-[10px] font-black tracking-widest  italic">
               validation système quincaillerie
             </p>
           </div>

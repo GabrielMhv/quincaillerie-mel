@@ -307,7 +307,7 @@ export default function NotificationsPage() {
             <div className="flex h-125 items-center justify-center">
               <div className="flex flex-col items-center gap-4">
                 <Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" />
-                <p className="text-xs font-black tracking-widest text-muted-foreground/40 italic uppercase">
+                <p className="text-xs font-black tracking-widest text-muted-foreground/40 italic">
                   Syncronisation du flux...
                 </p>
               </div>
@@ -369,7 +369,7 @@ export default function NotificationsPage() {
                           {n.title}
                         </h4>
                         {!n.is_read && (
-                          <Badge className="bg-primary/20 text-primary border-primary/30 text-[9px] font-black tracking-widest uppercase px-2 py-0.5">
+                          <Badge className="bg-primary/20 text-primary border-primary/30 text-[9px] font-black tracking-widest px-2 py-0.5">
                             Nouveau
                           </Badge>
                         )}
@@ -443,7 +443,7 @@ export default function NotificationsPage() {
 
         {/* Footer Info */}
         <div className="p-8 border-t border-border/50 bg-muted/30">
-          <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground/40 text-center uppercase">
+          <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground/40 text-center">
             Système de surveillance en temps réel • Ets La Championne
           </p>
         </div>

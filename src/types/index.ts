@@ -139,3 +139,9 @@ export interface LowStockAlert {
   boutique_name: string;
   quantity: number;
 }
+
+export interface CartItem {
+  product: Product;
+  quantity: number;
+  boutique_id: string;
+}

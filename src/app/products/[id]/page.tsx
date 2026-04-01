@@ -48,7 +48,7 @@ export default async function ProductDetailPage({
         <div className="container mx-auto px-4 md:px-6 pt-12 md:pt-20 lg:pt-32 relative z-10">
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 text-[10px] font-black tracking-widest text-primary hover:opacity-70 transition-all mb-12 sm:mb-16 lg:mb-20 uppercase"
+            className="inline-flex items-center gap-2 text-[10px] font-black tracking-widest text-primary hover:opacity-70 transition-all mb-12 sm:mb-16 lg:mb-20"
           >
             <ArrowLeft className="h-4 w-4" />
             Retour à l&apos;inventaire
@@ -126,7 +126,7 @@ export default async function ProductDetailPage({
                           <span className="text-[9px] font-black tracking-widest text-primary opacity-60">
                             BOUTIQUE
                           </span>
-                          <p className="text-base font-black tracking-tight leading-none text-slate-800 dark:text-white uppercase">
+                          <p className="text-base font-black tracking-tight leading-none text-slate-800 dark:text-white ">
                             {stock.boutique?.name}
                           </p>
                         </div>

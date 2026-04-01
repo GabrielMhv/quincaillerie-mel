@@ -151,7 +151,7 @@ export default async function ProfilePage() {
                     <Mail className="h-5 w-5" />
                   </div>
                   <div className="text-left">
-                    <p className="text-[10px] font-black text-muted-foreground/50 tracking-widest uppercase mb-0.5">
+                    <p className="text-[10px] font-black text-muted-foreground/50 tracking-widest mb-0.5">
                       Email
                     </p>
                     <p className="font-bold">{profile?.email}</p>
@@ -163,7 +163,7 @@ export default async function ProfilePage() {
                       <MapPin className="h-5 w-5" />
                     </div>
                     <div className="text-left">
-                      <p className="text-[10px] font-black text-muted-foreground/50 tracking-widest uppercase mb-0.5">
+                      <p className="text-[10px] font-black text-muted-foreground/50 tracking-widest mb-0.5">
                         Affectation
                       </p>
                       <p className="font-bold">{profile.boutiques.name}</p>
@@ -175,7 +175,7 @@ export default async function ProfilePage() {
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div className="text-left flex-1">
-                    <p className="text-[10px] font-black text-muted-foreground/50 tracking-widest uppercase mb-0.5">
+                    <p className="text-[10px] font-black text-muted-foreground/50 tracking-widest mb-0.5">
                       Membre depuis
                     </p>
                     <p className="font-bold">

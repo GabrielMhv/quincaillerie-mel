@@ -176,7 +176,7 @@ export default async function StatsPage(props: {
               <BarChart3 className="h-7 w-7" />
             </div>
             <div className="space-y-1">
-              <p className="text-[10px] font-black tracking-widest text-muted-foreground/60 italic uppercase mb-1">
+              <p className="text-[10px] font-black tracking-widest text-muted-foreground/60 italic mb-1">
                 Volume de Production (Équipe)
               </p>
               <p className="text-4xl font-black tracking-tighter text-gradient">
@@ -195,7 +195,7 @@ export default async function StatsPage(props: {
               <Target className="h-7 w-7" />
             </div>
             <div className="space-y-1">
-              <p className="text-[10px] font-black tracking-widest text-muted-foreground/60 italic uppercase mb-1">
+              <p className="text-[10px] font-black tracking-widest text-muted-foreground/60 italic mb-1">
                 Impact des Recommandations
               </p>
               <p className="text-5xl font-black tracking-tighter text-indigo-600 leading-none">
@@ -214,7 +214,7 @@ export default async function StatsPage(props: {
               <Medal className="h-7 w-7" />
             </div>
             <div className="space-y-1">
-              <p className="text-[10px] font-black tracking-widest text-muted-foreground/60 italic uppercase mb-1">
+              <p className="text-[10px] font-black tracking-widest text-muted-foreground/60 italic mb-1">
                 Capital Humain Actif
               </p>
               <p className="text-5xl font-black tracking-tighter text-orange-600 leading-none">
@@ -233,7 +233,7 @@ export default async function StatsPage(props: {
               <Trophy className="h-6 w-6 text-yellow-500 drop-shadow-glow" />
               Matrice d&apos;Excellence Opérationnelle
             </h3>
-            <p className="text-sm text-muted-foreground font-medium italic uppercase tracking-widest opacity-40">
+            <p className="text-sm text-muted-foreground font-medium italic tracking-widest opacity-40">
               Intelligence de performance individuelle
             </p>
           </div>

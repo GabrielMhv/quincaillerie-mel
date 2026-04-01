@@ -245,7 +245,7 @@ export default async function AnalysesPage(props: {
                 Nombre de clients et chiffre d&apos;affaires par collaborateur
               </p>
             </div>
-            <div className="px-5 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 text-[10px] font-black tracking-widest uppercase">
+            <div className="px-5 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 text-[10px] font-black tracking-widest">
               Recap Global
             </div>
           </div>
