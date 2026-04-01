@@ -58,7 +58,7 @@ export default function SettingsPage() {
         if (data?.value) {
           setSettings(data.value);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error fetching settings:", error);
         toast.error("Erreur lors du chargement des paramètres");
       } finally {
@@ -80,9 +80,13 @@ export default function SettingsPage() {
 
       if (error) throw error;
       toast.success("Configurations sauvegardées avec succès");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error saving settings:", error);
-      toast.error(error.message || "Erreur lors de l'enregistrement");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de l'enregistrement",
+      );
     } finally {
       setSaving(false);
     }

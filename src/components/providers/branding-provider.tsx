@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-interface BrandingSettings {
+export interface BrandingSettings {
   name: string;
   description: string;
   address: string;

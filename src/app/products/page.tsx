@@ -6,22 +6,7 @@ import { ProductGrid } from "@/components/products/product-grid";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Search,
-  SlidersHorizontal,
-  Sparkles,
-  Filter,
-  ChevronRight,
-  LayoutGrid,
-  X,
-  Hammer,
-  Warehouse,
-  Landmark,
-  ArrowRight,
-  Menu,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
+import { Search, Filter, Hammer, Warehouse } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -52,17 +37,17 @@ function ProductsContent() {
   const inStock = searchParams.get("stock") === "true";
 
   const [localSearch, setLocalSearch] = useState(search);
-  const [localMin, setLocalMin] = useState(minPrice || "");
-  const [localMax, setLocalMax] = useState(maxPrice || "");
 
+  // Sync local search with URL param
   useEffect(() => {
     setLocalSearch(search);
-    setLocalMin(minPrice || "");
-    setLocalMax(maxPrice || "");
-  }, [search, minPrice, maxPrice]);
+  }, [search]);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
 
@@ -119,9 +104,9 @@ function ProductsContent() {
             <div className="hidden lg:inline-flex items-center gap-2 md:gap-3 px-3 md:px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-black tracking-widest shadow-sm">
               <Warehouse className="h-3.5 w-3.5" /> Inventaire certifié A+
             </div>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-tight leading-[1] md:leading-[0.9] text-slate-900 dark:text-white mx-auto lg:mx-0">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-tight leading-none md:leading-[0.9] text-slate-900 dark:text-white mx-auto lg:mx-0">
               Showroom <br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-primary via-emerald-500 to-green-600 bg-[length:200%_auto] animate-gradient">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-primary via-emerald-500 to-green-600 bg-size-[200%_auto] animate-gradient">
                 Equipements.
               </span>
             </h1>
@@ -173,7 +158,7 @@ function ProductsContent() {
                 />
                 <SheetContent
                   side="left"
-                  className="w-[85vw] sm:w-[350px] p-6 pt-12"
+                  className="w-[85vw] sm:w-87.5 p-6 pt-12"
                 >
                   <SheetHeader className="mb-8">
                     <SheetTitle className="text-2xl font-black tracking-tight text-left flex items-center gap-2">
@@ -280,7 +265,7 @@ function ProductsContent() {
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div
                     key={i}
-                    className="aspect-[4/5] rounded-[4rem] bg-slate-200 dark:bg-white/5 animate-pulse"
+                    className="aspect-4/5 rounded-[4rem] bg-slate-200 dark:bg-white/5 animate-pulse"
                   />
                 ))}
               </div>

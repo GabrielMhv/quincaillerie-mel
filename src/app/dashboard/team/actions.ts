@@ -47,8 +47,10 @@ export async function createTeamMember(formData: FormData) {
 
     revalidatePath("/dashboard/team");
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Admin user creation error:", error);
-    return { error: error.message };
+    return {
+      error: error instanceof Error ? error.message : "Erreur inconnue",
+    };
   }
 }

@@ -9,12 +9,11 @@ import {
   XCircle,
   Truck,
   Sparkles,
-  Search,
   Plus,
 } from "lucide-react";
 import { TransferActions } from "@/components/stocks/transfer-actions";
 import { TransferItemsModal } from "@/components/stocks/transfer-items-modal";
-import { formatDate, cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -236,7 +235,7 @@ export default async function TransfersPage() {
                     </td>
                     <td className="px-10">{getStatusBadge(tx.status)}</td>
                     <td className="px-10 text-right">
-                      <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0 transition-all duration-500">
+                      <div className="flex justify-end opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-500">
                         {(profile?.role === "admin" ||
                           isGlobal ||
                           isIncoming ||

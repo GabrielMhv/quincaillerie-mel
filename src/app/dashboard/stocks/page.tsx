@@ -1,11 +1,12 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
-import { formatCurrency, cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { StockEditor } from "@/components/products/stock-editor";
 import { Badge } from "@/components/ui/badge";
 import { ProductFormModal } from "@/components/products/product-form-modal";
-import { Sparkles, Package, AlertTriangle, Boxes } from "lucide-react";
+import { Sparkles, AlertTriangle, Boxes } from "lucide-react";
+import Image from "next/image";
 
 export default async function DashboardStocksPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -150,7 +151,7 @@ export default async function DashboardStocksPage(props: {
                 {boutiques?.map((boutique) => (
                   <th
                     key={boutique.id}
-                    className="px-10 text-center border-r border-border/30 last:border-r-0 min-w-[220px]"
+                    className="px-10 text-center border-r border-border/30 last:border-r-0 min-w-55"
                   >
                     {boutique.name}
                   </th>
@@ -163,13 +164,14 @@ export default async function DashboardStocksPage(props: {
                   key={product.id}
                   className="group hover:bg-primary/2 transition-all h-32 border-none"
                 >
-                  <td className="px-10 sticky left-0 bg-card/90 backdrop-blur-md z-10 border-r border-border/30 group-hover:bg-primary/[0.03] transition-colors">
+                  <td className="px-10 sticky left-0 bg-card/90 backdrop-blur-md z-10 border-r border-border/30 group-hover:bg-primary/3 transition-colors">
                     <div className="flex items-center gap-6">
                       <div className="h-20 w-20 rounded-3xl bg-secondary/30 relative overflow-hidden border border-border/50 shrink-0 shadow-sm transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-3">
-                        <img
+                        <Image
                           src={product.image_url || "/placeholder-product.jpg"}
-                          alt=""
-                          className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                          alt={product.name}
+                          fill
+                          className="object-cover transition-transform group-hover:scale-110"
                         />
                       </div>
                       <div className="min-w-0 flex-1 space-y-2">
@@ -192,7 +194,8 @@ export default async function DashboardStocksPage(props: {
                   </td>
                   {boutiques?.map((boutique) => {
                     const stockRecord = product.stocks?.find(
-                      (s: any) => s.boutique_id === boutique.id,
+                      (s: { boutique_id: string; quantity: number }) =>
+                        s.boutique_id === boutique.id,
                     );
                     const currentStock = stockRecord?.quantity || 0;
                     const isLow =

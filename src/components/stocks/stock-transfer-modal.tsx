@@ -26,8 +26,8 @@ import { useRouter } from "next/navigation";
 
 export function StockTransferModal({ currentBoutiqueId }: { currentBoutiqueId: string }) {
   const [open, setOpen] = useState(false);
-  const [products, setProducts] = useState<any[]>([]);
-  const [boutiques, setBoutiques] = useState<any[]>([]);
+  const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
+  const [boutiques, setBoutiques] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -42,6 +42,7 @@ export function StockTransferModal({ currentBoutiqueId }: { currentBoutiqueId: s
     if (open) {
       loadData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const loadData = async () => {
@@ -98,8 +99,11 @@ export function StockTransferModal({ currentBoutiqueId }: { currentBoutiqueId: s
       setSelectedProductId("");
       setFromBoutiqueId("");
       setQuantity("1");
-    } catch (error: any) {
-      toast.error("Erreur", { description: error.message });
+    } catch (error: unknown) {
+      toast.error("Erreur", {
+        description:
+          error instanceof Error ? error.message : "Une erreur est survenue",
+      });
     } finally {
       setSubmitting(false);
     }

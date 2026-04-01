@@ -32,7 +32,7 @@ interface Notification {
   is_read: boolean;
   created_at: string;
   boutique_id?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   boutique?: { name: string };
 }
 
@@ -96,8 +96,8 @@ export default function NotificationsPage() {
       const { data, error } = await query;
 
       if (error) throw error;
-      setNotifications(data as Notification[]);
-    } catch (error: any) {
+      setNotifications((data || []) as Notification[]);
+    } catch (error: unknown) {
       toast.error("Erreur lors du chargement des notifications");
       console.error(error);
     } finally {

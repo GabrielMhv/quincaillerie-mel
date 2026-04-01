@@ -32,12 +32,30 @@ const OrderPDFLink = dynamic(
   },
 );
 
+interface Order {
+  id: string;
+  created_at: string;
+  total: number;
+  client_name?: string;
+  client_phone?: string;
+  is_scheduled: boolean;
+  scheduled_at: string;
+  latitude: number | null;
+  longitude: number | null;
+  boutique?: { name: string };
+  order_items: Array<{
+    products?: { name: string };
+    unit_price: number;
+    quantity: number;
+  }>;
+}
+
 export default function OrderSuccessPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = use(props.searchParams);
   const orderId = (searchParams.id || searchParams.orderId) as string;
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const clearCart = useCartStore((state) => state.clearCart);
 
@@ -60,7 +78,11 @@ export default function OrderSuccessPage(props: {
           );
         }
         if (data) {
-          setOrder(data);
+          // Map phone to client_phone if needed
+          setOrder({
+            ...data,
+            client_phone: data.phone || data.client_phone,
+          });
           clearCart();
         }
         setLoading(false);
@@ -174,7 +196,7 @@ export default function OrderSuccessPage(props: {
                     </p>
                   </div>
                   <p className="text-xs text-muted-foreground font-medium">
-                    {order.phone}
+                    {order.client_phone}
                   </p>
                   {order.latitude && order.longitude && (
                     <a
@@ -211,7 +233,7 @@ export default function OrderSuccessPage(props: {
                       variant="outline"
                       className="w-full rounded-2xl h-14 font-bold tracking-tight text-[11px] border-2 group shadow-xl hover:shadow-primary/10 transition-all"
                     >
-                      C'est noté !
+                      C&apos;est noté !
                     </Button>
                   </Link>
                 </div>

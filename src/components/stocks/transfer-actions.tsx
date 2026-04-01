@@ -14,7 +14,6 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 interface TransferActionsProps {
   transferId: string;

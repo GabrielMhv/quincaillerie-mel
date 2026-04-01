@@ -108,7 +108,7 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
             {userToEdit ? "Modifier l'accès" : "Inviter un membre"}
           </DialogTitle>
           <DialogDescription>
-            Attriibuez le rôle et la boutique d'affectation pour{" "}
+            Attriibuez le rôle et la boutique d&apos;affectation pour{" "}
             {userToEdit ? "ce membre" : "le nouvel employé"}.
           </DialogDescription>
         </DialogHeader>
@@ -137,7 +137,7 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
             />
             {userToEdit && (
               <p className="text-xs text-muted-foreground">
-                L'email ne peut être modifié que par l'utilisateur.
+                L&apos;email ne peut être modifié que par l&apos;utilisateur.
               </p>
             )}
           </div>
@@ -185,7 +185,7 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
               ))}
             </select>
             <p className="text-xs text-muted-foreground">
-              Indispensable pour limiter l'accès à une seule boutique.
+              Indispensable pour limiter l&apos;accès à une seule boutique.
             </p>
           </div>
 

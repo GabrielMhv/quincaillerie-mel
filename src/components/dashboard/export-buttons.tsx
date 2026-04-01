@@ -9,8 +9,15 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
+interface ExportDataItem {
+  created_at: string;
+  total: number;
+  boutique?: { name: string };
+  employee?: { name: string };
+}
+
 interface ExportButtonsProps {
-  data: any[];
+  data: ExportDataItem[];
   filename?: string;
 }
 

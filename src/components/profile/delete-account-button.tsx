@@ -64,7 +64,7 @@ export function DeleteAccountButton({ userId }: { userId: string }) {
           <DialogTitle>Êtes-vous absolument sûr ?</DialogTitle>
           <DialogDescription>
             Cette action est irréversible. Elle supprimera définitivement votre
-            profil et vos données d'accès de nos serveurs.
+            profil et vos données d&apos;accès de nos serveurs.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:gap-0">

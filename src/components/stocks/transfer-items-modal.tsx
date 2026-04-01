@@ -11,8 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Eye, Loader2, Package, Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import NextImage from "next/image";
 
 export function TransferItemsModal({ transferId }: { transferId: string }) {
   const [items, setItems] = useState<
@@ -141,10 +140,12 @@ export function TransferItemsModal({ transferId }: { transferId: string }) {
                       <td className="px-6">
                         <div className="flex items-center gap-3">
                           {item.product?.image_url && (
-                            <img
+                            <NextImage
                               src={item.product.image_url}
-                              alt=""
-                              className="h-8 w-8 rounded-lg object-cover border border-border/50"
+                              alt={item.product.name}
+                              width={32}
+                              height={32}
+                              className="rounded-lg object-cover border border-border/50"
                             />
                           )}
                           <span className="font-black tracking-tight text-foreground/80 group-hover:text-primary transition-colors">

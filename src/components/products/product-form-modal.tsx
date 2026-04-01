@@ -33,7 +33,6 @@ interface ProductFormModalProps {
   userRole: UserRole;
   userBoutiqueId: string | null;
   boutiques: Boutique[];
-  token?: string; // Optional: To trigger a refresh if needed
 }
 
 export function ProductFormModal({
@@ -305,7 +304,7 @@ export function ProductFormModal({
                     className="cursor-pointer"
                   />
                   <div className="text-xs text-muted-foreground">
-                    Ou collez une URL d'image existante :
+                    Ou collez une URL d&apos;image existante :
                   </div>
                   <Input
                     value={imageUrl}
@@ -317,7 +316,7 @@ export function ProductFormModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="min_stock_alert">Seuil d'alerte</Label>
+              <Label htmlFor="min_stock_alert">Seuil d&apos;alerte</Label>
               <Input
                 id="min_stock_alert"
                 name="min_stock_alert"

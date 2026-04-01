@@ -102,7 +102,7 @@ export default async function StoresPage() {
                     </div>
                   </td>
                   <td className="px-10 text-right">
-                    <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0 transition-all duration-500">
+                    <div className="flex justify-end opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-500">
                       <StoreFormModal store={store} />
                     </div>
                   </td>
