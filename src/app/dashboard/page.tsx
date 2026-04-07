@@ -168,7 +168,7 @@ export default async function DashboardPage(props: {
       </section>
 
       {/* Filter Section */}
-      <section className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 md:p-8 rounded-[2rem] md:rounded-4xl bg-card/40 backdrop-blur-xl border border-border/50 shadow-premium">
+      <section className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 md:p-8 rounded-4xl bg-card/40 backdrop-blur-xl border border-border/50 shadow-premium">
         <div className="flex items-center gap-4">
           <Clock className="h-5 w-5 text-primary/40" />
           <h2 className="text-xl font-black tracking-tighter italic">

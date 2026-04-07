@@ -257,7 +257,7 @@ export function StockRequestTerminal({
                   )}
                 >
                   <SelectValue placeholder="Source">
-                    <span className="truncate max-w-[280px] inline-block">
+                    <span className="truncate max-w-70 inline-block">
                       {boutiques.find((b) => b.id === sourceBoutiqueId)?.name ||
                         "Source"}
                     </span>
@@ -298,7 +298,7 @@ export function StockRequestTerminal({
                   )}
                 >
                   <SelectValue placeholder="Cible">
-                    <span className="truncate max-w-[280px] inline-block">
+                    <span className="truncate max-w-70 inline-block">
                       {boutiques.find((b) => b.id === targetBoutiqueId)?.name ||
                         "Cible"}
                     </span>
