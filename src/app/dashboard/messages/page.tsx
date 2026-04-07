@@ -136,7 +136,7 @@ export default function MessagesDashboard() {
               <Inbox className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-indigo-600/60 tracking-widest uppercase leading-none mb-1">
+              <p className="text-[10px] font-black text-indigo-600/60 tracking-widest leading-none mb-1">
                 Boîte de réception
               </p>
               <p className="text-sm font-bold">{messages.length} Messages</p>

@@ -226,10 +226,11 @@ export default async function AnalysesPage(props: {
                       <div
                         className="h-2.5 w-2.5 rounded-full"
                         style={{
-                          backgroundColor: chartColors[idx % chartColors.length],
+                          backgroundColor:
+                            chartColors[idx % chartColors.length],
                         }}
                       />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                      <span className="text-[10px] font-black tracking-widest text-muted-foreground">
                         {b.name}
                       </span>
                     </div>

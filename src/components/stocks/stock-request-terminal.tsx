@@ -8,13 +8,11 @@ import {
   Minus,
   Trash2,
   Truck,
-  ArrowRightLeft,
   Loader2,
   Package,
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -29,22 +27,23 @@ import { Product, Boutique } from "@/types";
 
 export function StockRequestTerminal({
   currentBoutiqueId,
+  userRole,
 }: {
   currentBoutiqueId: string;
+  userRole?: string;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [boutiques, setBoutiques] = useState<Boutique[]>([]);
   const [cart, setCart] = useState<(Product & { qty: number })[]>([]);
   const [sourceBoutiqueId, setSourceBoutiqueId] = useState("");
+  const [targetBoutiqueId, setTargetBoutiqueId] = useState(currentBoutiqueId);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
   const supabase = createClient();
 
   const fetchProducts = useCallback(
     async (query: string = "") => {
-      setIsLoadingProducts(true);
       try {
         let q = supabase
           .from("products")
@@ -59,25 +58,24 @@ export function StockRequestTerminal({
         setProducts(data || []);
       } catch (error) {
         console.error(error);
-      } finally {
-        setIsLoadingProducts(false);
       }
     },
     [supabase],
   );
 
   const fetchBoutiques = useCallback(async () => {
-    const { data } = await supabase
-      .from("boutiques")
-      .select("id, name")
-      .neq("id", currentBoutiqueId);
+    const { data } = await supabase.from("boutiques").select("id, name");
     setBoutiques((data as Boutique[]) || []);
-  }, [supabase, currentBoutiqueId]);
+  }, [supabase]);
 
   useEffect(() => {
     fetchProducts("");
     fetchBoutiques();
   }, [fetchProducts, fetchBoutiques]);
+
+  useEffect(() => {
+    setTargetBoutiqueId(currentBoutiqueId);
+  }, [currentBoutiqueId]);
 
   const addToCart = (product: Product) => {
     setCart((prev) => {
@@ -113,6 +111,14 @@ export function StockRequestTerminal({
       toast.error("Choisissez une boutique source");
       return;
     }
+    if (!targetBoutiqueId) {
+      toast.error("Choisissez une boutique cible");
+      return;
+    }
+    if (sourceBoutiqueId === targetBoutiqueId) {
+      toast.error("La boutique source et cible doivent être différentes");
+      return;
+    }
 
     setIsProcessing(true);
     try {
@@ -125,7 +131,7 @@ export function StockRequestTerminal({
         .from("stock_transfers")
         .insert({
           from_boutique_id: sourceBoutiqueId,
-          to_boutique_id: currentBoutiqueId,
+          to_boutique_id: targetBoutiqueId,
           created_by: user?.id,
           status: "pending",
         })
@@ -159,14 +165,14 @@ export function StockRequestTerminal({
   };
 
   return (
-    <div className="flex h-[calc(100vh-140px)] gap-8 p-6 animate-in fade-in duration-700">
+    <div className="flex h-[calc(100vh-280px)] min-h-175">
       {/* Product Selection */}
-      <div className="flex flex-col flex-1 gap-6 overflow-hidden">
+      <div className="flex flex-col flex-1 gap-6 p-8 overflow-hidden border-r border-slate-50 dark:border-slate-800">
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground/50 group-hover:text-primary transition-colors duration-300" />
+          <Search className="absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-hover:text-blue-500 transition-colors duration-300" />
           <input
-            placeholder="Rechercher un produit à demander..."
-            className="w-full h-14 pl-12 pr-6 bg-card/50 backdrop-blur-xl border border-border/50 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-muted-foreground/30"
+            placeholder="Rechercher un produit à réapprovisionner..."
+            className="w-full h-16 pl-16 pr-8 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm font-black focus:outline-none focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400 placeholder:font-bold"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -175,163 +181,206 @@ export function StockRequestTerminal({
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 pb-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto pr-4 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-6 custom-scrollbar">
           {products.map((product) => (
             <div
               key={product.id}
-              className="group bg-card/40 backdrop-blur-md border border-border/40 rounded-4xl overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer flex flex-col shadow-sm hover:shadow-xl hover:-translate-y-1"
+              className="group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden hover:border-blue-500/50 transition-all duration-500 cursor-pointer flex flex-col shadow-sm hover:shadow-xl hover:-translate-y-1"
               onClick={() => addToCart(product)}
             >
-              <div className="aspect-square relative w-full bg-muted/30 overflow-hidden">
+              <div className="aspect-square relative w-full bg-slate-50 dark:bg-slate-800 overflow-hidden">
                 <Image
                   src={product.image_url || "/placeholder-product.jpg"}
                   alt=""
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <div className="p-5 flex flex-col flex-1">
-                <p className="text-[10px] font-black tracking-widest text-primary mb-1 italic opacity-60">
+              <div className="p-6 flex flex-col flex-1">
+                <span className="text-[10px] font-black tracking-[0.2em] text-blue-600 mb-2">
                   {product.category?.name || "Général"}
-                </p>
-                <h4 className="text-sm font-black tracking-tight line-clamp-2 mb-4 group-hover:text-primary transition-colors">
+                </span>
+                <h4 className="text-sm font-black text-slate-900 dark:text-white tracking-tight line-clamp-2 mb-4 group-hover:text-blue-600 transition-colors leading-relaxed">
                   {product.name}
                 </h4>
-                <div className="mt-auto pt-4 border-t border-border/30 flex items-center justify-between">
-                  <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                <div className="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+                  <div className="h-8 w-8 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all duration-300">
                     <Plus className="h-4 w-4" />
                   </div>
-                  <span className="text-[10px] font-black tracking-widest text-muted-foreground/40 italic">
-                    Ajouter
+                  <span className="text-[10px] font-black text-slate-400 group-hover:text-blue-600 tracking-widest transition-colors">
+                    Ajouter au panier
                   </span>
                 </div>
               </div>
             </div>
           ))}
-          {products.length === 0 && !isLoadingProducts && (
-            <div className="col-span-full py-20 text-center space-y-4 opacity-30">
-              <Package className="h-12 w-12 mx-auto" />
-              <p className="text-sm font-black tracking-widest italic">
-                Aucun produit ne correspond à votre recherche
-              </p>
-            </div>
-          )}
         </div>
       </div>
 
       {/* Transfer List (Terminal Sidebar) */}
-      <div className="w-105 flex flex-col rounded-[3rem] border border-border/50 bg-card/60 backdrop-blur-2xl shadow-premium overflow-hidden">
-        <div className="p-8 border-b border-border/50 bg-primary/5">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                <Zap className="h-5 w-5 fill-current" />
+      <div className="w-110 flex flex-col bg-slate-50/50 dark:bg-slate-900/50 overflow-hidden">
+        <div className="p-10 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/40">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-orange-50 dark:bg-orange-500/10 border border-orange-100 dark:border-orange-500/20 flex items-center justify-center text-orange-600">
+                <Zap className="h-6 w-6 fill-current" />
               </div>
               <div>
-                <h3 className="text-lg font-black tracking-tighter leading-none">
-                  Terminal flux
+                <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+                  Terminal Flux
                 </h3>
-                <p className="text-[10px] font-bold text-muted-foreground/60 tracking-widest mt-1 italic">
-                  Requête en cours
+                <p className="text-[11px] font-black text-slate-400 tracking-widest mt-2">
+                  Constitution du panier
                 </p>
               </div>
             </div>
-            <Badge
-              variant="outline"
-              className="rounded-full bg-background/50 border-primary/20 text-primary font-black px-3 py-1 text-[10px]"
-            >
-              {cart.length} lignes
-            </Badge>
+            <div className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black text-[10px] tracking-widest  shadow-lg">
+              {cart.length} Lignes
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <label className="text-[10px] font-black text-muted-foreground/40 tracking-widest ml-1 italic">
-              Point d&apos;expédition source
-            </label>
-            <Select
-              onValueChange={(v) => setSourceBoutiqueId(v || "")}
-              value={sourceBoutiqueId}
-            >
-              <SelectTrigger
-                className={cn(
-                  "h-16 bg-background/40 backdrop-blur-xl border-border/40 rounded-2xl font-black text-sm transition-all duration-500 shadow-sm hover:shadow-md hover:border-primary/30",
-                  sourceBoutiqueId
-                    ? "border-emerald-500/30 bg-emerald-500/2 text-emerald-600 ring-4 ring-emerald-500/5"
-                    : "border-border/50",
-                )}
+          <div className="flex flex-col gap-6">
+            <div className="space-y-4">
+              <label className="text-[10px] font-black text-slate-400 tracking-[0.2em] ml-1 uppercase">
+                Source
+              </label>
+              <Select
+                onValueChange={(v) => setSourceBoutiqueId(v || "")}
+                value={sourceBoutiqueId}
               >
-                <SelectValue placeholder="Choisir la boutique source" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-border/40 bg-card/95 backdrop-blur-2xl shadow-premium animate-in fade-in zoom-in-95">
-                {boutiques.map((b) => (
-                  <SelectItem
-                    key={b.id}
-                    value={b.id}
-                    className="font-bold text-sm py-4 cursor-pointer focus:bg-primary/10 transition-colors  tracking-tight"
-                  >
-                    {b.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                <SelectTrigger
+                  className={cn(
+                    "h-20 bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 rounded-2xl font-black text-sm transition-all duration-500 shadow-sm hover:shadow-md px-6",
+                    sourceBoutiqueId
+                      ? "border-orange-500/30 ring-4 ring-orange-500/5 text-orange-600"
+                      : "border-slate-100",
+                  )}
+                >
+                  <SelectValue placeholder="Source">
+                    <span className="truncate max-w-[280px] inline-block">
+                      {boutiques.find((b) => b.id === sourceBoutiqueId)?.name ||
+                        "Source"}
+                    </span>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="rounded-3xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden p-2">
+                  {boutiques
+                    .filter((b) => b.id !== targetBoutiqueId)
+                    .map((b) => (
+                      <SelectItem
+                        key={b.id}
+                        value={b.id}
+                        className="font-black text-xs py-4 rounded-xl cursor-pointer focus:bg-orange-50 dark:focus:bg-orange-500/10 focus:text-orange-600 transition-colors uppercase tracking-tight"
+                      >
+                        {b.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-[10px] font-black text-slate-400 tracking-[0.2em] ml-1 uppercase">
+                Cible
+              </label>
+              <Select
+                onValueChange={(v) => setTargetBoutiqueId(v || "")}
+                value={targetBoutiqueId}
+                disabled={userRole !== "admin"}
+              >
+                <SelectTrigger
+                  className={cn(
+                    "h-20 bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 rounded-2xl font-black text-sm transition-all duration-500 shadow-sm hover:shadow-md px-6",
+                    targetBoutiqueId
+                      ? "border-blue-500/30 ring-4 ring-blue-500/5 text-blue-600"
+                      : "border-slate-100",
+                    userRole !== "admin" && "opacity-50 cursor-not-allowed",
+                  )}
+                >
+                  <SelectValue placeholder="Cible">
+                    <span className="truncate max-w-[280px] inline-block">
+                      {boutiques.find((b) => b.id === targetBoutiqueId)?.name ||
+                        "Cible"}
+                    </span>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="rounded-3xl border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden p-2">
+                  {boutiques
+                    .filter((b) => b.id !== sourceBoutiqueId)
+                    .map((b) => (
+                      <SelectItem
+                        key={b.id}
+                        value={b.id}
+                        className="font-black text-xs py-4 rounded-xl cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-500/10 focus:text-blue-600 transition-colors uppercase tracking-tight"
+                      >
+                        {b.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-0 custom-scrollbar">
-          <div className="divide-y divide-border/20">
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {cart.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-4 p-6 hover:bg-primary/2 transition-colors group"
+                className="flex items-center gap-6 p-8 hover:bg-white dark:hover:bg-slate-800/50 transition-all group"
               >
-                <div className="h-14 w-14 rounded-2xl border border-border/50 bg-muted/30 relative overflow-hidden shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-500">
+                <div className="h-20 w-20 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 relative overflow-hidden shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-500">
                   <Image
                     src={item.image_url || "/placeholder-product.jpg"}
                     alt=""
                     fill
-                    className="object-cover"
+                    className="object-contain p-2"
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black tracking-tight leading-tight mb-3 truncate">
+                  <p className="text-sm font-black text-slate-800 dark:text-white tracking-tight leading-tight mb-4 truncate ">
                     {item.name}
                   </p>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-1">
+                      <button
+                        className="h-10 w-10 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all"
+                        onClick={() => updateQty(item.id, -1)}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </button>
+                      <span className="text-sm font-black w-10 text-center tabular-nums text-slate-900 dark:text-white">
+                        {item.qty}
+                      </span>
+                      <button
+                        className="h-10 w-10 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all"
+                        onClick={() => updateQty(item.id, 1)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+
                     <button
-                      className="h-7 w-7 rounded-lg bg-secondary/50 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all"
-                      onClick={() => updateQty(item.id, -1)}
-                    >
-                      <Minus className="h-3 w-3" />
-                    </button>
-                    <span className="text-sm font-black w-6 text-center tabular-nums">
-                      {item.qty}
-                    </span>
-                    <button
-                      className="h-7 w-7 rounded-lg bg-secondary/50 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all"
-                      onClick={() => updateQty(item.id, 1)}
-                    >
-                      <Plus className="h-3 w-3" />
-                    </button>
-                    <button
-                      className="h-7 w-7 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all ml-auto"
+                      className="h-12 w-12 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all ml-auto shadow-sm border border-rose-100 dark:border-rose-500/20"
                       onClick={() => removeFromCart(item.id)}
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
               </div>
             ))}
             {cart.length === 0 && (
-              <div className="py-32 text-center space-y-4 opacity-20">
-                <ArrowRightLeft className="h-12 w-12 mx-auto" />
-                <div className="space-y-1">
-                  <p className="text-sm font-black tracking-widest italic opacity-40">
-                    Panier vide
+              <div className="py-40 text-center space-y-6 opacity-30">
+                <div className="h-24 w-24 rounded-4xl bg-slate-100 dark:bg-slate-800 mx-auto flex items-center justify-center">
+                  <Package className="h-10 w-10 text-slate-400" />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-black tracking-[0.2em]  text-slate-500">
+                    Flux inexistant
                   </p>
-                  <p className="text-[10px] font-bold opacity-30">
-                    Initialisez un flux à gauche
+                  <p className="text-[10px] font-black  text-slate-400 tracking-widest">
+                    Initiez un mouvement à gauche
                   </p>
                 </div>
               </div>
@@ -339,27 +388,30 @@ export function StockRequestTerminal({
           </div>
         </div>
 
-        <div className="p-8 border-t border-border/40 bg-muted/20">
+        <div className="p-10 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
           <Button
             className={cn(
-              "w-full h-16 rounded-3xl text-base font-black tracking-tighter shadow-xl transition-all duration-500 flex gap-3",
+              "w-full h-18 rounded-4xl text-sm font-black tracking-widest  shadow-2xl transition-all duration-500 flex gap-4 border-none",
               !sourceBoutiqueId || cart.length === 0
-                ? "opacity-50 grayscale"
-                : "bg-primary text-primary-foreground hover:scale-[1.02] shadow-primary/20",
+                ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
+                : "bg-orange-600 text-white hover:bg-orange-700 hover:scale-[1.02] shadow-orange-500/20",
             )}
             onClick={handleSubmit}
-            disabled={isProcessing || cart.length === 0 || !sourceBoutiqueId}
+            disabled={isProcessing || !sourceBoutiqueId || cart.length === 0}
           >
             {isProcessing ? (
-              <Loader2 className="h-6 w-6 animate-spin" />
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Synchronisation...</span>
+              </>
             ) : (
               <>
-                <Truck className="h-6 w-6" />
-                <span>Confirmer l&apos;expédition</span>
+                <Truck className="h-5 w-5" />
+                <span>Soumettre la demande</span>
               </>
             )}
           </Button>
-          <p className="text-[10px] text-center text-muted-foreground/40 font-bold tracking-widest mt-4 italic">
+          <p className="text-[10px] text-center text-slate-400 font-bold tracking-widest mt-4  italic">
             Validation sécurisée du transfert logistique
           </p>
         </div>

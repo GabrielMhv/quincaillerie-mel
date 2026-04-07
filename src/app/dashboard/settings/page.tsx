@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { useBranding } from "@/components/providers/branding-provider";
 import {
   Save,
   Loader2,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 
 export default function SettingsPage() {
+  const { refreshSettings } = useBranding();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
@@ -78,6 +80,10 @@ export default function SettingsPage() {
         .upsert({ key: "branding", value: settings }, { onConflict: "key" });
 
       if (error) throw error;
+
+      // Update global branding context
+      await refreshSettings();
+
       toast.success("Configurations sauvegardées avec succès");
     } catch (error: unknown) {
       console.error("Error saving settings:", error);
@@ -107,16 +113,24 @@ export default function SettingsPage() {
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       {/* Header Section */}
-      <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-black tracking-tighter leading-tight">
+      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-slate-500/5 border border-slate-500/10 relative overflow-hidden group shadow-premium">
+        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
+          <Settings2 className="h-40 w-40 text-slate-600" />
+        </div>
+        <div className="space-y-3 relative z-10">
+          <div className="h-14 w-14 rounded-2xl bg-slate-500/10 flex items-center justify-center text-slate-600 mb-2">
+            <Settings2 className="h-7 w-7" />
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
             Configurations{" "}
-            <span className="text-gradient leading-relaxed">Système</span>
+            <span className="text-slate-500 italic">Système</span>
           </h1>
-          <p className="text-lg text-muted-foreground font-medium italic">
-            Pilotez l&apos;identité et les paramètres globaux de votre
-            plateforme
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-lg text-muted-foreground font-medium italic leading-none">
+              Pilotez l&apos;identité et les paramètres globaux de votre
+              plateforme.
+            </p>
+          </div>
         </div>
       </section>
 

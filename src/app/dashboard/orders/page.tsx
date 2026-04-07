@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
-import { History, ShoppingCart, Filter } from "lucide-react";
+import { Clock, ShoppingBag, History } from "lucide-react";
 import { OrdersTable } from "@/components/orders/orders-table";
 import { OrderFilters } from "@/components/orders/order-filters";
+import { cn } from "@/lib/utils";
+import { format, startOfDay } from "date-fns";
 
 export default async function OrdersPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -10,7 +12,14 @@ export default async function OrdersPage(props: {
   const searchParams = await props.searchParams;
   const boutiqueSwitcherId = searchParams.boutiqueId as string | undefined;
   const statusFilter = searchParams.status as string | undefined;
-  const startDate = searchParams.startDate as string | undefined;
+
+  // Default to today if no date range is provided
+  const now = new Date();
+  const startDate =
+    (searchParams.startDate as string | undefined) ||
+    (searchParams.preset
+      ? undefined
+      : format(startOfDay(now), "yyyy-MM-dd'T'HH:mm:ss"));
   const endDate = searchParams.endDate as string | undefined;
 
   const supabase = await createClient();
@@ -61,14 +70,12 @@ export default async function OrdersPage(props: {
   }
 
   // Fetch current boutique name for display if filtered
-  let currentBoutiqueName = "";
   if (filteredBoutiqueId) {
-    const { data: bData } = await supabase
+    await supabase
       .from("boutiques")
       .select("name")
       .eq("id", filteredBoutiqueId)
       .single();
-    currentBoutiqueName = bData?.name || "";
   }
 
   const { data: orders, error } = await query;
@@ -77,76 +84,97 @@ export default async function OrdersPage(props: {
     console.error("Orders fetching error:", error);
   }
 
-  return (
-    <div className="space-y-12 animate-in fade-in duration-1000">
-      {/* Header Section */}
-      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-indigo-500/5 border border-indigo-500/10 relative overflow-hidden group shadow-premium">
-        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
-          <History className="h-40 w-40 text-indigo-600" />
-        </div>
-        <div className="space-y-3 relative z-10">
-          <div className="h-14 w-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 mb-2">
-            <ShoppingCart className="h-7 w-7" />
-          </div>
-          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
-            Ventes & <span className="text-indigo-500 italic">Historique</span>
-          </h1>
-          <div className="flex items-center gap-4">
-            <p className="text-lg text-muted-foreground font-medium italic leading-none">
-              {isGlobalScope
-                ? "Gestion consolidée de toutes les boutiques."
-                : `Consultation des ventes : ${currentBoutiqueName}`}
-            </p>
-            {boutiqueSwitcherId && (
-              <Badge
-                variant="outline"
-                className="bg-indigo-500/10 text-indigo-600 border-indigo-500/20 px-4 py-1 rounded-full font-black text-[10px] tracking-widest uppercase shadow-xs"
-              >
-                Mode Local
-              </Badge>
-            )}
-          </div>
-        </div>
+  // Calcul des statistiques simples
+  const stats = {
+    total: orders?.length || 0,
+    pending: orders?.filter((o) => o.status === "pending").length || 0,
+    completed: orders?.filter((o) => o.status === "completed").length || 0,
+  };
 
-        <div className="flex items-center gap-3 relative z-10 px-8 py-4 rounded-3xl bg-secondary/30 backdrop-blur-md border border-border/10 shadow-lg">
-          <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-              <ShoppingCart className="h-5 w-5" />
+  return (
+    <div className="max-w-400 mx-auto p-4 md:p-8 space-y-6 animate-in fade-in duration-700">
+      {/* Search Header */}
+      <div className="relative group">
+        <input
+          type="text"
+          placeholder="Rechercher des commandes"
+          className="w-full h-14 pl-6 pr-14 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-full text-slate-500 text-sm shadow-sm focus:ring-1 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow group-hover:shadow-md"
+        />
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 text-blue-500 hover:rotate-180 transition-transform cursor-pointer">
+          <History className="h-5 w-5" />
+        </div>
+      </div>
+
+      {/* Stats Cards Grid Header */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          {
+            label: "Total commandes",
+            value: stats.total,
+            color: "text-blue-600 bg-blue-50/50",
+            icon: ShoppingBag,
+          },
+          {
+            label: "En attente",
+            value: stats.pending,
+            color: "text-amber-600 bg-amber-50/50",
+            icon: Clock,
+          },
+          {
+            label: "En préparation",
+            value: 0,
+            color: "text-purple-600 bg-purple-50/50",
+            icon: Clock,
+          }, // Placeholder for UI match
+          {
+            label: "Livré",
+            value: stats.completed,
+            color: "text-emerald-600 bg-emerald-50/50",
+            icon: ShoppingBag,
+          },
+        ].map((stat, i) => (
+          <div
+            key={i}
+            className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4"
+          >
+            <div
+              className={cn(
+                "h-12 w-12 rounded-xl flex items-center justify-center shadow-sm",
+                stat.color,
+              )}
+            >
+              <stat.icon className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-muted-foreground/60 tracking-widest">
-                Volume Total
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                {stat.label}
               </p>
-              <p className="text-xl font-black">{orders?.length || 0}</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums">
+                {stat.value}
+              </h3>
             </div>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
 
       {/* Filter Section */}
-      <section className="rounded-[2.5rem] border border-border/50 bg-card/50 backdrop-blur-xl p-8 shadow-premium">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
-            <Filter className="h-5 w-5" />
-          </div>
-          <div>
-            <h3 className="text-lg font-black tracking-tight">
-              Filtrage Avancé
-            </h3>
-            <p className="text-xs font-bold text-muted-foreground/60 italic">
-              Affinez votre recherche par date et statut
-            </p>
-          </div>
-        </div>
-        <OrderFilters />
-      </section>
+      <OrderFilters />
 
       {/* Main Content Area */}
-      <section className="rounded-[3rem] border border-border/50 bg-card/80 backdrop-blur-xl shadow-premium overflow-hidden">
-        <div className="p-8 border-b border-border/50 bg-muted/30 flex justify-between items-center">
-          <h3 className="text-sm font-black tracking-tight text-muted-foreground/60 flex items-center gap-2">
-            <History className="h-4 w-4" /> Journal des Transactions
-          </h3>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-sm overflow-hidden">
+        <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white  tracking-wider">
+              Flux d&apos;activité direct
+            </h3>
+          </div>
+          <Badge
+            variant="outline"
+            className="rounded-full px-3 py-1 text-[10px] font-bold  tracking-tighter"
+          >
+            {orders?.length || 0} résultats
+          </Badge>
         </div>
 
         <OrdersTable
@@ -155,7 +183,7 @@ export default async function OrdersPage(props: {
           currentUserId={user.id}
           userRole={profile?.role || "employee"}
         />
-      </section>
+      </div>
     </div>
   );
 }

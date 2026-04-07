@@ -20,8 +20,10 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useBranding } from "@/components/providers/branding-provider";
 
 export default function ContactPage() {
+  const { settings } = useBranding();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const supabase = createClient();
@@ -60,20 +62,20 @@ export default function ContactPage() {
   const contactInfo = [
     {
       title: "Ligne directe",
-      value: "+(228) 22 51 04 04",
+      value: settings.phone,
       description: "Service client réactif de 8h à 19h",
       icon: Phone,
       delay: "delay-100",
     },
     {
       title: "Support digital",
-      value: "contact@lachampionne.com",
+      value: settings.email,
       description: "Expertise technique sous 24h",
       icon: Mail,
       delay: "delay-200",
     },
     {
-      title: "Lomé • Ségbé",
+      title: settings.address.split(",")[0] || "Lomé • Ségbé",
       value: "Direction Générale",
       description: "Notre centre logistique principal",
       icon: MapPin,
@@ -103,9 +105,9 @@ export default function ContactPage() {
               </span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed px-4">
-              Ets La Championne Ségbé & Sanguera : Votre partenaire stratégique
-              pour l&apos;outillage professionnel et les projets
-              d&apos;envergure au Togo.
+              {settings.name}{" "}
+              {settings.address.split(",")[0] || "Ségbé & Sanguera"} :{" "}
+              {settings.description}
             </p>
           </div>
 

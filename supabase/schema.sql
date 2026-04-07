@@ -336,15 +336,26 @@ CREATE TRIGGER on_stock_updated_notification
 -- ============================================
 CREATE OR REPLACE FUNCTION public.handle_stock_transfer_completion()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_stock_quantity INTEGER;
+  v_item RECORD;
 BEGIN
   -- 1. Deduct from sender when SHIPPED
   IF NEW.status = 'shipped' AND (OLD.status IS NULL OR OLD.status != 'shipped') THEN
-    UPDATE public.stocks s
-    SET quantity = s.quantity - ti.quantity
-    FROM public.stock_transfer_items ti
-    WHERE ti.transfer_id = NEW.id
-      AND s.product_id = ti.product_id
-      AND s.boutique_id = NEW.from_boutique_id;
+    FOR v_item IN (SELECT product_id, quantity FROM public.stock_transfer_items WHERE transfer_id = NEW.id) LOOP
+      -- Check stock in source boutique
+      SELECT quantity INTO v_stock_quantity 
+      FROM public.stocks 
+      WHERE product_id = v_item.product_id AND boutique_id = NEW.from_boutique_id;
+
+      IF v_stock_quantity IS NULL OR v_stock_quantity < v_item.quantity THEN
+        RAISE EXCEPTION 'Stock insuffisant pour le produit % dans la boutique source.', v_item.product_id;
+      END IF;
+
+      UPDATE public.stocks 
+      SET quantity = quantity - v_item.quantity
+      WHERE product_id = v_item.product_id AND boutique_id = NEW.from_boutique_id;
+    END LOOP;
   END IF;
 
   -- 2. Add to receiver when COMPLETED (Received)
@@ -421,18 +432,42 @@ CREATE TRIGGER on_transfer_requested_notification
   FOR EACH ROW EXECUTE FUNCTION public.handle_transfer_request_notification();
 
 -- ============================================
--- ROW LEVEL SECURITY (RLS)
+-- ROW LEVEL SECURITY (RLS) FOR STOCK TRANSFERS
 -- ============================================
+ALTER TABLE public.stock_transfers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.stock_transfer_items ENABLE ROW LEVEL SECURITY;
 
-ALTER TABLE public.boutiques ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.stocks ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.employee_referrals ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+-- STOCK_TRANSFERS: Read access for involved boutiques or admins
+DROP POLICY IF EXISTS "transfers_admin_all" ON public.stock_transfers;
+CREATE POLICY "transfers_admin_all" ON public.stock_transfers FOR ALL USING (get_user_role() = 'admin');
+
+DROP POLICY IF EXISTS "transfers_involved_boutique" ON public.stock_transfers;
+CREATE POLICY "transfers_involved_boutique" ON public.stock_transfers FOR SELECT USING (
+  from_boutique_id = get_user_boutique_id() OR to_boutique_id = get_user_boutique_id()
+);
+
+-- STOCK_TRANSFER_ITEMS: Access if parent transfer is readable
+DROP POLICY IF EXISTS "items_admin_all" ON public.stock_transfer_items;
+CREATE POLICY "items_admin_all" ON public.stock_transfer_items FOR ALL USING (get_user_role() = 'admin');
+
+DROP POLICY IF EXISTS "items_read_involved" ON public.stock_transfer_items;
+CREATE POLICY "items_read_involved" ON public.stock_transfer_items FOR SELECT USING (
+  EXISTS (
+    SELECT 1 FROM public.stock_transfers t
+    WHERE t.id = transfer_id
+      AND (t.from_boutique_id = get_user_boutique_id() OR t.to_boutique_id = get_user_boutique_id())
+  )
+);
+
+DROP POLICY IF EXISTS "items_insert_involved" ON public.stock_transfer_items;
+CREATE POLICY "items_insert_involved" ON public.stock_transfer_items 
+  FOR INSERT WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.stock_transfers t
+      WHERE t.id = transfer_id
+        AND t.to_boutique_id = get_user_boutique_id()
+    )
+  );
 
 -- Helper function to get current user's role
 CREATE OR REPLACE FUNCTION public.get_user_role()

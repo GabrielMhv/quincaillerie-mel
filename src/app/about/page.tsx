@@ -17,8 +17,10 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useBranding } from "@/components/providers/branding-provider";
 
 export default function AboutPage() {
+  const { settings } = useBranding();
   const stats = [
     { label: "Années à vos côtés", value: "5+" },
     { label: "Boutiques de proximité", value: "2" },
@@ -37,8 +39,7 @@ export default function AboutPage() {
     },
     {
       title: "Stock permanent",
-      description:
-        "Plus besoin d'attendre. Nos rayons à Ségbé et Sanguera sont fournis quotidiennement pour vous servir.",
+      description: `Plus besoin d'attendre. Nos rayons à ${settings.address.split(",")[0] || "Lomé"} sont fournis quotidiennement pour vous servir.`,
       icon: Warehouse,
       color: "bg-amber-600",
       delay: "delay-200",
@@ -86,13 +87,11 @@ export default function AboutPage() {
               <h1 className="text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter leading-[0.9] md:leading-[0.85] text-slate-900 dark:text-white mx-auto lg:mx-0">
                 La quincaillerie <br className="hidden md:block" />
                 <span className="text-transparent bg-clip-text bg-linear-to-r from-primary via-emerald-500 to-primary bg-size[200%_auto] animate-gradient">
-                  La Championne.
+                  {settings.name}.
                 </span>
               </h1>
               <p className="text-lg md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
-                Votre partenaire de confiance pour tout l&apos;outillage
-                professionnel et les matériaux de construction de qualité à
-                Ségbé et Sanguera.
+                {settings.description}
               </p>
               <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 sm:gap-6 pt-4 w-full">
                 <Link href="/products" className="shrink-0 w-full sm:w-auto">

@@ -1,11 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Loader2, Plus, Minus } from "lucide-react";
+import { Plus, Minus, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface StockEditorProps {
@@ -23,96 +21,108 @@ export function StockEditor({
   onStockUpdated,
   disabled,
 }: StockEditorProps) {
-  const [quantity, setQuantity] = useState(initialStock);
   const [isUpdating, setIsUpdating] = useState(false);
   const supabase = createClient();
   const router = useRouter();
 
-  const handleUpdate = async (newQuantity: number) => {
-    if (newQuantity < 0) return;
+  const handleUpdate = async (change: number) => {
+    const newQuantity = Math.max(0, initialStock + change);
+    if (newQuantity === initialStock && change !== 0) return;
+
     setIsUpdating(true);
 
     try {
-      // Check if stock entry exists
       const { data: existingStock, error: fetchError } = await supabase
         .from("stocks")
-        .select("id")
+        .select("id, quantity")
         .eq("product_id", productId)
         .eq("boutique_id", boutiqueId)
         .maybeSingle();
 
       if (fetchError) throw fetchError;
 
+      const currentDbQuantity = existingStock?.quantity ?? 0;
+      const finalQuantity = Math.max(0, currentDbQuantity + change);
+
       if (existingStock) {
-        // Update existing
         const { error: updateError } = await supabase
           .from("stocks")
-          .update({ quantity: newQuantity })
+          .update({ quantity: finalQuantity })
           .eq("id", existingStock.id);
 
         if (updateError) throw updateError;
       } else {
-        // Create new stock entry
         const { error: insertError } = await supabase.from("stocks").insert({
           product_id: productId,
           boutique_id: boutiqueId,
-          quantity: newQuantity,
+          quantity: finalQuantity,
         });
 
         if (insertError) throw insertError;
       }
 
-      setQuantity(newQuantity);
-      toast.success("Stock mis à jour");
+      toast.success(
+        change > 0 ? "+" + change + " ajouté" : change + " retiré",
+        {
+          description: "Nouveau stock : " + finalQuantity,
+          duration: 2000,
+        },
+      );
+
       onStockUpdated?.();
       router.refresh();
     } catch (error) {
       console.error("Stock update error:", error);
-      toast.error("Erreur lors de la mise à jour", {
-        description: error instanceof Error ? error.message : "Erreur inconnue",
-      });
-      setQuantity(initialStock); // Revert UI
+      toast.error("Échec de la mise à jour");
     } finally {
       setIsUpdating(false);
     }
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8"
-        onClick={() => handleUpdate(quantity - 1)}
-        disabled={disabled || isUpdating || quantity <= 0}
+    <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/50 p-1 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm relative pr-2">
+      <button
+        onClick={() => handleUpdate(-1)}
+        disabled={disabled || isUpdating || initialStock <= 0}
+        className="h-10 w-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 border border-slate-100 dark:border-slate-700 transition-all active:scale-95 disabled:opacity-30 shadow-sm"
       >
-        <Minus className="h-3 w-3" />
-      </Button>
-      <div className="relative">
-        <Input
-          type="number"
-          min="0"
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          onBlur={(e) => handleUpdate(Number(e.target.value))}
-          disabled={disabled || isUpdating}
-          className="h-8 w-16 text-center tabular-nums p-0"
-        />
-        {isUpdating && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-md">
-            <Loader2 className="h-4 w-4 animate-spin text-primary" />
-          </div>
-        )}
+        <Minus className="h-4 w-4" />
+      </button>
+
+      <div className="min-w-12.5 px-2 flex flex-col items-center">
+        <span className="text-[14px] font-black text-slate-900 dark:text-white tabular-nums leading-none">
+          {initialStock}
+        </span>
+        <span className="text-[8px] font-bold text-slate-400  tracking-tighter mt-1">
+          Stock
+        </span>
       </div>
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8"
-        onClick={() => handleUpdate(quantity + 1)}
+
+      <button
+        onClick={() => handleUpdate(1)}
         disabled={disabled || isUpdating}
+        className="h-10 w-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 border border-slate-100 dark:border-slate-700 transition-all active:scale-95 disabled:opacity-30 shadow-sm"
       >
-        <Plus className="h-3 w-3" />
-      </Button>
+        <Plus className="h-4 w-4" />
+      </button>
+
+      <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 mx-1" />
+
+      <div className="flex gap-1">
+        <button
+          onClick={() => handleUpdate(10)}
+          disabled={disabled || isUpdating}
+          className="h-10 px-3 flex items-center justify-center rounded-xl bg-emerald-500 text-white font-black text-[11px] hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 shadow-md shadow-emerald-500/20"
+        >
+          +10
+        </button>
+      </div>
+
+      {isUpdating && (
+        <div className="ml-2">
+          <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+        </div>
+      )}
     </div>
   );
 }

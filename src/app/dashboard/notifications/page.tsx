@@ -239,7 +239,8 @@ export default function NotificationsPage() {
             <Bell className="h-7 w-7" />
           </div>
           <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
-            Centre de <span className="text-blue-500 italic">Notifications</span>
+            Centre de{" "}
+            <span className="text-blue-500 italic">Notifications</span>
           </h1>
           <div className="flex items-center gap-4">
             <p className="text-lg text-muted-foreground font-medium italic leading-none">
@@ -252,7 +253,7 @@ export default function NotificationsPage() {
             variant="outline"
             onClick={markAllAsRead}
             disabled={!notifications.some((n) => !n.is_read)}
-            className="rounded-3xl border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-blue-600 font-black tracking-widest text-[10px] uppercase px-6 py-4 shadow-xs"
+            className="rounded-3xl border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-blue-600 font-black tracking-widest text-[10px]  px-6 py-4 shadow-xs"
           >
             <CheckCircle2 className="h-4 w-4 mr-2" /> Tout marquer comme lu
           </Button>

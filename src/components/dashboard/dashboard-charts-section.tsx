@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatCurrency, cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { TrendingUp, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
 import { SparkAreaChart } from "@/components/dashboard/dashboard-charts";
 import { PremiumStatCard } from "@/components/dashboard/premium-stat-card";
@@ -111,7 +111,7 @@ export async function DashboardChartsSection({
           iconName="DollarSign"
           trend={12.4}
           description="Revenus réels encaissés"
-          className="bg-primary/5"
+          className="bg-primary/5 rounded-4xl"
         />
         <PremiumStatCard
           title="Commandes"
@@ -119,7 +119,7 @@ export async function DashboardChartsSection({
           iconName="ShoppingBag"
           trend={8}
           description="Volume de transactions"
-          className="bg-indigo-500/5 shadow-indigo-500/5 border-indigo-500/20"
+          className="bg-indigo-500/5 shadow-indigo-500/5 border-indigo-500/20 rounded-4xl"
         />
         <PremiumStatCard
           title="Clients Actifs"
@@ -127,27 +127,28 @@ export async function DashboardChartsSection({
           iconName="Users"
           trend={22}
           description="Nouveaux comptes"
-          className="bg-emerald-500/5 shadow-emerald-500/5 border-emerald-500/20"
+          className="bg-emerald-500/5 shadow-emerald-500/5 border-emerald-500/20 rounded-4xl"
         />
         <PremiumStatCard
           title="Produits"
           value={totalProducts.toString()}
           iconName="Package"
           description="Au catalogue"
-          className="bg-amber-500/5 shadow-amber-500/5 border-amber-500/20"
+          className="bg-amber-500/5 shadow-amber-500/5 border-amber-500/20 rounded-4xl"
         />
       </section>
 
       {/* Secondary Status Grid */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 rounded-2xl border border-border/40 bg-card/80 backdrop-blur-xl p-10 shadow-premium group overflow-hidden relative">
+        <div className="lg:col-span-2 rounded-4xl border border-border/40 bg-card/80 backdrop-blur-xl p-10 shadow-premium group overflow-hidden relative">
           <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
             <TrendingUp className="h-40 w-40 text-primary" />
           </div>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 relative z-10">
             <div>
               <h3 className="text-3xl font-black tracking-tighter leading-none mb-2">
-                Performance <span className="text-gradient">Boutique</span>
+                Performance{" "}
+                <span className="text-gradient leading-relaxed">Boutique</span>
               </h3>
               <p className="text-sm font-medium text-muted-foreground italic">
                 Évolution réelle des revenus encaissés
@@ -173,14 +174,14 @@ export async function DashboardChartsSection({
         </div>
 
         <div className="flex flex-col gap-8">
-          <div className="flex-1 rounded-2xl border border-border/40 bg-card/80 backdrop-blur-xl p-10 shadow-premium relative overflow-hidden group">
+          <div className="flex-1 rounded-4xl border border-border/40 bg-card/80 backdrop-blur-xl p-10 shadow-premium relative overflow-hidden group">
             <div className="flex items-center justify-between mb-8">
               <div className="h-14 w-14 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
                 <Clock className="h-7 w-7" />
               </div>
-              <Badge className="rounded-full px-4 py-1 border-amber-500/20 bg-amber-500/5 text-amber-600 text-[10px] font-black tracking-widest italic">
+              <div className="rounded-full px-4 py-1 border-amber-500/20 bg-amber-500/5 text-amber-600 text-[10px] font-black tracking-widest italic">
                 En Attente
-              </Badge>
+              </div>
             </div>
             <h4 className="text-4xl font-black tracking-tighter mb-1">
               {pendingOrders}
@@ -198,20 +199,20 @@ export async function DashboardChartsSection({
             </div>
           </div>
 
-          <div className="flex-1 rounded-2xl border border-border/40 bg-emerald-500/5 backdrop-blur-xl p-10 shadow-premium relative overflow-hidden group">
+          <div className="flex-1 rounded-4xl border border-border/40 bg-card/80 backdrop-blur-xl p-10 shadow-premium relative overflow-hidden group">
             <div className="flex items-center justify-between mb-8">
               <div className="h-14 w-14 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
                 <CheckCircle2 className="h-7 w-7" />
               </div>
-              <Badge className="rounded-full px-4 py-1 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 text-[10px] font-black tracking-widest italic">
-                Terminés
-              </Badge>
+              <div className="rounded-full px-4 py-1 border-emerald-500/20 bg-emerald-500/5 text-emerald-600 text-[10px] font-black tracking-widest italic">
+                Terminées
+              </div>
             </div>
             <h4 className="text-4xl font-black tracking-tighter mb-1">
               {completedOrders}
             </h4>
             <p className="text-sm font-medium text-muted-foreground italic mb-6">
-              Ventes finalisées
+              Succès de la période
             </p>
             <div className="w-full bg-muted/30 h-3 rounded-full overflow-hidden">
               <div
@@ -224,27 +225,6 @@ export async function DashboardChartsSection({
           </div>
         </div>
       </section>
-    </div>
-  );
-}
-
-// Internal Badge for the component
-function Badge({
-  className,
-  children,
-}: {
-  className?: string;
-  children: React.ReactNode;
-  [key: string]: unknown;
-}) {
-  return (
-    <div
-      className={cn(
-        "px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-        className,
-      )}
-    >
-      {children}
     </div>
   );
 }

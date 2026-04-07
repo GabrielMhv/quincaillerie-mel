@@ -91,7 +91,7 @@ export default async function POSPage(props: {
             <Sparkles className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-[10px] font-black text-orange-600/60 tracking-widest uppercase leading-none mb-1">
+            <p className="text-[10px] font-black text-orange-600/60 tracking-widest leading-none mb-1">
               Prêt pour l&apos;encaissement
             </p>
             <p className="text-sm font-bold">Session Directe Active</p>

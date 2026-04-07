@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Calendar as CalendarIcon, X } from "lucide-react";
@@ -11,12 +10,13 @@ const PRESETS = [
   { id: "today", label: "Aujourd'hui" },
   { id: "7-days", label: "7 derniers jours" },
   { id: "30-days", label: "30 derniers jours" },
+  { id: "custom", label: "Personnalisé" },
 ];
 
 const STATUS_FILTERS = [
   { id: "all", label: "Toutes les commandes" },
   { id: "pending", label: "En attente" },
-  { id: "completed", label: "Validé" },
+  { id: "completed", label: "Livré" },
   { id: "cancelled", label: "Annulé" },
 ];
 
@@ -24,7 +24,7 @@ export function OrderFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const activePreset = searchParams.get("preset") || "30-days";
+  const activePreset = searchParams.get("preset") || "today";
   const activeStatus = searchParams.get("status") || "all";
   const startDate = searchParams.get("startDate");
   const endDate = searchParams.get("endDate");
@@ -41,20 +41,40 @@ export function OrderFilters() {
     router.push(`?${params.toString()}`);
   };
 
+  const openPicker = (e: React.MouseEvent<HTMLDivElement>) => {
+    const input = e.currentTarget.querySelector("input") as HTMLInputElement;
+    if (input) {
+      if ("showPicker" in HTMLInputElement.prototype) {
+        try {
+          input.showPicker();
+        } catch {
+          input.click();
+        }
+      } else {
+        input.click();
+      }
+    }
+  };
+
   const handlePresetChange = (presetId: string) => {
+    if (presetId === "custom") {
+      updateParams({ preset: "custom" });
+      return;
+    }
+
     let start = null;
     let end = null;
     const now = new Date();
 
     if (presetId === "today") {
-      start = format(startOfDay(now), "yyyy-MM-dd HH:mm:ss");
-      end = format(endOfDay(now), "yyyy-MM-dd HH:mm:ss");
+      start = format(startOfDay(now), "yyyy-MM-dd'T'HH:mm:ss");
+      end = format(endOfDay(now), "yyyy-MM-dd'T'HH:mm:ss");
     } else if (presetId === "7-days") {
-      start = format(startOfDay(subDays(now, 7)), "yyyy-MM-dd HH:mm:ss");
-      end = format(endOfDay(now), "yyyy-MM-dd HH:mm:ss");
+      start = format(startOfDay(subDays(now, 7)), "yyyy-MM-dd'T'HH:mm:ss");
+      end = format(endOfDay(now), "yyyy-MM-dd'T'HH:mm:ss");
     } else if (presetId === "30-days") {
-      start = format(startOfDay(subDays(now, 30)), "yyyy-MM-dd HH:mm:ss");
-      end = format(endOfDay(now), "yyyy-MM-dd HH:mm:ss");
+      start = format(startOfDay(subDays(now, 30)), "yyyy-MM-dd'T'HH:mm:ss");
+      end = format(endOfDay(now), "yyyy-MM-dd'T'HH:mm:ss");
     }
 
     updateParams({
@@ -64,85 +84,128 @@ export function OrderFilters() {
     });
   };
 
+  const handleDateChange = (type: "start" | "end", dateValue: string) => {
+    if (!dateValue) return;
+    const date =
+      type === "start"
+        ? startOfDay(new Date(dateValue))
+        : endOfDay(new Date(dateValue));
+    updateParams({
+      [type === "start" ? "startDate" : "endDate"]: format(
+        date,
+        "yyyy-MM-dd'T'HH:mm:ss",
+      ),
+      preset: "custom",
+    });
+  };
+
   const clearFilters = () => {
-    router.push("?");
+    router.push("/dashboard/orders");
   };
 
   return (
-    <div className="space-y-6 animate-in slide-in-from-top duration-500">
-      {/* Date Presets and Range Inputs */}
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex bg-muted/30 p-1.5 rounded-2xl border border-border/40 overflow-x-auto no-scrollbar">
-          {PRESETS.map((preset) => (
-            <Button
-              key={preset.id}
-              variant="ghost"
-              size="sm"
-              onClick={() => handlePresetChange(preset.id)}
+    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-6">
+      {/* Première ligne : Titre + Périodes + Dates personnalisées */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap">
+          Filtrer les commandes
+        </h3>
+
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Groupement des Presets */}
+          <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+            {PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                onClick={() => handlePresetChange(preset.id)}
+                className={cn(
+                  "px-4 py-2 text-[13px] font-medium transition-colors border-r last:border-r-0 border-slate-200 dark:border-slate-700",
+                  activePreset === preset.id
+                    ? "bg-slate-50 text-slate-900 dark:bg-slate-800 dark:text-white"
+                    : "bg-white text-slate-500 hover:text-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-slate-200",
+                )}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Dates personnalisées */}
+          <div className="flex items-center gap-2">
+            <div
+              onClick={openPicker}
+              className="relative flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-lg hover:border-slate-300 transition-colors cursor-pointer min-w-35 select-none"
+            >
+              <CalendarIcon className="h-4 w-4 text-slate-400 pointer-events-none" />
+              <span className="text-[13px] font-medium text-slate-600 dark:text-slate-300 pointer-events-none line-clamp-1">
+                {startDate
+                  ? format(new Date(startDate), "dd MMM yyyy", { locale: fr })
+                  : "Date début"}
+              </span>
+              <input
+                type="date"
+                defaultValue={
+                  startDate ? format(new Date(startDate), "yyyy-MM-dd") : ""
+                }
+                onChange={(e) => handleDateChange("start", e.target.value)}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full z-10"
+              />
+            </div>
+            <span className="text-slate-400 text-sm">à</span>
+            <div
+              onClick={openPicker}
+              className="relative flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-lg hover:border-slate-300 transition-colors cursor-pointer min-w-35 select-none"
+            >
+              <CalendarIcon className="h-4 w-4 text-slate-400 pointer-events-none" />
+              <span className="text-[13px] font-medium text-slate-600 dark:text-slate-300 pointer-events-none line-clamp-1">
+                {endDate
+                  ? format(new Date(endDate), "dd MMM yyyy", { locale: fr })
+                  : "Date fin"}
+              </span>
+              <input
+                type="date"
+                defaultValue={
+                  endDate ? format(new Date(endDate), "yyyy-MM-dd") : ""
+                }
+                onChange={(e) => handleDateChange("end", e.target.value)}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full z-10"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Deuxième ligne : Filtres de statut */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-2">
+          {STATUS_FILTERS.map((status) => (
+            <button
+              key={status.id}
+              onClick={() => updateParams({ status: status.id })}
               className={cn(
-                "rounded-xl px-4 py-2 transition-all duration-300 font-bold text-[11px] tracking-widest",
-                activePreset === preset.id
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                  : "text-muted-foreground hover:bg-primary/5",
+                "px-5 py-2 rounded-lg text-[13px] font-medium transition-all border",
+                activeStatus === status.id
+                  ? "bg-emerald-700 border-emerald-700 text-white shadow-sm"
+                  : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-800 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-400",
               )}
             >
-              {preset.label}
-            </Button>
+              {status.label}
+            </button>
           ))}
         </div>
 
-        <div className="flex items-center gap-2 bg-muted/30 p-1.5 rounded-2xl border border-border/40">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-background border border-border/50 rounded-xl shadow-sm">
-            <CalendarIcon className="h-3 w-3 text-muted-foreground" />
-            <span className="text-[11px] font-black text-muted-foreground/80">
-              {startDate
-                ? format(new Date(startDate), "dd MMM yyyy", { locale: fr })
-                : "Début"}
-            </span>
-          </div>
-          <span className="text-muted-foreground font-black text-[10px]">
-            à
-          </span>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-background border border-border/50 rounded-xl shadow-sm">
-            <CalendarIcon className="h-3 w-3 text-muted-foreground" />
-            <span className="text-[11px] font-black text-muted-foreground/80">
-              {endDate
-                ? format(new Date(endDate), "dd MMM yyyy", { locale: fr })
-                : "Fin"}
-            </span>
-          </div>
-        </div>
-
-        {(startDate || activeStatus !== "all") && (
-          <Button
-            variant="ghost"
-            size="sm"
+        {(startDate ||
+          endDate ||
+          activeStatus !== "all" ||
+          activePreset !== "today") && (
+          <button
             onClick={clearFilters}
-            className="rounded-xl border border-rose-500/20 text-rose-500 hover:bg-rose-500/10 gap-2 font-bold text-[11px]"
+            className="flex items-center gap-2 text-rose-500 hover:text-rose-600 text-[13px] font-medium transition-colors"
           >
-            <X className="h-4 w-4" /> Réinitialiser
-          </Button>
+            <X className="h-4 w-4" />
+            Réinitialiser
+          </button>
         )}
-      </div>
-
-      {/* Status Filter Pills */}
-      <div className="flex flex-wrap gap-2">
-        {STATUS_FILTERS.map((status) => (
-          <Button
-            key={status.id}
-            variant="ghost"
-            size="sm"
-            onClick={() => updateParams({ status: status.id })}
-            className={cn(
-              "rounded-full px-5 py-2.5 transition-all duration-500 font-black text-[11px] tracking-tight border-2",
-              activeStatus === status.id
-                ? "bg-green-500 text-white border-green-500 shadow-[0_0_20px_-5px_rgba(34,197,94,0.4)]"
-                : "bg-background border-border/50 text-muted-foreground hover:border-green-500/40 hover:text-green-600",
-            )}
-          >
-            {status.label}
-          </Button>
-        ))}
       </div>
     </div>
   );

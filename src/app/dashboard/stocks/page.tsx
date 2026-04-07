@@ -6,7 +6,7 @@ import { StockEditor } from "@/components/products/stock-editor";
 import { Badge } from "@/components/ui/badge";
 import { ProductFormModal } from "@/components/products/product-form-modal";
 import { StockHistory } from "@/components/dashboard/stock-history";
-import { Sparkles, AlertTriangle, Boxes } from "lucide-react";
+import { AlertTriangle, Boxes, Plus } from "lucide-react";
 import Image from "next/image";
 
 export default async function DashboardStocksPage(props: {
@@ -94,86 +94,81 @@ export default async function DashboardStocksPage(props: {
   }
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-1000">
+    <div className="max-w-400 mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-700">
       {/* Header Section */}
-      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-amber-500/5 border border-amber-500/10 relative overflow-hidden group shadow-premium">
-        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
-          <Boxes className="h-40 w-40 text-amber-600" />
-        </div>
-        <div className="space-y-3 relative z-10">
-          <div className="h-14 w-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 mb-2">
-            <Boxes className="h-7 w-7" />
-          </div>
-          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
-            Mouvements de <span className="text-amber-500 italic">Stocks</span>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-1 text-center md:text-left">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            Gestion des Stocks
           </h1>
-          <div className="flex items-center gap-4">
-             <p className="text-lg text-muted-foreground font-medium italic leading-none">
-               {isGlobalScope 
-                 ? "Inventaire consolidé du réseau quincaillerie." 
-                 : `État des stocks : ${currentBoutiqueName}`}
-             </p>
-             {boutiqueSwitcherId && (
-               <Badge 
-                 variant="outline" 
-                 className="bg-amber-500/10 text-amber-600 border-amber-500/20 px-4 py-1 rounded-full font-black text-[10px] tracking-widest uppercase shadow-xs"
-               >
-                 Dépôt Local
-               </Badge>
-             )}
-          </div>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            {isGlobalScope
+              ? "Inventaire consolidé du réseau"
+              : `État des stocks : ${currentBoutiqueName}`}
+          </p>
         </div>
-        
-        <div className="flex items-center gap-4 relative z-10">
+
+        <div className="flex items-center gap-4">
           <ProductFormModal
             categories={categories || []}
             userRole={role}
             userBoutiqueId={profile.boutique_id}
             boutiques={boutiques || []}
+            trigger={
+              <button
+                type="button"
+                className="flex items-center gap-2 bg-[#064e3b] hover:bg-[#065f46] text-white px-8 py-3.5 rounded-2xl font-bold text-sm shadow-sm transition-all active:scale-95"
+              >
+                <Plus className="h-5 w-5" /> Ajouter un produit
+              </button>
+            }
           />
         </div>
-      </section>
+      </div>
 
       {/* Main Table Area */}
-      <section className="rounded-[4rem] border border-border/50 bg-card/80 backdrop-blur-xl shadow-premium overflow-hidden">
-        <div className="p-10 border-b border-border/50 bg-muted/30 flex justify-between items-center">
-          <h3 className="text-sm font-black tracking-tight text-muted-foreground/60 flex items-center gap-2">
-            <Boxes className="h-4 w-4" /> Matrice d&apos;Inventaire
-          </h3>
-          <div className="px-5 py-2 rounded-2xl bg-primary/10 border border-primary/20 flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-xs font-black tracking-widest text-primary italic">
-              Sync. Temps-Réel
-            </span>
+      <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-4xl shadow-sm overflow-hidden">
+        <div className="px-8 py-6 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between bg-slate-50/30">
+          <div className="flex items-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wider">
+              Inventaire en temps réel
+            </h3>
           </div>
+          <Badge
+            variant="outline"
+            className="rounded-full px-4 py-1 text-[11px] font-bold text-slate-500 border-slate-200"
+          >
+            {products?.length || 0} références
+          </Badge>
         </div>
 
-        <div className="max-w-full overflow-x-auto custom-scrollbar">
+        <div className="max-w-full overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="text-[10px] font-black text-muted-foreground/50 tracking-[0.2em] border-b border-border/30 h-16 bg-muted/10">
-                <th className="px-10 text-left sticky left-0 bg-muted/10 backdrop-blur-md z-20 border-r border-border/30 w-72">
-                  Produit & Unité
+              <tr className="text-[10px] font-black text-slate-400 dark:text-slate-500 tracking-widest border-b border-slate-50 dark:border-slate-800 h-16 bg-slate-50/50 dark:bg-slate-900/50">
+                <th className="px-8 text-left sticky left-0 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-md z-20 border-r border-slate-50 dark:border-slate-800 w-80">
+                  Produit & Référence
                 </th>
                 {boutiques?.map((boutique) => (
                   <th
                     key={boutique.id}
-                    className="px-10 text-center border-r border-border/30 last:border-r-0 min-w-55"
+                    className="px-8 text-center border-r border-slate-50 dark:border-slate-800 last:border-r-0 min-w-48"
                   >
                     {boutique.name}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/20">
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
               {products?.map((product) => (
                 <tr
                   key={product.id}
-                  className="group hover:bg-primary/2 transition-all h-32 border-none"
+                  className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all h-28"
                 >
-                  <td className="px-10 sticky left-0 bg-card/90 backdrop-blur-md z-10 border-r border-border/30 group-hover:bg-primary/3 transition-colors">
-                    <div className="flex items-center gap-6">
-                      <div className="h-20 w-20 rounded-3xl bg-secondary/30 relative overflow-hidden border border-border/50 shrink-0 shadow-sm transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-3">
+                  <td className="px-8 sticky left-0 bg-white dark:bg-slate-900 backdrop-blur-md z-10 border-r border-slate-50 dark:border-slate-800 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/50 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="h-16 w-16 rounded-2xl bg-slate-50 dark:bg-slate-800 relative overflow-hidden border border-slate-100 dark:border-slate-700 shrink-0 shadow-sm transition-transform duration-500 group-hover:scale-105">
                         <Image
                           src={product.image_url || "/placeholder-product.jpg"}
                           alt={product.name}
@@ -181,20 +176,17 @@ export default async function DashboardStocksPage(props: {
                           className="object-cover transition-transform group-hover:scale-110"
                         />
                       </div>
-                      <div className="min-w-0 flex-1 space-y-2">
-                        <p className="font-black text-lg tracking-tight truncate group-hover:text-primary transition-colors leading-none">
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <p className="font-bold text-slate-900 dark:text-white truncate leading-tight">
                           {product.name}
                         </p>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <Badge
-                            variant="outline"
-                            className="text-[9px] font-black tracking-widest bg-emerald-500/5 text-emerald-600 border-emerald-500/10 px-2 py-0.5 rounded-full italic"
-                          >
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-[10px] font-black tracking-wider text-slate-400 dark:text-slate-500">
                             {formatCurrency(product.price)}
-                          </Badge>
-                          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-500/5 border border-rose-500/10 text-[9px] font-black text-rose-600 tracking-widest italic">
+                          </span>
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-lg bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30">
                             Alerte: {product.min_stock_alert}
-                          </div>
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -211,13 +203,13 @@ export default async function DashboardStocksPage(props: {
                     return (
                       <td
                         key={`${product.id}-${boutique.id}`}
-                        className="px-10 text-center border-r border-border/30 last:border-r-0"
+                        className="px-8 text-center border-r border-slate-50 dark:border-slate-800 last:border-r-0"
                       >
-                        <div className="flex flex-col items-center gap-4">
+                        <div className="flex flex-col items-center gap-3">
                           {isLow && (
                             <Badge
                               variant="outline"
-                              className="rounded-full px-3 py-0.5 text-[9px] font-black tracking-widest bg-rose-500/10 text-rose-600 border-rose-500/20 animate-pulse shadow-[0_0_15px_-5px_rgba(244,63,94,0.4)]"
+                              className="rounded-full px-3 py-0.5 text-[9px] font-bold bg-rose-50 text-rose-600 border-rose-200 animate-pulse"
                             >
                               Stock Critique
                             </Badge>
@@ -244,9 +236,9 @@ export default async function DashboardStocksPage(props: {
                     colSpan={(boutiques?.length || 0) + 1}
                     className="text-center"
                   >
-                    <div className="flex flex-col items-center justify-center space-y-5 opacity-20">
-                      <Boxes className="h-16 w-16" />
-                      <p className="text-lg font-black tracking-widest text-center">
+                    <div className="flex flex-col items-center justify-center space-y-4 opacity-30">
+                      <Boxes className="h-12 w-12 text-slate-400" />
+                      <p className="text-sm font-bold text-slate-500">
                         Aucun produit au catalogue
                       </p>
                     </div>
@@ -256,12 +248,18 @@ export default async function DashboardStocksPage(props: {
             </tbody>
           </table>
         </div>
-      </section>
+      </div>
 
       {/* Historique des mouvements de stock */}
-      <section className="mt-8">
+      <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-4xl shadow-sm p-8">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-wider">
+            Historique des mouvements
+          </h3>
+        </div>
         <StockHistory />
-      </section>
+      </div>
     </div>
   );
 }

@@ -167,11 +167,11 @@ export function PublicFooter() {
         {/* Bottom Bar */}
         <div className="mt-16 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-bold tracking-tight text-white/60 text-center md:text-left">
           <div className="flex flex-col md:flex-row items-center gap-3">
-            <div className="h-7 w-7 rounded-full bg-white/5 flex items-center justify-center hidden md:flex">
+            <div className="h-7 w-7 rounded-full bg-white/5 items-center justify-center hidden md:flex">
               <Sparkles className="h-3.5 w-3.5 text-primary/40" />
             </div>
             <p className="opacity-90">
-              &copy; {new Date().getFullYear()} Ets La Championne • Excellence &
+              &copy; {new Date().getFullYear()} {settings.name} • Excellence &
               Innovation au Togo.
             </p>
           </div>

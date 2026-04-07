@@ -206,28 +206,28 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
   };
 
   return (
-    <div className="flex h-[calc(100vh-140px)] gap-8 p-6 animate-in fade-in duration-700">
+    <div className="flex flex-col lg:flex-row h-full lg:h-[calc(100vh-140px)] gap-6 lg:gap-8 p-4 sm:p-6 animate-in fade-in duration-700 overflow-hidden">
       {/* Left Area: Search & Products */}
-      <div className="flex-1 flex flex-col gap-6 overflow-hidden">
-        <div className="flex flex-col gap-6">
+      <div className="flex-1 flex flex-col gap-4 lg:gap-6 overflow-hidden min-h-0">
+        <div className="flex flex-col gap-4 lg:gap-6">
           <div className="relative group">
-            <Search className="absolute left-6 top-1/2 h-6 w-6 -translate-y-1/2 text-muted-foreground/30 group-focus-within:text-primary transition-colors" />
+            <Search className="absolute left-4 sm:left-6 top-1/2 h-5 w-5 sm:h-6 sm:w-6 -translate-y-1/2 text-muted-foreground/30 group-focus-within:text-primary transition-colors" />
             <input
-              placeholder="Scanner un code barre ou rechercher par nom..."
-              className="w-full h-20 pl-16 pr-8 bg-card/60 backdrop-blur-3xl border-2 border-border/50 rounded-[2.5rem] text-lg font-black tracking-tight focus:outline-none focus:ring-8 focus:ring-primary/5 focus:border-primary transition-all placeholder:text-muted-foreground/20 shadow-2xl shadow-primary/5"
+              placeholder="Rechercher un produit..."
+              className="w-full h-14 sm:h-20 pl-12 sm:pl-16 pr-6 sm:pr-8 bg-card/60 backdrop-blur-3xl border-2 border-border/50 rounded-2xl sm:rounded-[2.5rem] text-sm sm:text-lg font-black tracking-tight focus:outline-none focus:ring-4 sm:focus:ring-8 focus:ring-primary/5 focus:border-primary transition-all placeholder:text-muted-foreground/20 shadow-xl sm:shadow-2xl shadow-primary/5"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             {isSearching && (
-              <Loader2 className="absolute right-6 top-1/2 h-6 w-6 -translate-y-1/2 animate-spin text-primary" />
+              <Loader2 className="absolute right-4 sm:right-6 top-1/2 h-5 w-5 sm:h-6 sm:w-6 -translate-y-1/2 animate-spin text-primary" />
             )}
           </div>
 
-          <div className="flex items-center gap-3 overflow-x-auto pb-2 px-1 custom-scrollbar no-scrollbar scroll-smooth">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 px-1 custom-scrollbar no-scrollbar scroll-smooth">
             <button
               onClick={() => setSelectedCategoryId(null)}
               className={cn(
-                "px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all duration-300 shrink-0 whitespace-nowrap border italic",
+                "px-4 sm:px-8 py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[8px] sm:text-[10px] font-black tracking-widest transition-all duration-300 shrink-0 whitespace-nowrap border italic",
                 !selectedCategoryId
                   ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105"
                   : "bg-muted/50 text-muted-foreground hover:bg-muted border-border/50",
@@ -240,7 +240,7 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
                 key={cat.id}
                 onClick={() => setSelectedCategoryId(cat.id)}
                 className={cn(
-                  "px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all duration-300 shrink-0 whitespace-nowrap border italic",
+                  "px-4 sm:px-8 py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[8px] sm:text-[10px] font-black tracking-widest transition-all duration-300 shrink-0 whitespace-nowrap border italic",
                   selectedCategoryId === cat.id
                     ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105"
                     : "bg-muted/50 text-muted-foreground hover:bg-muted border-border/50",
@@ -252,21 +252,21 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 custom-scrollbar min-h-0">
           {searchResults.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center space-y-4 opacity-20">
-              <Package className="h-16 w-16" />
-              <p className="text-sm font-black tracking-widest italic">
+            <div className="h-full flex flex-col items-center justify-center space-y-4 opacity-20 py-10">
+              <Package className="h-12 w-12 sm:h-16 sm:w-16" />
+              <p className="text-[10px] sm:text-sm font-black tracking-widest italic text-center px-4">
                 Aucun produit trouvé dans cette boutique
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 pb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 pb-6">
               {searchResults.map((product) => (
                 <div
                   key={product.id}
                   className={cn(
-                    "group bg-card/40 backdrop-blur-md border border-border/40 rounded-4xl overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer flex flex-col shadow-sm hover:shadow-xl hover:-translate-y-1",
+                    "group bg-card/40 backdrop-blur-md border border-border/40 rounded-2xl sm:rounded-4xl overflow-hidden hover:border-primary/50 transition-all duration-500 cursor-pointer flex flex-col shadow-sm hover:shadow-xl hover:-translate-y-1",
                     ((product.stocks as unknown as { quantity: number }[])?.[0]
                       ?.quantity || 0) <= 0 &&
                       "opacity-60 grayscale cursor-not-allowed",
@@ -281,7 +281,7 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
                       src={product.image_url || "/placeholder-product.jpg"}
                       alt=""
                       fill
-                      sizes="(max-width: 768px) 50vw, 25vw"
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 20vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     {((product.stocks as unknown as { quantity: number }[])?.[0]
@@ -289,16 +289,16 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px]">
                         <Badge
                           variant="destructive"
-                          className="rounded-full px-3 py-1 font-black text-[10px] tracking-widest"
+                          className="rounded-full px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[8px] sm:text-[10px] tracking-widest"
                         >
                           RUPTURE
                         </Badge>
                       </div>
                     )}
-                    <div className="absolute top-4 right-4">
+                    <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
                       <div
                         className={cn(
-                          "h-8 px-3 rounded-full flex items-center justify-center text-[10px] font-black border backdrop-blur-md shadow-sm transition-colors",
+                          "h-6 px-2 sm:h-8 sm:px-3 rounded-full flex items-center justify-center text-[8px] sm:text-[10px] font-black border backdrop-blur-md shadow-sm transition-colors",
                           ((
                             product.stocks as unknown as { quantity: number }[]
                           )?.[0]?.quantity || 0) <= 5
@@ -309,20 +309,20 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
                         {(
                           product.stocks as unknown as { quantity: number }[]
                         )?.[0]?.quantity || 0}{" "}
-                        dispo
+                        <span className="hidden sm:inline ml-1">dispo</span>
                       </div>
                     </div>
                   </div>
-                  <div className="p-5 flex flex-col flex-1">
-                    <h4 className="text-sm font-black tracking-tight line-clamp-2 mb-3 group-hover:text-primary transition-colors">
+                  <div className="p-3 sm:p-5 flex flex-col flex-1">
+                    <h4 className="text-[11px] sm:text-sm font-black tracking-tight line-clamp-2 mb-2 sm:mb-3 group-hover:text-primary transition-colors">
                       {product.name}
                     </h4>
-                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-border/20">
-                      <span className="text-lg font-black tracking-tighter text-primary">
+                    <div className="mt-auto flex items-center justify-between pt-2 sm:pt-4 border-t border-border/20">
+                      <span className="text-sm sm:text-lg font-black tracking-tighter text-primary">
                         {formatCurrency(product.price)}
                       </span>
-                      <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                        <Plus className="h-4 w-4" />
+                      <div className="h-6 w-6 sm:h-8 sm:w-8 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                        <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                       </div>
                     </div>
                   </div>
@@ -334,18 +334,18 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
       </div>
 
       {/* Right Area: Ticket */}
-      <div className="w-105 flex flex-col rounded-[3rem] border border-border/50 bg-card/60 backdrop-blur-2xl shadow-premium overflow-hidden">
-        <div className="p-8 border-b border-border/50 bg-primary/5">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                <Zap className="h-5 w-5 fill-current" />
+      <div className="w-full lg:w-105 flex flex-col rounded-2xl sm:rounded-[3rem] border border-border/50 bg-card/60 backdrop-blur-2xl shadow-xl sm:shadow-premium overflow-hidden h-125 lg:h-auto shrink-0">
+        <div className="p-4 sm:p-8 border-b border-border/50 bg-primary/5 shrink-0">
+          <div className="flex items-center justify-between mb-4 sm:mb-8">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5 fill-current" />
               </div>
               <div>
-                <h2 className="text-lg font-black tracking-tighter leading-none">
+                <h2 className="text-sm sm:text-lg font-black tracking-tighter leading-none">
                   Ticket de caisse
                 </h2>
-                <p className="text-[10px] font-bold text-muted-foreground/60 tracking-widest mt-1">
+                <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground/60 tracking-widest mt-1">
                   Session active
                 </p>
               </div>

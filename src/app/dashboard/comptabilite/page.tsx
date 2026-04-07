@@ -40,6 +40,21 @@ export default async function ComptabilitePage(props: {
     .select("role, boutique_id")
     .eq("id", user.id)
     .single();
+
+  if (profile?.role === "employee") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-100 text-center space-y-4">
+        <h1 className="text-3xl font-black tracking-tighter">
+          Accès Restreint
+        </h1>
+        <p className="text-muted-foreground">
+          Vous n&apos;avez pas les permissions nécessaires pour accéder à la
+          comptabilité.
+        </p>
+      </div>
+    );
+  }
+
   const isGlobalScope = profile?.role === "admin" && !boutiqueSwitcherId;
   const filteredBoutiqueId = !isGlobalScope
     ? profile?.role === "admin"
@@ -81,8 +96,8 @@ export default async function ComptabilitePage(props: {
       <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">
           <h1 className="text-5xl font-black tracking-tighter leading-tight">
-            Journal de{" "}
-            <span className="text-gradient leading-relaxed">Comptabilité</span>
+            Journal des{" "}
+            <span className="text-gradient leading-relaxed">Écritures</span>
           </h1>
           <p className="text-lg text-muted-foreground font-medium">
             Gestion financière et rapports de transactions
@@ -101,7 +116,7 @@ export default async function ComptabilitePage(props: {
             </div>
             <div>
               <h3 className="text-[11px] font-bold text-emerald-100/70 tracking-tight">
-                Chiffre d&apos;Affaires Brut
+                CA Global (TTC)
               </h3>
               <p className="text-4xl font-black text-white tracking-tighter">
                 {formatCurrency(totalRevenue)}
@@ -118,7 +133,7 @@ export default async function ComptabilitePage(props: {
             </div>
             <div>
               <h3 className="text-[11px] font-bold text-orange-100/70 tracking-tight">
-                TVA Estimée (18%)
+                TVA Collectée (18%)
               </h3>
               <p className="text-4xl font-black text-white tracking-tighter">
                 {formatCurrency(totalTaxes)}
@@ -135,7 +150,7 @@ export default async function ComptabilitePage(props: {
             </div>
             <div>
               <h3 className="text-[11px] font-bold text-indigo-100/70 tracking-tight">
-                Chiffre d&apos;Affaires Net
+                Net Hors Taxes (HT)
               </h3>
               <p className="text-4xl font-black text-white tracking-tighter">
                 {formatCurrency(netRevenue)}
@@ -152,8 +167,8 @@ export default async function ComptabilitePage(props: {
               <FileText className="h-5 w-5" />
             </div>
             <h3 className="text-xl font-black tracking-tighter">
-              Historique des Flux{" "}
-              <span className="text-muted-foreground/40 text-sm ml-2 italic">
+              Grand Livre des Ventes{" "}
+              <span className="text-muted-foreground/40 text-sm ml-2">
                 ({validOrders.length} transactions)
               </span>
             </h3>
@@ -165,20 +180,20 @@ export default async function ComptabilitePage(props: {
           <Table>
             <TableHeader>
               <TableRow className="border-b border-border/30 h-20 bg-muted/10 opacity-60">
-                <TableHead className="px-10 text-[10px] font-black tracking-[0.2em] italic">
-                  Date & Heure
+                <TableHead className="px-10 text-[10px] font-black tracking-[0.2em]">
+                  Date de Valeur
                 </TableHead>
-                <TableHead className="px-10 text-[10px] font-black tracking-[0.2em] italic">
+                <TableHead className="px-10 text-[10px] font-black tracking-[0.2em]">
                   Boutique
                 </TableHead>
-                <TableHead className="px-10 text-[10px] font-black tracking-[0.2em] italic">
-                  Caissier
+                <TableHead className="px-10 text-[10px] font-black tracking-[0.2em]">
+                  Agent Émetteur
                 </TableHead>
-                <TableHead className="px-10 text-[10px] font-black tracking-[0.2em] italic">
-                  Statut Paiement
+                <TableHead className="px-10 text-[10px] font-black tracking-[0.2em]">
+                  État du Flux
                 </TableHead>
-                <TableHead className="px-10 text-right text-[10px] font-black tracking-[0.2em] italic">
-                  Montant Total
+                <TableHead className="px-10 text-right text-[10px] font-black tracking-[0.2em]">
+                  Débit TTC
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -189,7 +204,7 @@ export default async function ComptabilitePage(props: {
                   className="h-24 hover:bg-primary/2 transition-colors border-none group"
                 >
                   <TableCell className="px-10">
-                    <span className="text-sm font-bold tracking-tight opacity-70 italic">
+                    <span className="text-sm font-bold tracking-tight opacity-70">
                       {format(new Date(o.created_at), "d MMMM yyyy 'à' HH:mm", {
                         locale: fr,
                       })}
@@ -198,7 +213,7 @@ export default async function ComptabilitePage(props: {
                   <TableCell className="px-10">
                     <Badge
                       variant="outline"
-                      className="rounded-xl px-4 py-1.5 bg-primary/5 text-primary border-primary/10 text-[10px] font-black tracking-widest italic leading-none"
+                      className="rounded-xl px-4 py-1.5 bg-primary/5 text-primary border-primary/10 text-[10px] font-black tracking-widest leading-none"
                     >
                       {o.boutique?.name || "Réseau"}
                     </Badge>
@@ -206,7 +221,7 @@ export default async function ComptabilitePage(props: {
                   <TableCell className="px-10">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center text-[10px] font-black text-primary">
-                        {o.employee?.name?.substring(0, 2).toUpperCase()}
+                        {o.employee?.name?.substring(0, 2).to()}
                       </div>
                       <span className="text-sm font-black tracking-tight">
                         {o.employee?.name}
@@ -217,7 +232,7 @@ export default async function ComptabilitePage(props: {
                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 w-fit">
                       <CreditCard className="h-3.5 w-3.5" />
                       <span className="text-[10px] font-black tracking-widest">
-                        Validé
+                        Encaissé
                       </span>
                     </div>
                   </TableCell>

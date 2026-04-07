@@ -62,7 +62,7 @@ export function DashboardTopbar() {
     boutiqueId ? `${href}?boutiqueId=${boutiqueId}` : href;
 
   return (
-    <header className="flex h-20 items-center gap-6 border-b border-primary/5 bg-background/60 backdrop-blur-xl px-4 lg:px-10 sticky top-0 z-40 transition-all duration-500">
+    <header className="flex h-24 items-center gap-6 border-b border-primary/5 bg-background/60 backdrop-blur-2xl px-6 lg:px-12 sticky top-0 z-40 transition-all duration-500">
       {/* Mobile Hamburger Menu (Sheet) */}
       <Sheet>
         <SheetTrigger
@@ -70,12 +70,12 @@ export function DashboardTopbar() {
             <Button
               variant="ghost"
               size="icon"
-              className="shrink-0 md:hidden h-12 w-12 rounded-2xl bg-muted/50 transition-transform active:scale-90"
+              className="shrink-0 lg:hidden h-12 w-12 rounded-2xl bg-muted/50 transition-transform active:scale-95 border border-primary/5 shadow-sm"
             />
           }
         >
           <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle navigation menu</span>
+          <span className="sr-only">Navigation</span>
         </SheetTrigger>
         <SheetContent
           side="left"
@@ -83,7 +83,7 @@ export function DashboardTopbar() {
         >
           <SheetHeader className="pb-10 border-b border-primary/5">
             <SheetTitle className="text-3xl font-black tracking-tighter text-gradient text-left">
-              Navigation
+              {settings.name}
             </SheetTitle>
           </SheetHeader>
           <nav className="grid gap-4 mt-10">
@@ -93,55 +93,45 @@ export function DashboardTopbar() {
             >
               <div className="flex items-center gap-3">
                 <LayoutDashboard className="h-5 w-5" />
-                <span>Vue d&apos;ensemble</span>
+                <span>Dashboard Principal</span>
               </div>
-            </Link>
-            <Link
-              href={wrapHref("/dashboard/pos")}
-              className="group flex items-center justify-between rounded-2xl px-6 py-4 text-muted-foreground hover:bg-muted font-bold transition-all"
-            >
-              <span>Caisse Digitale</span>
-            </Link>
-            <Link
-              href={wrapHref("/dashboard/orders")}
-              className="group flex items-center justify-between rounded-2xl px-6 py-4 text-muted-foreground hover:bg-muted font-bold transition-all"
-            >
-              <span>Registre Officiel</span>
             </Link>
           </nav>
         </SheetContent>
       </Sheet>
 
-      <div className="w-full flex-1 flex items-center gap-6">
+      <div className="w-full flex-1 flex items-center gap-8">
         <div className="flex flex-col">
-          <h1 className="hidden text-2xl font-black tracking-tighter md:block leading-none group cursor-default">
-            {currentBoutique ? (
-              <span className="flex items-center gap-2">
-                <span className="text-orange-500 opacity-60">#</span>{" "}
-                {currentBoutique.name}
-              </span>
-            ) : (
-              <span className="flex items-center gap-2 italic">
-                {settings.name} <span className="text-gradient">Total</span>
-              </span>
-            )}
-          </h1>
-          <p className="hidden text-[10px] font-black tracking-widest text-muted-foreground/40 lg:block mt-1.5 lowercase italic">
+          <div className="flex items-center gap-3">
+            <h1 className="hidden text-2xl lg:text-3xl font-black tracking-tighter sm:block leading-none group cursor-default">
+              {currentBoutique ? (
+                <span className="flex items-center gap-3 text-slate-900 dark:text-white drop-shadow-sm">
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shadow-lg shadow-emerald-500/50" />
+                  {currentBoutique.name}
+                </span>
+              ) : (
+                <span className="flex items-center gap-2 italic text-primary dark:text-blue-400 font-black drop-shadow-sm">
+                  {settings.name}
+                </span>
+              )}
+            </h1>
+          </div>
+          <p className="hidden text-[11px] font-black tracking-[0.2em] text-muted-foreground/40 lg:block mt-2 lowercase italic">
             {currentBoutique
-              ? "Unité Opérationnelle Locale"
-              : settings.description}
+              ? "Unité de vente locale synchronisée"
+              : "Poste de commandement centralisé"}
           </p>
         </div>
 
-        <div className="h-8 w-px bg-primary/5 hidden md:block mx-2" />
+        <div className="h-10 w-px bg-primary/5 hidden md:block mx-4" />
 
         {user?.role === "admin" && (
           <Suspense
             fallback={
-              <div className="h-10 w-50 animate-pulse bg-muted rounded-2xl" />
+              <div className="h-12 w-64 animate-pulse bg-muted rounded-2xl" />
             }
           >
-            <div className="scale-95 group-hover:scale-100 transition-transform">
+            <div className="scale-100 transition-all hover:scale-[1.02]">
               <BoutiqueSwitcher />
             </div>
           </Suspense>

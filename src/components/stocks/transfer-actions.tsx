@@ -14,24 +14,32 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { PrintTransferButton } from "./print-transfer-button";
 
 interface TransferActionsProps {
   transferId: string;
   status: string;
-  isSender: boolean; // Am I the boutique B (sender)?
+  isSender: boolean;
+  isReceiver: boolean;
+  isAdmin?: boolean;
 }
 
 export function TransferActions({
   transferId,
   status,
   isSender,
+  isReceiver,
+  isAdmin = false,
 }: TransferActionsProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const supabase = createClient();
   const router = useRouter();
 
-  if (status === "completed" || status === "cancelled" || status === "rejected")
-    return null;
+  if (status === "completed") {
+    return <PrintTransferButton transferId={transferId} />;
+  }
+
+  if (status === "cancelled" || status === "rejected") return null;
 
   const updateStatus = async (newStatus: string) => {
     setLoading(newStatus);
@@ -40,109 +48,9 @@ export function TransferActions({
         data: { user },
       } = await supabase.auth.getUser();
 
-      // Get transfer details
-      const { data: transfer, error: fetchError } = await supabase
-        .from("stock_transfers")
-        .select("*, stock_transfer_items(*)")
-        .eq("id", transferId)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      // Handle stock movement
-      if (newStatus === "shipped") {
-        // Collect all items (from parent and children)
-        const itemsToMove = [];
-        if (transfer.product_id && transfer.quantity) {
-          itemsToMove.push({
-            product_id: transfer.product_id,
-            quantity: transfer.quantity,
-          });
-        }
-        if (transfer.stock_transfer_items?.length > 0) {
-          transfer.stock_transfer_items.forEach(
-            (item: { product_id: string; quantity: number }) => {
-              itemsToMove.push({
-                product_id: item.product_id,
-                quantity: item.quantity,
-              });
-            },
-          );
-        }
-
-        // Deduct from source
-        for (const item of itemsToMove) {
-          // Check current stock
-          const { data: currentStock } = await supabase
-            .from("stocks")
-            .select("quantity")
-            .eq("product_id", item.product_id)
-            .eq("boutique_id", transfer.from_boutique_id)
-            .single();
-
-          if (!currentStock || currentStock.quantity < item.quantity) {
-            throw new Error(
-              `Stock insuffisant pour l'un des produits dans la boutique source.`,
-            );
-          }
-
-          const { error: deductError } = await supabase
-            .from("stocks")
-            .update({ quantity: currentStock.quantity - item.quantity })
-            .eq("product_id", item.product_id)
-            .eq("boutique_id", transfer.from_boutique_id);
-
-          if (deductError) throw deductError;
-        }
-      }
-
-      if (newStatus === "completed") {
-        // Collect all items
-        const itemsToMove = [];
-        if (transfer.product_id && transfer.quantity) {
-          itemsToMove.push({
-            product_id: transfer.product_id,
-            quantity: transfer.quantity,
-          });
-        }
-        if (transfer.stock_transfer_items?.length > 0) {
-          transfer.stock_transfer_items.forEach(
-            (item: { product_id: string; quantity: number }) => {
-              itemsToMove.push({
-                product_id: item.product_id,
-                quantity: item.quantity,
-              });
-            },
-          );
-        }
-
-        // Add to destination
-        for (const item of itemsToMove) {
-          const { data: existingStock } = await supabase
-            .from("stocks")
-            .select("id, quantity")
-            .eq("product_id", item.product_id)
-            .eq("boutique_id", transfer.to_boutique_id)
-            .single();
-
-          if (existingStock) {
-            const { error: addError } = await supabase
-              .from("stocks")
-              .update({ quantity: existingStock.quantity + item.quantity })
-              .eq("id", existingStock.id);
-            if (addError) throw addError;
-          } else {
-            const { error: insertError } = await supabase
-              .from("stocks")
-              .insert({
-                product_id: item.product_id,
-                boutique_id: transfer.to_boutique_id,
-                quantity: item.quantity,
-              });
-            if (insertError) throw insertError;
-          }
-        }
-      }
+      // We no longer handle stock movement here in the frontend.
+      // The database trigger public.handle_stock_transfer_completion() deals with it.
+      // This prevents double deduction and ensures atomic transactions.
 
       const { error: updateError } = await supabase
         .from("stock_transfers")
@@ -153,7 +61,10 @@ export function TransferActions({
         })
         .eq("id", transferId);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Supabase Update Error:", updateError);
+        throw updateError;
+      }
 
       const labels: Record<string, string> = {
         accepted: "accepté",
@@ -177,11 +88,44 @@ export function TransferActions({
     }
   };
 
-  // 1. PENDING: Sender can accept/reject, Requester can cancel
+  // 1. PENDING: Sender (B) can accept/reject, Receiver (A) can ONLY cancel
   if (status === "pending") {
+    // IF ADMIN
+    if (isAdmin) {
+      return (
+        <div className="flex gap-3 justify-end items-center">
+          <PrintTransferButton transferId={transferId} />
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-10 px-6 rounded-xl text-rose-600 hover:bg-rose-500/10 font-black tracking-tighter text-xs"
+            onClick={() => updateStatus("rejected")}
+            disabled={!!loading}
+          >
+            {loading === "rejected" ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <XCircle className="h-4 w-4 mr-2" />
+            )}
+            Refuser (Admin)
+          </Button>
+          <Button
+            size="sm"
+            className="h-10 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black tracking-tighter text-xs shadow-lg shadow-emerald-500/20"
+            onClick={() => updateStatus("accepted")}
+            disabled={!!loading}
+          >
+            Accepter (Admin)
+          </Button>
+        </div>
+      );
+    }
+
+    // IF SENDER (B - celui qui doit envoyer)
     if (isSender) {
       return (
-        <div className="flex gap-3 justify-end">
+        <div className="flex gap-3 justify-end items-center">
+          <PrintTransferButton transferId={transferId} />
           <Button
             size="sm"
             variant="ghost"
@@ -212,76 +156,108 @@ export function TransferActions({
         </div>
       );
     }
+
+    // IF RECEIVER (A - celui qui a fait la demande)
+    if (isReceiver) {
+      return (
+        <div className="flex gap-3 justify-end items-center">
+          <PrintTransferButton transferId={transferId} />
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-10 px-6 rounded-xl text-rose-600 hover:bg-rose-500/10 font-black tracking-tighter text-xs"
+            onClick={() => updateStatus("cancelled")}
+            disabled={!!loading}
+          >
+            <Ban className="h-4 w-4 mr-2" /> Annuler ma demande
+          </Button>
+        </div>
+      );
+    }
+
     return (
-      <Button
-        size="sm"
-        variant="ghost"
-        className="h-10 px-6 rounded-xl text-rose-600 hover:bg-rose-500/10 font-black tracking-tighter text-xs"
-        onClick={() => updateStatus("cancelled")}
-        disabled={!!loading}
+      <Badge
+        variant="outline"
+        className="rounded-full bg-slate-500/10 text-slate-500 border-slate-500/20 px-4 py-1.5 text-[10px] font-black tracking-widest italic"
       >
-        <Ban className="h-4 w-4 mr-2" /> Annuler
-      </Button>
+        À Valider
+      </Badge>
     );
   }
 
   // 2. ACCEPTED: Sender marks as SHIPPED
   if (status === "accepted") {
-    if (isSender) {
+    if (isSender || isAdmin) {
       return (
-        <Button
-          size="sm"
-          className="h-10 px-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black tracking-tighter text-xs shadow-lg shadow-blue-500/20 flex gap-2"
-          onClick={() => updateStatus("shipped")}
-          disabled={!!loading}
-        >
-          {loading === "shipped" ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <MoveRight className="h-4 w-4" />
-          )}
-          Expédier le stock
-        </Button>
+        <div className="flex gap-3 justify-end items-center">
+          <PrintTransferButton transferId={transferId} />
+          <Button
+            size="sm"
+            className="h-10 px-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black tracking-tighter text-xs shadow-lg shadow-blue-500/20 flex gap-2"
+            onClick={() => updateStatus("shipped")}
+            disabled={!!loading}
+          >
+            {loading === "shipped" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <MoveRight className="h-4 w-4" />
+            )}
+            Expédier le stock
+          </Button>
+        </div>
       );
     }
     return (
-      <Badge
-        variant="outline"
-        className="rounded-full bg-blue-500/5 text-blue-600 border-blue-500/20 px-4 py-1.5 text-[10px] font-black tracking-widest italic animate-pulse"
-      >
-        PRÉPARATION...
-      </Badge>
+      <div className="flex gap-3 justify-end items-center">
+        <PrintTransferButton transferId={transferId} />
+        <Badge
+          variant="outline"
+          className="rounded-full bg-blue-500/5 text-blue-600 border-blue-500/20 px-4 py-1.5 text-[10px] font-black tracking-widest italic animate-pulse"
+        >
+          Préparation...
+        </Badge>
+      </div>
     );
   }
 
   // 3. SHIPPED: Requester marks as COMPLETED (Received)
   if (status === "shipped") {
-    if (!isSender) {
+    if (isReceiver || isAdmin) {
       return (
-        <Button
-          size="sm"
-          className="h-10 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black tracking-tighter text-xs shadow-lg shadow-emerald-500/20 flex gap-2"
-          onClick={() => updateStatus("completed")}
-          disabled={!!loading}
-        >
-          {loading === "completed" ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <CheckCircle2 className="h-4 w-4" />
-          )}
-          Confirmer réception
-        </Button>
+        <div className="flex gap-3 justify-end items-center">
+          <PrintTransferButton transferId={transferId} />
+          <Button
+            size="sm"
+            className="h-10 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black tracking-tighter text-xs shadow-lg shadow-emerald-500/20 flex gap-2"
+            onClick={() => updateStatus("completed")}
+            disabled={!!loading}
+          >
+            {loading === "completed" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4" />
+            )}
+            Confirmer réception
+          </Button>
+        </div>
       );
     }
     return (
-      <Badge
-        variant="outline"
-        className="rounded-full bg-orange-500/5 text-orange-600 border-orange-500/20 px-4 py-1.5 text-[10px] font-black tracking-widest italic animate-pulse flex gap-2"
-      >
-        <Truck className="h-3 w-3" /> EN ROUTE...
-      </Badge>
+      <div className="flex gap-3 justify-end items-center">
+        {(isSender || isReceiver || isAdmin) && (
+          <PrintTransferButton transferId={transferId} />
+        )}
+        <Badge
+          variant="outline"
+          className="rounded-full bg-orange-500/5 text-orange-600 border-orange-500/20 px-4 py-1.5 text-[10px] font-black tracking-widest italic animate-pulse flex gap-2"
+        >
+          <Truck className="h-3 w-3" /> En Route...
+        </Badge>
+      </div>
     );
   }
 
-  return null;
+  return isSender || isReceiver || isAdmin ? (
+    <PrintTransferButton transferId={transferId} />
+  ) : null;
 }

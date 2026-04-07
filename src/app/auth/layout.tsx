@@ -1,3 +1,6 @@
+"use client";
+
+import { useBranding } from "@/components/providers/branding-provider";
 import { Warehouse, ShieldAlert } from "lucide-react";
 import Image from "next/image";
 
@@ -6,6 +9,8 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { settings } = useBranding();
+
   return (
     <div className="flex min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-950">
       {/* Decorative background for the whole page */}
@@ -35,7 +40,7 @@ export default function AuthLayout({
             </div>
             <div className="flex flex-col">
               <span className="font-black text-2xl tracking-tighter text-white leading-none">
-                Ets La Championne
+                {settings.name}
               </span>
               <span className="text-[10px] tracking-widest opacity-50 font-bold text-primary mt-1">
                 Portail logistique
@@ -47,60 +52,49 @@ export default function AuthLayout({
             <div className="space-y-4">
               <h1 className="text-6xl font-black tracking-tighter leading-tight">
                 Pilotage <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-blue-400">
-                  multi-boutiques.
+                <span className="font-black text-transparent bg-clip-text bg-linear-to-r from-primary to-blue-400">
+                  Multi-Boutique.
                 </span>
               </h1>
-              <p className="text-xl text-slate-500 dark:text-slate-300 font-medium leading-relaxed">
-                Gérez vos stocks, vos équipes et vos performances en temps réel
-                sur l&apos;ensemble du réseau Ségbé et Sanguera.
+              <p className="text-lg font-medium opacity-60 leading-relaxed max-w-md">
+                Accédez à votre infrastructure de gestion centralisée pour
+                piloter vos stocks et vos ventes en temps réel.
+              </p>
+            </div>
+
+            <div className="p-10 rounded-[3rem] bg-white/5 backdrop-blur-3xl border border-white/10 shadow-3xl space-y-4">
+              <div className="flex items-center gap-4 text-primary">
+                <ShieldAlert className="h-6 w-6" />
+                <span className="text-sm font-black tracking-widest">
+                  Accès Sécurisé
+                </span>
+              </div>
+              <p className="text-[13px] font-medium opacity-50 leading-relaxed">
+                Cet espace est réservé au personnel autorisé de l&apos;enseigne{" "}
+                {settings.name}. Toute tentative de connexion non autorisée est
+                enregistrée.
               </p>
             </div>
           </div>
 
-          <div className="flex justify-between items-center pt-10 border-t border-white/5 opacity-40">
-            <div className="text-[10px] font-bold tracking-widest">
-              &copy; 2026 Ecosystème digital
-            </div>
+          <div className="mt-auto pt-10 border-t border-white/10 flex items-center justify-between text-[10px] font-black tracking-widest text-white/30">
+            <span>Propulsé par Nexus v3.0</span>
+            <span>&copy; 2026 {settings.name}</span>
           </div>
         </div>
       </div>
 
-      {/* Right side with form */}
-      <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-[55%] lg:px-24 relative overflow-y-auto">
-        <div className="mx-auto w-full max-w-sm lg:max-w-md animate-in fade-in slide-in-from-right-12 duration-1000">
-          {/* Mobile Branding */}
-          <div className="lg:hidden mb-12 flex justify-center">
-            <div className="flex items-center gap-3 text-left">
-              <div className="p-2 bg-primary/10 rounded-xl text-primary">
-                <Warehouse className="h-6 w-6" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-black text-2xl tracking-tighter text-slate-900 dark:text-white leading-none">
-                  Ets La Championne
-                </span>
-                <span className="text-[9px] tracking-widest opacity-50 font-bold text-primary">
-                  Console admin
-                </span>
-              </div>
-            </div>
-          </div>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-12 relative">
+        <div className="w-full max-w-lg z-50 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          {children}
+        </div>
 
-          <div className="relative group">
-            {/* Background decorative glow for form */}
-            <div className="absolute -inset-4 bg-primary/5 rounded-[4rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000 -z-10" />
-
-            <div className="bg-white/70 dark:bg-white/3 backdrop-blur-3xl rounded-[2.5rem] md:rounded-[3.5rem] p-6 lg:p-14 shadow-3xl border border-white dark:border-white/10">
-              <div className="relative z-10">{children}</div>
-            </div>
-          </div>
-
-          <div className="mt-12 text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-200 dark:bg-white/5 text-[10px] font-bold tracking-tight text-slate-500 dark:text-slate-300">
-              <ShieldAlert className="h-3 w-3" /> Espace réservé au personnel
-              autorisé
-            </div>
-          </div>
+        {/* Support floating info for mobile */}
+        <div className="lg:hidden absolute bottom-12 left-12 right-12 text-center space-y-4">
+          <p className="text-[10px] font-black tracking-widest text-slate-400">
+            {settings.name} Admin Center
+          </p>
         </div>
       </div>
     </div>

@@ -20,9 +20,11 @@ import { useRouter } from "next/navigation";
 export function DeleteProductButton({
   productId,
   productName,
+  trigger,
 }: {
   productId: string;
   productName: string;
+  trigger?: React.ReactElement;
 }) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,13 +60,15 @@ export function DeleteProductButton({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-destructive hover:bg-destructive/10"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          trigger || (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )
         }
       />
       <DialogContent>

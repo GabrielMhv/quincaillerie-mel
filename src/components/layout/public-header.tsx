@@ -51,15 +51,18 @@ export function PublicHeader() {
     <header className="sticky top-0 z-100 w-full border-b border-white/10 dark:border-white/5 bg-background/60 backdrop-blur-2xl">
       <div className="container mx-auto flex h-20 items-center justify-between px-3 sm:px-6">
         <div className="flex items-center gap-4 lg:gap-10">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="p-2.5 rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
-              <Store className="h-6 w-6 text-primary" />
+          <Link
+            href="/"
+            className="flex items-center space-x-2 sm:space-x-3 group"
+          >
+            <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
+              <Store className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </div>
-            <span className="font-black text-xl sm:text-2xl tracking-tighter text-gradient leading-none">
+            <span className="font-black text-lg sm:text-2xl tracking-tighter text-gradient leading-none">
               {settings.name}
-              <span className="hidden sm:inline">
+              <span className="hidden md:inline">
                 <br />
-                <span className="text-[9px] sm:text-[10px] tracking-tight opacity-60 font-bold text-blue-400 inline-block">
+                <span className="text-[10px] tracking-tight opacity-60 font-bold text-blue-400 inline-block">
                   {settings.description.substring(0, 30)}...
                 </span>
               </span>
