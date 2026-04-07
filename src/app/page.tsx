@@ -62,7 +62,7 @@ export default async function HomePage(props: {
                     vos chantiers.
                   </span>
                 </h1>
-                <p className="text-lg md:text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
+                <p className="text-lg md:text-2xl text-slate-600 dark:text-slate-300 font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
                   L&apos;outillage professionnel et les matériaux de
                   construction qu&apos;il vous faut à Ségbé et Sanguera. Plus de
                   2500 références en stock pour les pros et les particuliers.
@@ -99,7 +99,7 @@ export default async function HomePage(props: {
                   <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     15k+
                   </p>
-                  <p className="text-[11px] font-bold text-slate-400 tracking-tight">
+                  <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 tracking-tight">
                     Clients servis
                   </p>
                 </div>
@@ -108,7 +108,7 @@ export default async function HomePage(props: {
                   <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     2.5k
                   </p>
-                  <p className="text-[11px] font-bold text-slate-400 tracking-tight">
+                  <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 tracking-tight">
                     Références
                   </p>
                 </div>
@@ -117,7 +117,7 @@ export default async function HomePage(props: {
                   <p className="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
                     02
                   </p>
-                  <p className="text-[11px] font-bold text-slate-400 tracking-tight">
+                  <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 tracking-tight">
                     Points de vente
                   </p>
                 </div>
@@ -157,7 +157,7 @@ export default async function HomePage(props: {
                   <p className="text-[12px] md:text-[13px] font-black tracking-tighter text-slate-900 dark:text-white leading-none">
                     Stock Disponible
                   </p>
-                  <p className="text-[9px] md:text-[10px] font-bold text-slate-400 tracking-tight">
+                  <p className="text-[9px] md:text-[10px] font-bold text-slate-600 dark:text-slate-300 tracking-tight">
                     Lomé, Ségbé, Sanguera
                   </p>
                 </div>
@@ -189,7 +189,7 @@ export default async function HomePage(props: {
                   <div className="h-12 w-12 rounded-2xl bg-slate-100 dark:bg-white/5 group-hover:bg-white/20 flex items-center justify-center text-primary group-hover:text-white transition-all">
                     <Layers className="h-6 w-6" />
                   </div>
-                  <span className="text-[12px] font-bold tracking-tight text-slate-600 dark:text-slate-400 group-hover:text-white transition-colors">
+                  <span className="text-[12px] font-bold tracking-tight text-slate-700 dark:text-slate-300 group-hover:text-white transition-colors">
                     {category.name}
                   </span>
                 </Link>
@@ -239,7 +239,7 @@ export default async function HomePage(props: {
                   <h3 className="text-2xl font-black tracking-tighter text-slate-900 dark:text-white mb-4">
                     {advantage.title}
                   </h3>
-                  <p className="text-slate-500 dark:text-slate-400 font-medium text-[15px] leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+                  <p className="text-slate-600 dark:text-slate-300 font-medium text-[15px] leading-relaxed transition-opacity">
                     {advantage.desc}
                   </p>
                   <div className="mt-8 scale-x-0 group-hover:scale-x-100 h-1 w-12 bg-primary transition-transform origin-left duration-500" />
@@ -303,7 +303,7 @@ export default async function HomePage(props: {
                       futurs chantiers ?
                     </span>
                   </h2>
-                  <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
+                  <p className="text-lg md:text-xl text-slate-300 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
                     Bénéficiez de conditions préférentielles et d&apos;un
                     support technique dédié pour vos approvisionnements
                     professionnels.
@@ -340,7 +340,7 @@ export default async function HomePage(props: {
                       <p className="text-2xl sm:text-3xl font-black tracking-tighter text-white">
                         {stat.label}
                       </p>
-                      <p className="text-[10px] font-bold text-slate-500 tracking-tight line-clamp-1">
+                      <p className="text-[10px] font-bold text-slate-300 tracking-tight line-clamp-1">
                         {stat.sub}
                       </p>
                     </div>

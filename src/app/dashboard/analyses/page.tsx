@@ -2,31 +2,29 @@ import { createClient } from "@/lib/supabase/server";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
   TrendingUp,
-  Sparkles,
   PieChart as PieIcon,
   LineChart as LineIcon,
-  Search,
-  Calendar,
   Users,
   Trophy,
   UserCheck,
+  Store,
 } from "lucide-react";
-import { format, subDays, startOfDay, subHours } from "date-fns";
+import {
+  format,
+  subDays,
+  startOfDay,
+  eachDayOfInterval,
+  eachHourOfInterval,
+  isSameDay,
+  isSameHour,
+} from "date-fns";
 import { fr } from "date-fns/locale";
 import {
   AreaRevenueChart,
   CategoryPieChart,
+  SparkAreaChart,
 } from "@/components/dashboard/dashboard-charts";
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
-import { ExportButtons } from "@/components/dashboard/export-buttons";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 export default async function AnalysesPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -46,6 +44,11 @@ export default async function AnalysesPage(props: {
     .select("role, boutique_id")
     .eq("id", user.id)
     .single();
+
+  const { data: boutiques } = await supabase
+    .from("boutiques")
+    .select("id, name");
+
   const isGlobalScope = profile?.role === "admin" && !boutiqueSwitcherId;
   const filteredBoutiqueId = !isGlobalScope
     ? profile?.role === "admin"
@@ -71,27 +74,66 @@ export default async function AnalysesPage(props: {
   const { data: orders } = await ordersQuery;
   const validOrders = orders || [];
 
-  // 1. Revenue over time (Last 12 samples based on range)
-  const samples = range === "today" ? 12 : 7;
-  const timeData = Array.from({ length: samples }, (_, i) => {
-    // If today, samples are hours. If 7d/30d, samples are days.
-    const d =
-      range === "today"
-        ? subHours(new Date(), samples - 1 - i)
-        : subDays(new Date(), samples - 1 - i);
+  // Multi-store processing
+  let multiStoreValues: number[][] = [];
+  const chartColors = [
+    "#2563eb",
+    "#10b981",
+    "#f59e0b",
+    "#ef4444",
+    "#8b5cf6",
+    "#ec4899",
+    "#06b6d4",
+  ];
 
-    return {
-      dateStr: d.toISOString().split("T")[0],
-      display: format(d, range === "today" ? "HH:mm" : "EEE d", { locale: fr }),
-      fullIso: d.toISOString().substring(0, range === "today" ? 13 : 10),
-    };
-  });
+  const timeLabels: string[] = [];
+  const intervals: Date[] = [];
 
-  const revenueSeries = timeData.map((t) => {
+  if (range === "today") {
+    const start = startOfDay(new Date());
+    const end = new Date();
+    const hours = eachHourOfInterval({ start, end });
+    hours.forEach((h) => {
+      intervals.push(h);
+      timeLabels.push(format(h, "HH:mm"));
+    });
+  } else {
+    const days = range === "7d" ? 7 : 30;
+    const start = subDays(new Date(), days - 1);
+    const end = new Date();
+    const daysRange = eachDayOfInterval({ start, end });
+    daysRange.forEach((d) => {
+      intervals.push(d);
+      timeLabels.push(format(d, "EEE d", { locale: fr }));
+    });
+  }
+
+  if (isGlobalScope && boutiques && boutiques.length > 0) {
+    multiStoreValues = boutiques.map((b) => {
+      return intervals.map((timeStep) => {
+        return validOrders
+          .filter(
+            (o) =>
+              o.boutique_id === b.id &&
+              (range === "today"
+                ? isSameHour(new Date(o.created_at), timeStep)
+                : isSameDay(new Date(o.created_at), timeStep)),
+          )
+          .reduce((sum, o) => sum + Number(o.total), 0);
+      });
+    });
+  }
+
+  // 1. Revenue over time (Single line for non-global)
+  const revenueSeries = intervals.map((t, i) => {
     const total = validOrders
-      .filter((o) => o.created_at.startsWith(t.fullIso))
+      .filter((o) =>
+        range === "today"
+          ? isSameHour(new Date(o.created_at), t)
+          : isSameDay(new Date(o.created_at), t),
+      )
       .reduce((s, o) => s + Number(o.total), 0);
-    return { date: t.display, total };
+    return { date: timeLabels[i], total };
   });
 
   // 2. Category Distribution
@@ -145,7 +187,11 @@ export default async function AnalysesPage(props: {
         {/* Revenue Evolution */}
         <div className="rounded-[3.5rem] border border-border/50 bg-card/40 backdrop-blur-xl p-10 flex flex-col space-y-8 shadow-premium relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
-            <LineIcon className="h-32 w-32 text-primary" />
+            {isGlobalScope ? (
+              <Store className="h-32 w-32 text-primary" />
+            ) : (
+              <LineIcon className="h-32 w-32 text-primary" />
+            )}
           </div>
           <div className="flex items-center gap-4 relative z-10">
             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
@@ -153,15 +199,44 @@ export default async function AnalysesPage(props: {
             </div>
             <div>
               <h3 className="text-2xl font-black tracking-tighter">
-                Évolution du C.A.
+                {isGlobalScope ? "Performance Réseau" : "Évolution du C.A."}
               </h3>
               <p className="text-sm text-muted-foreground font-medium italic">
-                Tendances monétaires sur la période
+                {isGlobalScope
+                  ? "Comparaison multi-boutiques"
+                  : "Tendances monétaires sur la période"}
               </p>
             </div>
           </div>
-          <div className="h-112.5 w-full pt-4">
-            {revenueSeries.some((s) => s.total > 0) ? (
+          <div className="h-112.5 w-full pt-4 relative z-10">
+            {isGlobalScope ? (
+              <>
+                <SparkAreaChart
+                  data={multiStoreValues}
+                  labels={timeLabels}
+                  height={450}
+                  colors={chartColors}
+                />
+                <div className="mt-8 flex flex-wrap gap-4 pt-4 border-t border-border/10">
+                  {boutiques?.map((b, idx) => (
+                    <div
+                      key={b.id}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted/20 border border-border/10"
+                    >
+                      <div
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{
+                          backgroundColor: chartColors[idx % chartColors.length],
+                        }}
+                      />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                        {b.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : revenueSeries.some((s) => s.total > 0) ? (
               <AreaRevenueChart data={revenueSeries} />
             ) : (
               <div className="h-full w-full flex flex-col items-center justify-center space-y-4 opacity-30 border border-dashed rounded-4xl">

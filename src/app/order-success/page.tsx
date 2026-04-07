@@ -5,10 +5,7 @@ import PublicLayout from "@/components/layout/public-layout";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
-  Download,
   Package,
-  ArrowRight,
-  Sparkles,
   Store,
   MapPin,
   Zap,
@@ -17,7 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { formatCurrency, formatDate, cn } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { useCartStore } from "@/store/cart";
 

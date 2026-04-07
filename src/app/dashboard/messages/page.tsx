@@ -113,26 +113,34 @@ export default function MessagesDashboard() {
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       {/* Header Section */}
-      <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-black tracking-tighter leading-tight">
-            Centre de{" "}
-            <span className="text-gradient leading-relaxed">Messages</span>
-          </h1>
-          <p className="text-lg text-muted-foreground font-medium italic">
-            Gérez les interactions et les demandes de contact client
-          </p>
+      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-indigo-500/5 border border-indigo-500/10 relative overflow-hidden group shadow-premium">
+        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
+          <MessageSquare className="h-40 w-40 text-indigo-600" />
         </div>
-
-        <div className="px-6 py-3 rounded-2xl bg-card border border-border/50 shadow-sm flex items-center gap-4">
-          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-            <Inbox className="h-5 w-5" />
+        <div className="space-y-3 relative z-10">
+          <div className="h-14 w-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 mb-2">
+            <MessageSquare className="h-7 w-7" />
           </div>
-          <div>
-            <p className="text-[10px] font-black text-muted-foreground/60 tracking-widest lowercase">
-              Flux Entrant
+          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
+            Messagerie <span className="text-indigo-500 italic">Client</span>
+          </h1>
+          <div className="flex items-center gap-4">
+            <p className="text-lg text-muted-foreground font-medium italic leading-none">
+              Gérez les demandes de contact et le support client
             </p>
-            <p className="text-sm font-bold">{messages.length} Messages</p>
+          </div>
+        </div>
+        <div className="p-2 relative z-10 flex gap-4">
+          <div className="px-8 py-4 rounded-3xl bg-secondary/30 backdrop-blur-md border border-border/10 shadow-lg flex items-center gap-4">
+            <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600">
+              <Inbox className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-indigo-600/60 tracking-widest uppercase leading-none mb-1">
+                Boîte de réception
+              </p>
+              <p className="text-sm font-bold">{messages.length} Messages</p>
+            </div>
           </div>
         </div>
       </section>

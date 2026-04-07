@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
   Bell,
@@ -68,14 +68,14 @@ export default function NotificationsPage() {
         } else {
           setLoading(false);
         }
-      } catch (e) {
+      } catch {
         setLoading(false);
       }
     }
     getSession();
   }, [supabase]);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!userRole) return;
 
     setLoading(true);
@@ -97,13 +97,13 @@ export default function NotificationsPage() {
 
       if (error) throw error;
       setNotifications((data || []) as Notification[]);
-    } catch (error: unknown) {
+    } catch {
       toast.error("Erreur lors du chargement des notifications");
-      console.error(error);
+      // console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [userRole, boutiqueId, filter, supabase]);
 
   useEffect(() => {
     fetchNotifications();
@@ -139,7 +139,7 @@ export default function NotificationsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userRole, filter, boutiqueId]);
+  }, [userRole, filter, boutiqueId, fetchNotifications, supabase]);
 
   const markAsRead = async (id: string) => {
     const { error } = await supabase
@@ -170,7 +170,7 @@ export default function NotificationsPage() {
 
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
       toast.success("Toutes les notifications ont été marquées comme lues");
-    } catch (error) {
+    } catch {
       toast.error("Erreur lors de l'opération");
     }
   };
@@ -230,33 +230,31 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       {/* Header Section */}
-      <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-primary/10 border border-primary/20">
-              <Bell className="h-6 w-6 text-primary" />
-            </div>
-            <h1 className="text-5xl font-black tracking-tighter leading-tight">
-              Centre de{" "}
-              <span className="text-gradient leading-relaxed">
-                Notifications
-              </span>
-            </h1>
-          </div>
-          <p className="text-lg text-muted-foreground font-medium italic">
-            Historique complet des activités et alertes système.
-          </p>
+      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-blue-500/5 border border-blue-500/10 relative overflow-hidden group shadow-premium">
+        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
+          <Bell className="h-40 w-40 text-blue-600" />
         </div>
-
-        <div className="flex items-center gap-3">
+        <div className="space-y-3 relative z-10">
+          <div className="h-14 w-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 mb-2">
+            <Bell className="h-7 w-7" />
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
+            Centre de <span className="text-blue-500 italic">Notifications</span>
+          </h1>
+          <div className="flex items-center gap-4">
+            <p className="text-lg text-muted-foreground font-medium italic leading-none">
+              Historique complet des activités et alertes système.
+            </p>
+          </div>
+        </div>
+        <div className="p-2 relative z-10">
           <Button
             variant="outline"
-            className="rounded-2xl border-primary/20 h-14 px-6 hover:bg-primary/5 font-black tracking-tight"
             onClick={markAllAsRead}
             disabled={!notifications.some((n) => !n.is_read)}
+            className="rounded-3xl border-blue-500/20 bg-blue-500/5 hover:bg-blue-500/10 text-blue-600 font-black tracking-widest text-[10px] uppercase px-6 py-4 shadow-xs"
           >
-            <CheckCircle2 className="mr-2 h-5 w-5 text-primary" />
-            Tout marquer comme lu
+            <CheckCircle2 className="h-4 w-4 mr-2" /> Tout marquer comme lu
           </Button>
         </div>
       </section>
@@ -285,7 +283,7 @@ export default function NotificationsPage() {
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              TOUTES
+              Toutes
             </button>
             <button
               onClick={() => setFilter("unread")}
@@ -296,7 +294,7 @@ export default function NotificationsPage() {
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              NON LUES
+              Non Lues
             </button>
           </div>
         </div>

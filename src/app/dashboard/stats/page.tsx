@@ -269,7 +269,7 @@ export default async function StatsPage(props: {
                         index === 0
                           ? "bg-yellow-500/20 text-yellow-600 border border-yellow-500/20"
                           : index === 1
-                            ? "bg-slate-400/20 text-slate-500 border border-slate-400/20"
+                            ? "bg-slate-400/20 text-slate-600 dark:text-slate-300 border border-slate-400/20"
                             : index === 2
                               ? "bg-orange-500/20 text-orange-600 border border-orange-500/20"
                               : "bg-muted/50 text-muted-foreground/50 border border-border/50",

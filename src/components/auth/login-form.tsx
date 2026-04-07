@@ -61,7 +61,7 @@ export function LoginForm() {
         <div className="space-y-3">
           <Label
             htmlFor="email"
-            className="text-[11px] font-bold tracking-widest text-slate-400 ml-1"
+            className="text-[11px] font-bold tracking-widest text-slate-500 dark:text-slate-300 ml-1"
           >
             Email professionnel
           </Label>
@@ -81,7 +81,7 @@ export function LoginForm() {
           <div className="flex items-center justify-between ml-1">
             <Label
               htmlFor="password"
-              className="text-[11px] font-bold tracking-widest text-slate-400"
+              className="text-[11px] font-bold tracking-widest text-slate-500 dark:text-slate-300"
             >
               Mot de passe
             </Label>
@@ -128,7 +128,7 @@ export function LoginForm() {
       </Button>
 
       <div className="pt-8 border-t border-slate-200 dark:border-white/5 text-center">
-        <p className="text-xs font-medium text-slate-500">
+        <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
           Vous êtes un client ?{" "}
           <Link
             href="/"

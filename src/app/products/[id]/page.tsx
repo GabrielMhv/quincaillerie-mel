@@ -101,10 +101,10 @@ export default async function ProductDetailPage({
               </div>
 
               <div className="space-y-4 max-w-2xl mx-auto lg:mx-0">
-                <h3 className="text-[10px] font-black tracking-[0.2em] text-slate-400">
+                <h3 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300">
                   DESCRIPTION DÉTAILLÉE
                 </h3>
-                <p className="text-base md:text-xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                <p className="text-base md:text-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
                   {typedProduct.description ||
                     "Aucune description détaillée n'est disponible pour ce produit d'exception."}
                 </p>
@@ -113,7 +113,7 @@ export default async function ProductDetailPage({
               {/* Availability per Boutique Section */}
               {typedProduct.stocks && typedProduct.stocks.length > 0 && (
                 <div className="space-y-6 pt-8 border-t border-slate-200 dark:border-white/5 mx-auto lg:mx-0 w-full max-w-md">
-                  <h3 className="text-[10px] font-black tracking-[0.2em] text-slate-400 text-center lg:text-left">
+                  <h3 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300 text-center lg:text-left">
                     POINTS DE VENTE ACTIFS
                   </h3>
                   <div className="grid gap-4">
@@ -172,7 +172,7 @@ export default async function ProductDetailPage({
                     <span className="text-[10px] font-black tracking-widest text-slate-900 dark:text-white mb-2">
                       {item.title}
                     </span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                       {item.desc}
                     </span>
                   </div>

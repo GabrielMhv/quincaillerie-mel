@@ -9,13 +9,15 @@ import {
   Calendar,
   ShoppingBag,
   MapPin,
-  User as UserIcon,
   Shield,
   Sparkles,
 } from "lucide-react";
 
 import { DeleteAccountButton } from "@/components/profile/delete-account-button";
-import { cn } from "@/lib/utils";
+import {
+  ProfileForm,
+  PasswordChangeForm,
+} from "@/components/profile/profile-form";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -28,9 +30,9 @@ export default async function ProfilePage() {
     redirect("/auth/login");
   }
 
-  // Fetch user profile with boutique info
+  // Fetch user profile with boutique info from 'profiles'
   const { data: profile } = await supabase
-    .from("users")
+    .from("profiles")
     .select("*, boutiques(name)")
     .eq("id", user.id)
     .single();
@@ -93,15 +95,31 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       {/* Header Section */}
-      <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-black tracking-tighter leading-tight">
-            Identité{" "}
-            <span className="text-gradient leading-relaxed">Numérique</span>
+      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-indigo-500/5 border border-indigo-500/10 relative overflow-hidden group shadow-premium">
+        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
+          <Shield className="h-40 w-40 text-indigo-600" />
+        </div>
+        <div className="space-y-3 relative z-10 font-black tracking-tighter leading-none mb-1">
+          <div className="h-14 w-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 mb-2">
+            <Shield className="h-7 w-7" />
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
+            Mon <span className="text-indigo-500 italic">Profil</span>
           </h1>
-          <p className="text-lg text-muted-foreground font-medium italic">
-            Gérez vos informations personnelles et historique d&apos;activité
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-lg text-muted-foreground font-medium italic leading-none">
+              Gérez vos informations personnelles et vos préférences
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-4">
+          <ProfileForm
+            initialData={{
+              full_name: profile?.full_name || profile?.name || "",
+              phone: profile?.phone,
+              avatar_url: profile?.avatar_url,
+            }}
+          />
         </div>
       </section>
 
@@ -189,7 +207,8 @@ export default async function ProfilePage() {
                 </div>
               </div>
 
-              <div className="w-full pt-8">
+              <div className="w-full pt-8 flex flex-col gap-4">
+                <PasswordChangeForm />
                 <DeleteAccountButton userId={user.id} />
               </div>
             </div>

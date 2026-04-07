@@ -15,9 +15,7 @@ import {
   History,
   Clock,
   ShoppingBag,
-  CheckCircle2,
-  AlertCircle,
-  ShoppingCart,
+    ShoppingCart,
 } from "lucide-react";
 import { OrderDetailsModal } from "./order-details-modal";
 import { Order } from "@/types";

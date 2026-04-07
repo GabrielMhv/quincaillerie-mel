@@ -51,7 +51,7 @@ export default function AuthLayout({
                   multi-boutiques.
                 </span>
               </h1>
-              <p className="text-xl text-slate-400 font-medium leading-relaxed">
+              <p className="text-xl text-slate-500 dark:text-slate-300 font-medium leading-relaxed">
                 Gérez vos stocks, vos équipes et vos performances en temps réel
                 sur l&apos;ensemble du réseau Ségbé et Sanguera.
               </p>
@@ -96,7 +96,7 @@ export default function AuthLayout({
           </div>
 
           <div className="mt-12 text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-200 dark:bg-white/5 text-[10px] font-bold tracking-tight text-slate-400">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-200 dark:bg-white/5 text-[10px] font-bold tracking-tight text-slate-500 dark:text-slate-300">
               <ShieldAlert className="h-3 w-3" /> Espace réservé au personnel
               autorisé
             </div>

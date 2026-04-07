@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createCategory, updateCategory } from "@/app/actions/products";
+import { categorySchema } from "@/lib/validations/product";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,7 +32,6 @@ export function CategoryFormModal({ category }: CategoryFormModalProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const [name, setName] = useState(category?.name || "");
 
@@ -45,21 +45,25 @@ export function CategoryFormModal({ category }: CategoryFormModalProps) {
     e.preventDefault();
     setLoading(true);
 
+    const rawData = { name };
+
+    const validation = categorySchema.safeParse(rawData);
+    if (!validation.success) {
+      toast.error(validation.error.issues[0].message);
+      setLoading(false);
+      return;
+    }
+
     try {
       if (category) {
-        // Update
-        const { error } = await supabase
-          .from("categories")
-          .update({ name })
-          .eq("id", category.id);
-
-        if (error) throw error;
+        // Update via Server Action
+        const result = await updateCategory(category.id, rawData);
+        if (result.error) throw new Error(result.error);
         toast.success("Catégorie mise à jour");
       } else {
-        // Create
-        const { error } = await supabase.from("categories").insert([{ name }]);
-
-        if (error) throw error;
+        // Create via Server Action
+        const result = await createCategory(rawData);
+        if (result.error) throw new Error(result.error);
         toast.success("Catégorie créée");
       }
 
@@ -70,7 +74,10 @@ export function CategoryFormModal({ category }: CategoryFormModalProps) {
       }
     } catch (error: unknown) {
       console.error("Error saving category:", error);
-      const message = error instanceof Error ? error.message : "Erreur lors de l'enregistrement";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de l'enregistrement";
       toast.error(message);
     } finally {
       setLoading(false);

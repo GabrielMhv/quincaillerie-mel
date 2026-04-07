@@ -123,10 +123,13 @@ interface BoutiqueSplitChartProps {
 }
 
 const COLORS = [
-  "hsl(var(--primary))",
-  "hsl(var(--secondary))",
-  "#10b981",
-  "#f59e0b",
+  "#2563eb", // Vibrant Blue
+  "#10b981", // Emerald Green
+  "#f59e0b", // Amber
+  "#ef4444", // Red
+  "#8b5cf6", // Violet
+  "#ec4899", // Pink
+  "#06b6d4", // Cyan
 ];
 
 export function BoutiqueSplitChart({ data }: BoutiqueSplitChartProps) {
@@ -161,18 +164,22 @@ export function BoutiqueSplitChart({ data }: BoutiqueSplitChartProps) {
   );
 }
 
-interface SparkAreaChartProps {
-  data: number[];
-  labels: string[];
-  height?: number;
-}
+
 
 export function SparkAreaChart({
   data,
   labels,
   height = 200,
-}: SparkAreaChartProps) {
-  const max = Math.max(...data, 100);
+  colors,
+}: {
+  data: number[] | number[][];
+  labels: string[];
+  height?: number;
+  colors?: string[];
+}) {
+  const isMulti = Array.isArray(data[0]);
+  const flatData = isMulti ? (data as number[][]).flat() : (data as number[]);
+  const max = Math.max(...flatData, 100);
 
   const generatePath = (values: number[], width: number, h: number) => {
     if (values.length < 2) return `M 0,${h} L ${width},${h}`;
@@ -197,6 +204,35 @@ export function SparkAreaChart({
     return `${path} L ${width},${h} L 0,${h} Z`;
   };
 
+  const renderSpark = (v: number[], idx: number) => {
+    const color = colors?.[idx] || "hsl(var(--primary))";
+    const gradId = `sparkGradient-${idx}`;
+    return (
+      <g key={idx}>
+        <defs>
+          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path
+          d={generateAreaPath(v, 800, 200)}
+          fill={`url(#${gradId})`}
+          className="transition-all duration-1000"
+        />
+        <path
+          d={generatePath(v, 800, 200)}
+          fill="none"
+          stroke={color}
+          strokeWidth={isMulti ? "3" : "4"}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="transition-all duration-1000"
+        />
+      </g>
+    );
+  };
+
   return (
     <div className="relative w-full overflow-hidden" style={{ height }}>
       <svg
@@ -204,34 +240,9 @@ export function SparkAreaChart({
         viewBox="0 0 800 200"
         preserveAspectRatio="none"
       >
-        <defs>
-          <linearGradient id="sparkGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="0%"
-              stopColor="hsl(var(--primary))"
-              stopOpacity="0.4"
-            />
-            <stop
-              offset="100%"
-              stopColor="hsl(var(--primary))"
-              stopOpacity="0"
-            />
-          </linearGradient>
-        </defs>
-        <path
-          d={generateAreaPath(data, 800, 200)}
-          fill="url(#sparkGradient)"
-          className="transition-all duration-1000"
-        />
-        <path
-          d={generatePath(data, 800, 200)}
-          fill="none"
-          stroke="hsl(var(--primary))"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="transition-all duration-1000"
-        />
+        {isMulti
+          ? (data as number[][]).map((v, i) => renderSpark(v, i))
+          : renderSpark(data as number[], 0)}
       </svg>
       <div className="flex justify-between items-center text-[10px] font-black text-muted-foreground/30 mt-4 px-2 tracking-tighter">
         <span>{labels[0]}</span>

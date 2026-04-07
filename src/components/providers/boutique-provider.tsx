@@ -53,7 +53,7 @@ export function BoutiqueProvider({ children }: { children: React.ReactNode }) {
             } else if (data.length > 0) {
               setSelectedBoutiqueState(data[0]);
             }
-          } catch (e) {
+          } catch {
             if (data.length > 0) setSelectedBoutiqueState(data[0]);
           }
         } else if (data && data.length > 0) {

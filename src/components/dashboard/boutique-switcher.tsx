@@ -7,10 +7,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
-import { Store, Globe, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Store, Globe } from "lucide-react";
 
 interface Boutique {
   id: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { convertToWebP } from "@/lib/image-utils";
+import { createProduct, updateProduct } from "@/app/actions/products";
+import { productSchema } from "@/lib/validations/product";
 
 interface Category {
   id: string;
@@ -54,7 +56,6 @@ export function ProductFormModal({
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   const router = useRouter();
-  const supabase = createClient();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -114,78 +115,58 @@ export function ProductFormModal({
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
-    const price = parseFloat(formData.get("price") as string);
-    const category_id = formData.get("category_id") as string;
-    const description = formData.get("description") as string;
-    const min_stock_alert = parseInt(formData.get("min_stock_alert") as string);
+    const rawData = {
+      name: formData.get("name") as string,
+      price: parseFloat(formData.get("price") as string),
+      category_id: formData.get("category_id") as string,
+      description: formData.get("description") as string,
+      min_stock_alert: parseInt(formData.get("min_stock_alert") as string) || 0,
+      image_url: imageUrl || null,
+    };
+
+    // Validation Zod avant l'action
+    const validation = productSchema.partial().safeParse(rawData);
+    if (!validation.success) {
+      toast.error(validation.error.issues[0].message);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       if (productToEdit) {
-        // UPDATE
-        const { error } = await supabase
-          .from("products")
-          .update({
-            name,
-            price,
-            category_id: category_id || null,
-            description,
-            min_stock_alert,
-            image_url: imageUrl,
-          })
-          .eq("id", productToEdit.id);
-
-        if (error) throw error;
-        toast.success("Produit mis à jour");
+        // UPDATE via Server Action
+        const result = await updateProduct(productToEdit.id, rawData);
+        if (result.error) throw new Error(result.error);
+        toast.success("Produit mis à jour avec succès");
       } else {
-        // CREATE
-        const { data: newProduct, error: productError } = await supabase
-          .from("products")
-          .insert({
-            name,
-            price,
-            category_id: category_id || null,
-            description,
-            min_stock_alert,
-            image_url: imageUrl,
-          })
-          .select()
-          .single();
-
-        if (productError) throw productError;
-
-        // Handle initial stocks for the new product
-        if (newProduct) {
-          const stockInserts = [];
-          if (userRole === "admin" && targetBoutique === "all") {
-            // Add stock for all boutiques
-            for (const boutique of boutiques) {
-              stockInserts.push({
-                product_id: newProduct.id,
-                boutique_id: boutique.id,
-                quantity: quantities[boutique.id] || 0,
-              });
-            }
-          } else {
-            // Add stock for a specific boutique
-            const bId = userRole === "admin" ? targetBoutique : userBoutiqueId;
-            if (bId && bId !== "all") {
-              stockInserts.push({
-                product_id: newProduct.id,
-                boutique_id: bId,
-                quantity: quantities[bId] || 0,
-              });
-            }
-          }
-
-          if (stockInserts.length > 0) {
-            const { error: stockError } = await supabase
-              .from("stocks")
-              .insert(stockInserts);
-            if (stockError) throw stockError;
+        // CREATE via Server Action
+        const stocks: { boutique_id: string; quantity: number }[] = [];
+        if (userRole === "admin" && targetBoutique === "all") {
+          boutiques.forEach((b) => {
+            stocks.push({
+              boutique_id: b.id,
+              quantity: quantities[b.id] || 0,
+            });
+          });
+        } else {
+          const bId = userRole === "admin" ? targetBoutique : userBoutiqueId;
+          if (bId && bId !== "all") {
+            stocks.push({
+              boutique_id: bId,
+              quantity: quantities[bId] || 0,
+            });
           }
         }
 
+        const createData = {
+          ...rawData,
+          category_id: rawData.category_id || "",
+          stocks,
+        };
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = await createProduct(createData as any);
+        if (result.error) throw new Error(result.error);
         toast.success("Produit créé avec succès");
       }
 
@@ -193,9 +174,9 @@ export function ProductFormModal({
       router.refresh();
     } catch (error) {
       console.error(error);
-      toast.error("Une erreur est survenue", {
-        description: error instanceof Error ? error.message : "Erreur inconnue",
-      });
+      toast.error(
+        error instanceof Error ? error.message : "Une erreur est survenue",
+      );
     } finally {
       setIsLoading(false);
     }

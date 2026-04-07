@@ -1,9 +1,14 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@/types";
-import { useRouter } from "next/navigation";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
@@ -22,7 +27,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
-  const router = useRouter();
 
   useEffect(() => {
     const fetchProfile = async (userId: string) => {
@@ -41,27 +45,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event: AuthChangeEvent, session: Session | null) => {
-      if (session) {
-        const profile = await fetchProfile(session.user.id);
-        setUser(profile);
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-
-    supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
-      const session = data?.session;
-      if (session) {
-        fetchProfile(session.user.id).then((profile) => {
+    } = supabase.auth.onAuthStateChange(
+      async (_event: AuthChangeEvent, session: Session | null) => {
+        if (session) {
+          const profile = await fetchProfile(session.user.id);
           setUser(profile);
-          setLoading(false);
-        });
-      } else {
+        } else {
+          setUser(null);
+        }
         setLoading(false);
-      }
-    });
+      },
+    );
+
+    supabase.auth
+      .getSession()
+      .then(({ data }: { data: { session: Session | null } }) => {
+        const session = data?.session;
+        if (session) {
+          fetchProfile(session.user.id).then((profile) => {
+            setUser(profile);
+            setLoading(false);
+          });
+        } else {
+          setLoading(false);
+        }
+      });
 
     return () => {
       subscription.unsubscribe();
@@ -73,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Faster: do both concurrently (or at least start signOut and redirect)
       supabase.auth.signOut();
       window.location.href = "/";
-    } catch (error) {
+    } catch {
       window.location.href = "/";
     }
   };

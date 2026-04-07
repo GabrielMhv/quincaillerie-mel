@@ -44,17 +44,27 @@ export default async function CategoriesPage() {
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       {/* Header Section */}
-      <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-black tracking-tighter leading-tight">
-            Organisation des{" "}
-            <span className="text-gradient leading-relaxed">Catégories</span>
-          </h1>
-          <p className="text-lg text-muted-foreground font-medium italic">
-            Structurez votre catalogue pour une navigation fluide
-          </p>
+      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-cyan-500/5 border border-cyan-500/10 relative overflow-hidden group shadow-premium">
+        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
+          <Tags className="h-40 w-40 text-cyan-600" />
         </div>
-        <CategoryFormModal />
+        <div className="space-y-3 relative z-10">
+          <div className="h-14 w-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-600 mb-2">
+            <Tags className="h-7 w-7" />
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
+            Organisation des{" "}
+            <span className="text-cyan-500 italic">Catégories</span>
+          </h1>
+          <div className="flex items-center gap-4">
+            <p className="text-lg text-muted-foreground font-medium italic leading-none">
+              Structurez votre catalogue pour une navigation fluide
+            </p>
+          </div>
+        </div>
+        <div className="p-2 relative z-10">
+          <CategoryFormModal />
+        </div>
       </section>
 
       {/* Main List Area */}

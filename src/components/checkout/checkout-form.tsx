@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { createOrderAction } from "@/app/actions/orders";
 
 export function CheckoutForm() {
   const { items, getTotal, clearCart, boutiqueId } = useCartStore();
@@ -73,12 +74,7 @@ export function CheckoutForm() {
     setIsLoading(true);
 
     try {
-      // Generate order ID client-side to avoid needing SELECT permission after INSERT
-      const orderId = crypto.randomUUID();
-
-      // 1. Create the order
-      const { error: orderError } = await supabase.from("orders").insert({
-        id: orderId,
+      const response = await createOrderAction({
         client_name: formData.client_name,
         phone: formData.phone,
         address: formData.address || null,
@@ -94,28 +90,25 @@ export function CheckoutForm() {
         status: "pending",
         is_scheduled: formData.is_scheduled,
         scheduled_at: formData.is_scheduled ? formData.scheduled_at : null,
+        items: items.map((item) => ({
+          product_id: item.product.id,
+          quantity: item.quantity,
+          price: item.product.price,
+        })),
       });
 
-      if (orderError) throw orderError;
-
-      // 2. Create order items
-      const orderItemsToInsert = items.map((item) => ({
-        order_id: orderId,
-        product_id: item.product.id,
-        quantity: item.quantity,
-        price: item.product.price,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from("order_items")
-        .insert(orderItemsToInsert);
-
-      if (itemsError) throw itemsError;
+      if (response.error) {
+        throw new Error(
+          typeof response.error === "string"
+            ? response.error
+            : "Erreur de validation des données.",
+        );
+      }
 
       // SUCCESS
       clearCart();
       toast.success("Commande validée avec succès !");
-      router.push(`/order-success?id=${orderId}`);
+      router.push(`/order-success?id=${response.orderId}`);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Erreur inconnue";

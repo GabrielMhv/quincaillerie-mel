@@ -1,13 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatCurrency, cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import {
-  DollarSign,
-  Star,
   TrendingUp,
-  Sparkles,
   FileText,
-  Download,
-  Target,
   Wallet,
   CreditCard,
   Receipt,

@@ -5,6 +5,7 @@ import { formatCurrency } from "@/lib/utils";
 import { StockEditor } from "@/components/products/stock-editor";
 import { Badge } from "@/components/ui/badge";
 import { ProductFormModal } from "@/components/products/product-form-modal";
+import { StockHistory } from "@/components/dashboard/stock-history";
 import { Sparkles, AlertTriangle, Boxes } from "lucide-react";
 import Image from "next/image";
 
@@ -95,36 +96,42 @@ export default async function DashboardStocksPage(props: {
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       {/* Header Section */}
-      <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-black tracking-tighter leading-tight">
-            Contrôle des{" "}
-            <span className="text-gradient leading-relaxed">Stocks</span>
+      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-amber-500/5 border border-amber-500/10 relative overflow-hidden group shadow-premium">
+        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
+          <Boxes className="h-40 w-40 text-amber-600" />
+        </div>
+        <div className="space-y-3 relative z-10">
+          <div className="h-14 w-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 mb-2">
+            <Boxes className="h-7 w-7" />
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
+            Mouvements de <span className="text-amber-500 italic">Stocks</span>
           </h1>
-          <div className="flex items-center gap-3">
-            <p className="text-lg text-muted-foreground font-medium italic">
-              {isGlobalScope
-                ? "Vue panoramique sur l'ensemble de l'inventaire"
-                : `Surveillance active : ${currentBoutiqueName}`}
-            </p>
-            {boutiqueSwitcherId && (
-              <Badge
-                variant="outline"
-                className="bg-orange-500/10 text-orange-600 border-orange-500/20 px-3 py-1 rounded-full font-black text-[10px] tracking-widest"
-              >
-                Unité : {currentBoutiqueName}
-              </Badge>
-            )}
+          <div className="flex items-center gap-4">
+             <p className="text-lg text-muted-foreground font-medium italic leading-none">
+               {isGlobalScope 
+                 ? "Inventaire consolidé du réseau quincaillerie." 
+                 : `État des stocks : ${currentBoutiqueName}`}
+             </p>
+             {boutiqueSwitcherId && (
+               <Badge 
+                 variant="outline" 
+                 className="bg-amber-500/10 text-amber-600 border-amber-500/20 px-4 py-1 rounded-full font-black text-[10px] tracking-widest uppercase shadow-xs"
+               >
+                 Dépôt Local
+               </Badge>
+             )}
           </div>
         </div>
-        {(role === "admin" || role === "manager") && (
+        
+        <div className="flex items-center gap-4 relative z-10">
           <ProductFormModal
             categories={categories || []}
             userRole={role}
             userBoutiqueId={profile.boutique_id}
             boutiques={boutiques || []}
           />
-        )}
+        </div>
       </section>
 
       {/* Main Table Area */}
@@ -249,6 +256,11 @@ export default async function DashboardStocksPage(props: {
             </tbody>
           </table>
         </div>
+      </section>
+
+      {/* Historique des mouvements de stock */}
+      <section className="mt-8">
+        <StockHistory />
       </section>
     </div>
   );

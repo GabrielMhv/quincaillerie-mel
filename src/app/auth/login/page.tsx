@@ -16,7 +16,7 @@ export default function LoginPage() {
             chez vous.
           </span>
         </h1>
-        <p className="text-lg text-slate-500 dark:text-slate-400 font-medium max-w-sm leading-relaxed">
+        <p className="text-lg text-slate-600 dark:text-slate-300 font-medium max-w-sm leading-relaxed">
           Accédez à votre console sécurisée pour piloter l&apos;ensemble de nos
           points de vente.
         </p>

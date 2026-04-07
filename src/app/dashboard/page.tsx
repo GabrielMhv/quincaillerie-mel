@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatCurrency, cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import {
   DollarSign,
   Package,
@@ -7,24 +7,24 @@ import {
   Users,
   TrendingUp,
   ArrowRight,
-  Zap,
   Clock,
   CheckCircle2,
 } from "lucide-react";
-import { SparkAreaChart } from "@/components/dashboard/dashboard-charts";
-import { PremiumStatCard } from "@/components/dashboard/premium-stat-card";
-import { format, subDays, startOfDay, subHours } from "date-fns";
-import { fr } from "date-fns/locale";
+import { subDays, startOfDay } from "date-fns";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ProductFormModal } from "@/components/products/product-form-modal";
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
+import { Suspense } from "react";
+import { DashboardSkeleton } from "@/components/ui/skeletons";
+import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts-section";
 
 export default async function DashboardPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = await props.searchParams;
   const boutiqueSwitcherId = searchParams.boutiqueId as string | undefined;
+  const fromParam = searchParams.from as string | undefined;
+  const toParam = searchParams.to as string | undefined;
 
   const supabase = await createClient();
 
@@ -94,10 +94,23 @@ export default async function DashboardPage(props: {
   const range = (searchParams.range as string) || "today";
 
   // Calculate Date Filters
-  let dateFilter: string | null = null;
-  if (range === "today") dateFilter = startOfDay(new Date()).toISOString();
-  else if (range === "7d") dateFilter = subDays(new Date(), 7).toISOString();
-  else if (range === "30d") dateFilter = subDays(new Date(), 30).toISOString();
+  let dateFilterStart: string | null = null;
+  let dateFilterEnd: string | null = null;
+
+  if (range === "today") dateFilterStart = startOfDay(new Date()).toISOString();
+  else if (range === "7d")
+    dateFilterStart = subDays(new Date(), 7).toISOString();
+  else if (range === "30d")
+    dateFilterStart = subDays(new Date(), 30).toISOString();
+  else if (range === "custom") {
+    if (fromParam) dateFilterStart = new Date(fromParam).toISOString();
+    if (toParam) {
+      // Set to the very end of the selected day
+      const endDate = new Date(toParam);
+      endDate.setHours(23, 59, 59, 999);
+      dateFilterEnd = endDate.toISOString();
+    }
+  }
 
   // Fetch orders with optional date filter
   let ordersQuery = supabase.from("orders").select(`
@@ -111,8 +124,11 @@ export default async function DashboardPage(props: {
     ordersQuery = ordersQuery.eq("boutique_id", filteredBoutiqueId);
   }
 
-  if (dateFilter) {
-    ordersQuery = ordersQuery.gte("created_at", dateFilter);
+  if (dateFilterStart) {
+    ordersQuery = ordersQuery.gte("created_at", dateFilterStart);
+  }
+  if (dateFilterEnd) {
+    ordersQuery = ordersQuery.lte("created_at", dateFilterEnd);
   }
 
   const { data: orders } = await ordersQuery;
@@ -124,53 +140,11 @@ export default async function DashboardPage(props: {
     .select("*")
     .order("name");
 
-  // Metrics
-  const totalOrders = validOrders.length;
-  const totalRevenue = validOrders.reduce(
-    (sum, order) => sum + Number(order.total),
-    0,
-  );
-
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("*")
-    .order("name");
-
   // Today's metrics
   const today = startOfDay(new Date());
   const todayIso = today.toISOString();
-  const yesterday = subDays(today, 1);
-  const yesterdayIsoStart = yesterday.toISOString();
-  const yesterdayIsoEnd = todayIso;
 
   const todayOrders = validOrders.filter((o) => o.created_at >= todayIso);
-  const todayRevenue = todayOrders.reduce(
-    (sum, order) => sum + Number(order.total),
-    0,
-  );
-
-  const yesterdayOrdersList = validOrders.filter(
-    (o) => o.created_at >= yesterdayIsoStart && o.created_at < yesterdayIsoEnd,
-  );
-  const yesterdayRevenue = yesterdayOrdersList.reduce(
-    (sum, order) => sum + Number(order.total),
-    0,
-  );
-
-  const calcTrend = (curr: number, prev: number) => {
-    if (prev === 0) return curr > 0 ? 100 : 0;
-    return Math.round(((curr - prev) / prev) * 100);
-  };
-
-  const revenueTrend = calcTrend(todayRevenue, yesterdayRevenue);
-  const ordersTrend = calcTrend(todayOrders.length, yesterdayOrdersList.length);
-
-  // Personal Sales (for anyone)
-  const myTodayOrders = todayOrders.filter((o) => o.employee_id === user.id);
-  const myTodayRevenue = myTodayOrders.reduce(
-    (sum, order) => sum + Number(order.total),
-    0,
-  );
 
   // Team Performance (for Manager/Admin)
   const teamSales: Record<
@@ -186,59 +160,6 @@ export default async function DashboardPage(props: {
       }
       teamSales[empId].total += Number(order.total);
       teamSales[empId].count += 1;
-    });
-  }
-
-  // --- REVENUE OVER TIME (Dynamic Samples) ---
-  const samples = range === "today" ? 12 : 7;
-  const timeData = Array.from({ length: samples }, (_, i) => {
-    const d =
-      range === "today"
-        ? subHours(new Date(), samples - 1 - i)
-        : subDays(new Date(), samples - 1 - i);
-
-    return {
-      isoPrefix: d.toISOString().substring(0, range === "today" ? 13 : 10),
-      display: format(d, range === "today" ? "HH:mm" : "EEE d", { locale: fr }),
-    };
-  });
-
-  const revenueData = timeData.map((t) => {
-    const total = validOrders
-      .filter((o) => o.created_at.startsWith(t.isoPrefix))
-      .reduce((sum, o) => sum + Number(o.total), 0);
-    return { date: t.display, total };
-  });
-
-  // --- TOP PRODUCTS ---
-  const productSales: Record<string, { name: string; quantity: number }> = {};
-  validOrders.forEach((order) => {
-    (
-      order.order_items as {
-        product_id: string;
-        quantity: number;
-        products: { name: string } | null;
-      }[]
-    )?.forEach((item) => {
-      const pName = item.products?.name || "Inconnu";
-      if (!productSales[item.product_id]) {
-        productSales[item.product_id] = { name: pName, quantity: 0 };
-      }
-      productSales[item.product_id].quantity += item.quantity;
-    });
-  });
-
-  const topProductsData = Object.values(productSales)
-    .sort((a, b) => b.quantity - a.quantity)
-    .slice(0, 5);
-
-  // --- BOUTIQUE SPLIT (Admin ONLY) ---
-  const boutiqueSales: Record<string, number> = {};
-  if (isGlobalScope) {
-    validOrders.forEach((order) => {
-      const bName =
-        (order.boutique as unknown as { name: string })?.name || "Autre";
-      boutiqueSales[bName] = (boutiqueSales[bName] || 0) + Number(order.total);
     });
   }
 
@@ -284,9 +205,6 @@ export default async function DashboardPage(props: {
       .slice(0, 5);
   }
 
-  const sparklineData = revenueData.map((d) => d.total);
-  const sparklineLabels = revenueData.map((d) => d.date);
-
   const hoursNow = new Date().getHours();
   const greeting =
     hoursNow < 12 ? "Bonjour" : hoursNow < 18 ? "Bon après-midi" : "Bonsoir";
@@ -310,32 +228,12 @@ export default async function DashboardPage(props: {
         </div>
 
         <div className="flex gap-4 h-fit">
-          <Link
-            href={
-              filteredBoutiqueId
-                ? `/dashboard/pos?boutiqueId=${filteredBoutiqueId}`
-                : "/dashboard/pos"
-            }
-          >
-            <Button className="rounded-full px-12 h-20 bg-primary text-white font-black tracking-tight text-lg shadow-3xl hover:scale-105 active:scale-95 transition-all group overflow-hidden">
-              Effectuer une Vente
-              <Zap className="ml-3 h-5 w-5 fill-current" />
-            </Button>
-          </Link>
-
-          {(role === "admin" || role === "manager") && (
-            <ProductFormModal
-              categories={categories || []}
-              userRole={role}
-              userBoutiqueId={profile.boutique_id}
-              boutiques={boutiques || []}
-            />
-          )}
+          {/* Removed action buttons as requested */}
         </div>
       </section>
 
       {/* Filter Section */}
-      <section className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 rounded-[3rem] bg-card/40 backdrop-blur-xl border border-border/50 shadow-premium">
+      <section className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 rounded-2xl bg-card/40 backdrop-blur-xl border border-border/50 shadow-premium">
         <div className="flex items-center gap-4">
           <Clock className="h-5 w-5 text-primary/40" />
           <h2 className="text-xl font-black tracking-tighter italic">
@@ -353,7 +251,7 @@ export default async function DashboardPage(props: {
               ? `/dashboard/analyses?boutiqueId=${filteredBoutiqueId}`
               : "/dashboard/analyses"
           }
-          className="group relative h-44 overflow-hidden rounded-[3.5rem] border border-indigo-500/20 bg-indigo-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/10"
+          className="group relative h-44 overflow-hidden rounded-2xl border border-indigo-500/20 bg-indigo-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/10"
         >
           <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
             <TrendingUp className="h-24 w-24 text-indigo-500" />
@@ -377,7 +275,7 @@ export default async function DashboardPage(props: {
               ? `/dashboard/comptabilite?boutiqueId=${filteredBoutiqueId}`
               : "/dashboard/comptabilite"
           }
-          className="group relative h-44 overflow-hidden rounded-[3.5rem] border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10"
+          className="group relative h-44 overflow-hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10"
         >
           <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
             <DollarSign className="h-24 w-24 text-emerald-500" />
@@ -399,7 +297,7 @@ export default async function DashboardPage(props: {
 
         <Link
           href="/dashboard/clients"
-          className="group relative h-44 overflow-hidden rounded-[3.5rem] border border-amber-500/20 bg-amber-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10"
+          className="group relative h-44 overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/5 backdrop-blur-xl p-10 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10"
         >
           <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
             <Users className="h-24 w-24 text-amber-500" />
@@ -447,7 +345,7 @@ export default async function DashboardPage(props: {
                 return (
                   <Link key={b.id} href={`/dashboard?boutiqueId=${b.id}`}>
                     <div
-                      className="group relative overflow-hidden rounded-[3rem] border border-border/50 bg-card/40 backdrop-blur-xl p-8 transition-all duration-500 hover:shadow-premium-hover hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-8"
+                      className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card/40 backdrop-blur-xl p-8 transition-all duration-500 hover:shadow-premium-hover hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-8"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
@@ -491,162 +389,17 @@ export default async function DashboardPage(props: {
       )}
 
       {/* Main KPI Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <PremiumStatCard
-          title={role === "employee" ? "Mon CA du Jour" : "Chiffre d'Affaires"}
-          value={formatCurrency(
-            role === "employee" ? myTodayRevenue : totalRevenue,
-          )}
-          iconName="DollarSign"
-          description={
-            role === "employee"
-              ? "Total de mes ventes aujourd'hui"
-              : "CA total enregistré sur la période"
-          }
-          trend={revenueTrend}
-          delay={100}
-          href={
-            filteredBoutiqueId
-              ? `/dashboard/comptabilite?boutiqueId=${filteredBoutiqueId}`
-              : "/dashboard/comptabilite"
-          }
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardChartsSection
+          filteredBoutiqueId={filteredBoutiqueId}
+          dateFilter={dateFilterStart}
+          range={range}
         />
-        <PremiumStatCard
-          title="Volume Commandes"
-          value={totalOrders}
-          iconName="ShoppingBag"
-          description="Nombre total de transactions"
-          trend={ordersTrend}
-          delay={200}
-          href={
-            filteredBoutiqueId
-              ? `/dashboard/analyses?boutiqueId=${filteredBoutiqueId}`
-              : "/dashboard/analyses"
-          }
-        />
-        <PremiumStatCard
-          title="CA du Jour"
-          value={formatCurrency(todayRevenue)}
-          iconName="TrendingUp"
-          description="Performance globale aujourd'hui"
-          trend={revenueTrend}
-          delay={300}
-          href={
-            filteredBoutiqueId
-              ? `/dashboard/comptabilite?range=today&boutiqueId=${filteredBoutiqueId}`
-              : "/dashboard/comptabilite?range=today"
-          }
-        />
-        <PremiumStatCard
-          title={isGlobalScope ? "Réseau de Vente" : "Point de Vente"}
-          value={
-            isGlobalScope
-              ? `${boutiques?.length || 0} Boutiques`
-              : currentBoutiqueName
-          }
-          iconName="Store"
-          description={
-            isGlobalScope
-              ? "Points de vente actifs"
-              : "Boutique d'affectation actuelle"
-          }
-          delay={400}
-          href={isGlobalScope ? "/dashboard/stores" : undefined}
-        />
-      </section>
-
-      {/* Analytics visualization */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2 p-10 rounded-[4rem] bg-card/80 backdrop-blur-xl border border-border/50 shadow-premium group">
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <h3 className="text-3xl font-black tracking-tighter">
-                Analyse des <span className="text-primary">Ventes</span>
-              </h3>
-              <p className="text-xs font-bold text-muted-foreground mt-1 tracking-tight">
-                {revenueTrend > 0
-                  ? `Tendances positives : +${revenueTrend}%`
-                  : revenueTrend < 0
-                    ? `Baisse observée : ${revenueTrend}%`
-                    : "Activité stable"}{" "}
-                sur la période
-              </p>
-            </div>
-            <div
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-xl transition-transform group-hover:scale-110",
-                revenueTrend >= 0
-                  ? "bg-emerald-500/10 text-emerald-600"
-                  : "bg-rose-500/10 text-rose-600",
-              )}
-            >
-              <TrendingUp className="h-4 w-4" />
-              <span className="text-[11px] font-bold tracking-tight">
-                {revenueTrend > 0
-                  ? `En hausse (${revenueTrend}%)`
-                  : revenueTrend < 0
-                    ? `En baisse (${revenueTrend}%)`
-                    : "Stable"}
-              </span>
-            </div>
-          </div>
-
-          {sparklineData.length > 0 ? (
-            <SparkAreaChart
-              data={sparklineData}
-              labels={sparklineLabels}
-              height={250}
-            />
-          ) : (
-            <div className="h-62.5 w-full flex flex-col items-center justify-center space-y-4 opacity-50 bg-muted/20 rounded-3xl border border-dashed border-border text-center">
-              <TrendingUp className="h-10 w-10 text-muted-foreground" />
-              <p className="text-[11px] font-bold text-muted-foreground/60 tracking-tight">
-                Aucune transaction enregistrée sur cette période
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="p-10 rounded-[4rem] bg-card/80 backdrop-blur-xl border border-border/50 shadow-premium">
-          <h3 className="text-3xl font-black tracking-tighter mb-10">
-            Top <span className="text-primary">Produits</span>
-          </h3>
-          <div className="space-y-8">
-            {topProductsData.map((p, i) => (
-              <div key={i} className="space-y-2 group">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-black text-foreground truncate max-w-37.5 group-hover:text-primary transition-colors">
-                    {p.name}
-                  </span>
-                  <span className="text-[10px] font-black text-primary">
-                    {p.quantity} ventes
-                  </span>
-                </div>
-                <div className="h-3 w-full bg-secondary/30 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary transition-all duration-1000"
-                    style={{
-                      width: `${(p.quantity / (topProductsData[0]?.quantity || 1)) * 100}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-            {topProductsData.length === 0 && (
-              <div className="py-20 text-center opacity-30">
-                <Package className="h-12 w-12 mx-auto mb-4" />
-                <p className="text-xs font-black tracking-widest text-center">
-                  Aucune donnée
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+      </Suspense>
 
       {/* Operations Overview */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 p-10 rounded-[4rem] bg-card/80 backdrop-blur-xl border border-border/50 shadow-premium">
+        <div className="lg:col-span-8 p-10 rounded-2xl bg-card/80 backdrop-blur-xl border border-border/50 shadow-premium">
           <div className="flex items-center justify-between mb-10">
             <h3 className="text-3xl font-black tracking-tighter">
               Transactions <span className="text-primary">Récentes</span>
@@ -699,7 +452,7 @@ export default async function DashboardPage(props: {
         </div>
 
         <div className="lg:col-span-4 flex flex-col gap-10">
-          <div className="p-10 rounded-[4rem] bg-card/80 backdrop-blur-xl border border-border/50 shadow-premium grow">
+          <div className="p-10 rounded-2xl bg-card/80 backdrop-blur-xl border border-border/50 shadow-premium grow">
             <h3 className="text-2xl font-black tracking-tighter mb-8 italic text-rose-600 flex items-center gap-3">
               <Package className="h-6 w-6" /> Stock Critique
             </h3>
@@ -746,7 +499,7 @@ export default async function DashboardPage(props: {
             </div>
           </div>
 
-          <div className="p-10 rounded-[4rem] bg-card/80 backdrop-blur-xl border border-border/50 shadow-premium">
+          <div className="p-10 rounded-2xl bg-card/80 backdrop-blur-xl border border-border/50 shadow-premium">
             <h3 className="text-2xl font-black tracking-tighter mb-8">
               Staff <span className="text-primary">Performance</span>
             </h3>

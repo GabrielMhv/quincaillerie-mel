@@ -65,17 +65,27 @@ export default async function DashboardTeamPage() {
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       {/* Header Section */}
-      <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-black tracking-tighter leading-tight">
-            Gestion de l&apos;
-            <span className="text-gradient leading-relaxed">Équipe</span>
-          </h1>
-          <p className="text-lg text-muted-foreground font-medium italic">
-            Pilotez les accès et les affectations de vos collaborateurs
-          </p>
+      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-violet-500/5 border border-violet-500/10 relative overflow-hidden group shadow-premium">
+        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
+          <Users className="h-40 w-40 text-violet-600" />
         </div>
-        <UserFormModal boutiques={boutiques || []} />
+        <div className="space-y-3 relative z-10">
+          <div className="h-14 w-14 rounded-2xl bg-violet-500/10 flex items-center justify-center text-violet-600 mb-2">
+            <Users className="h-7 w-7" />
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
+            Gestion de{" "}
+            <span className="text-violet-500 italic">l&apos;Équipe</span>
+          </h1>
+          <div className="flex items-center gap-4">
+            <p className="text-lg text-muted-foreground font-medium italic leading-none">
+              Pilotez les accès et les affectations de vos collaborateurs
+            </p>
+          </div>
+        </div>
+        <div className="p-2 relative z-10">
+          <UserFormModal boutiques={boutiques || []} />
+        </div>
       </section>
 
       {/* Main List Area */}

@@ -19,7 +19,6 @@ import {
   Settings2,
   MessageCircle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -179,7 +178,7 @@ export default function SettingsPage() {
                       setSettings({ ...settings, description: e.target.value })
                     }
                     placeholder="Ex: Votre partenaire pour tous vos travaux."
-                    className="min-h-[120px] px-6 py-4 rounded-3xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-medium leading-relaxed italic"
+                    className="min-h-30 px-6 py-4 rounded-3xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-medium leading-relaxed italic"
                   />
                 </div>
               </div>
@@ -255,7 +254,7 @@ export default function SettingsPage() {
                         setSettings({ ...settings, address: e.target.value })
                       }
                       placeholder="Ex: Lomé, Togo"
-                      className="min-h-[100px] pl-14 pr-6 py-4 rounded-3xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold"
+                      className="min-h-25 pl-14 pr-6 py-4 rounded-3xl bg-muted/30 border-border/50 focus:ring-primary/20 focus:border-primary/40 font-bold"
                     />
                   </div>
                 </div>

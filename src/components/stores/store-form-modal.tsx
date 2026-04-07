@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createBoutique, updateBoutique } from "@/app/actions/boutiques";
+import { boutiqueSchema } from "@/lib/validations/product";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,7 +34,6 @@ export function StoreFormModal({ store }: StoreFormModalProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const [formData, setFormData] = useState({
     name: store?.name || "",
@@ -53,30 +53,29 @@ export function StoreFormModal({ store }: StoreFormModalProps) {
     e.preventDefault();
     setLoading(true);
 
+    const rawData = {
+      name: formData.name,
+      location: formData.address, // Mapping 'address' to 'location' schema
+    };
+
+    const validation = boutiqueSchema.safeParse(rawData);
+    if (!validation.success) {
+      toast.error(validation.error.issues[0].message);
+      setLoading(false);
+      return;
+    }
+
     try {
       if (store) {
-        // Update
-        const { error } = await supabase
-          .from("boutiques")
-          .update({
-            name: formData.name,
-            address: formData.address,
-          })
-          .eq("id", store.id);
-
-        if (error) throw error;
+        // Update via Server Action
+        const result = await updateBoutique(store.id, rawData);
+        if (result.error) throw new Error(result.error);
         toast.success("Boutique mise à jour");
       } else {
-        // Create
-        const { error } = await supabase.from("boutiques").insert([
-          {
-            name: formData.name,
-            address: formData.address,
-          },
-        ]);
-
-        if (error) throw error;
-        toast.success("Boutique créée");
+        // Create via Server Action
+        const result = await createBoutique(rawData);
+        if (result.error) throw new Error(result.error);
+        toast.success("Boutique créée avec succès");
       }
 
       setOpen(false);

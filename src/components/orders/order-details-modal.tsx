@@ -15,7 +15,6 @@ import {
   MapPin,
   Calendar,
   Store,
-  Info,
   Globe,
   PackageOpen,
   CreditCard,
@@ -158,7 +157,9 @@ export function OrderDetailsModal({
                               {
                                 icon: Calendar,
                                 label: "Retrait prévu",
-                                value: order.scheduled_at ? formatDate(order.scheduled_at) : "Non défini",
+                                value: order.scheduled_at
+                                  ? formatDate(order.scheduled_at)
+                                  : "Non défini",
                               },
                             ]
                           : []),

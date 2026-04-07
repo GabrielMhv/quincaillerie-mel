@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Calendar as CalendarIcon, Filter, X } from "lucide-react";
+import { Calendar as CalendarIcon, X } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -24,7 +23,6 @@ const STATUS_FILTERS = [
 export function OrderFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const activePreset = searchParams.get("preset") || "30-days";
   const activeStatus = searchParams.get("status") || "all";

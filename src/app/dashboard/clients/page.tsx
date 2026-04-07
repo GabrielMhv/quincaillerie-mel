@@ -1,21 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatCurrency, cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import {
   Users,
   Search,
   TrendingUp,
-  Sparkles,
   UserCircle,
   Phone,
   MapPin,
   ShoppingBag,
-  ArrowRight,
 } from "lucide-react";
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";

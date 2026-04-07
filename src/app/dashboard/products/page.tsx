@@ -4,7 +4,7 @@ import { ProductFormModal } from "@/components/products/product-form-modal";
 import { Badge } from "@/components/ui/badge";
 import { DeleteProductButton } from "@/components/products/delete-product-button";
 import Image from "next/image";
-import { Sparkles, Package, ShoppingBag, Search } from "lucide-react";
+import { Package, ShoppingBag, Search } from "lucide-react";
 
 export default async function DashboardProductsPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -55,12 +55,7 @@ export default async function DashboardProductsPage(props: {
     .select("*")
     .order("name");
 
-  // Fetch boutique name if filtered
-  let currentBoutiqueName = "";
-  if (boutiqueSwitcherId) {
-    const boutique = boutiques?.find((b) => b.id === boutiqueSwitcherId);
-    currentBoutiqueName = boutique?.name || "";
-  }
+
 
   // Fetch Categories for the modal form
   const { data: categories } = await supabase
@@ -86,27 +81,31 @@ export default async function DashboardProductsPage(props: {
   return (
     <div className="space-y-12 animate-in fade-in duration-1000">
       {/* Header Section */}
-      <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-black tracking-tighter leading-tight">
-            Gestion des{" "}
-            <span className="text-gradient leading-relaxed">Produits</span>
+      <section className="flex flex-row items-center justify-between gap-6 px-10 py-12 rounded-[3.5rem] bg-emerald-500/5 border border-emerald-500/10 relative overflow-hidden group shadow-premium">
+        <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
+          <Package className="h-40 w-40 text-emerald-600" />
+        </div>
+        <div className="space-y-3 relative z-10">
+          <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-2">
+            <Package className="h-7 w-7" />
+          </div>
+          <h1 className="text-6xl font-black tracking-tighter leading-none mb-1">
+            Gestion des <span className="text-emerald-500 italic">Produits</span>
           </h1>
-          <div className="flex items-center gap-3">
-            <p className="text-lg text-muted-foreground font-medium italic">
-              {products?.length || 0} références disponibles
+          <div className="flex items-center gap-4">
+            <p className="text-lg text-muted-foreground font-medium italic leading-none">
+              {products?.length || 0} références en stock
             </p>
             {boutiqueSwitcherId && (
               <Badge
                 variant="outline"
-                className="bg-orange-500/10 text-orange-600 border-orange-500/20 px-3 py-1 rounded-full font-black text-[10px] tracking-widest"
+                className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-4 py-1 rounded-full font-black text-[10px] tracking-widest uppercase shadow-xs"
               >
-                Boutique : {currentBoutiqueName}
+                Stock local
               </Badge>
             )}
           </div>
         </div>
-
         <div className="flex items-center gap-4">
           {canManageProducts && (
             <ProductFormModal

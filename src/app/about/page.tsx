@@ -89,7 +89,7 @@ export default function AboutPage() {
                   La Championne.
                 </span>
               </h1>
-              <p className="text-lg md:text-xl lg:text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
+              <p className="text-lg md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 font-medium max-w-2xl leading-relaxed mx-auto lg:mx-0">
                 Votre partenaire de confiance pour tout l&apos;outillage
                 professionnel et les matériaux de construction de qualité à
                 Ségbé et Sanguera.
@@ -181,7 +181,7 @@ export default function AboutPage() {
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-900 dark:text-white">
                 La qualité au meilleur prix
               </h2>
-              <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+              <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
                 Depuis nos débuts à Lomé, nous nous engageons à fournir du
                 matériel pro accessible à tous les bâtisseurs de demain.
               </p>
@@ -208,7 +208,7 @@ export default function AboutPage() {
                   <h3 className="text-xl md:text-2xl font-black tracking-tighter mb-4 md:mb-5 group-hover:text-primary transition-colors leading-none">
                     {value.title}
                   </h3>
-                  <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-base leading-relaxed mb-6 md:mb-8 opacity-80 group-hover:opacity-100 transition-opacity">
+                  <p className="text-slate-600 dark:text-slate-300 font-medium text-sm md:text-base leading-relaxed mb-6 md:mb-8 opacity-80 group-hover:opacity-100 transition-opacity">
                     {value.description}
                   </p>
                   <div className="absolute -bottom-12 -right-12 h-32 w-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/20 transition-all duration-700" />

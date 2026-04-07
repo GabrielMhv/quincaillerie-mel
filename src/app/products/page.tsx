@@ -110,7 +110,7 @@ function ProductsContent() {
                 Equipements.
               </span>
             </h1>
-            <p className="hidden lg:block text-base sm:text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">
+            <p className="hidden lg:block text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 font-medium max-w-xl leading-relaxed">
               Explorez notre sélection rigoureuse d&apos;outillage professionnel
               et de matériaux haut de gamme, sourcés pour la réussite de vos
               projets au Togo.
@@ -120,11 +120,11 @@ function ProductsContent() {
           {/* Quick Search Overlay */}
           <div className="max-w-2xl mx-auto relative mt-8">
             <div className="relative bg-white dark:bg-card h-14 w-full rounded-full border border-slate-200/50 dark:border-white/5 flex items-center shadow-sm hover:shadow-md transition-shadow duration-300">
-              <Search className="ml-5 h-5 w-5 text-slate-400" />
+              <Search className="ml-5 h-5 w-5 text-slate-500 dark:text-slate-300" />
               <Input
                 type="search"
                 placeholder="Lancer une recherche..."
-                className="border-none bg-transparent shadow-none focus-visible:ring-0 text-[15px] font-medium h-full px-4 placeholder:text-slate-400 placeholder:font-normal flex-1"
+                className="border-none bg-transparent shadow-none focus-visible:ring-0 text-[15px] font-medium h-full px-4 placeholder:text-slate-500 dark:text-slate-300 placeholder:font-normal flex-1"
                 value={localSearch}
                 onChange={(e) => setLocalSearch(e.target.value)}
                 onKeyDown={(e) => {
@@ -168,7 +168,7 @@ function ProductsContent() {
 
                   <div className="space-y-6">
                     <div className="space-y-4">
-                      <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400">
+                      <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300">
                         CATÉGORIES
                       </h4>
                       <div className="flex flex-col gap-2">
@@ -224,7 +224,7 @@ function ProductsContent() {
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-400">
+                <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300">
                   CATÉGORIES
                 </h4>
                 <div className="flex flex-col gap-2">

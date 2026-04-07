@@ -102,7 +102,7 @@ export default function ContactPage() {
                 une réalité.
               </span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed px-4">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed px-4">
               Ets La Championne Ségbé & Sanguera : Votre partenaire stratégique
               pour l&apos;outillage professionnel et les projets
               d&apos;envergure au Togo.
@@ -310,7 +310,7 @@ export default function ContactPage() {
 
                       <div className="hidden lg:flex items-center justify-center gap-6 pt-6 opacity-30 group-hover:opacity-60 transition-opacity">
                         <div className="h-px w-12 bg-slate-400" />
-                        <span className="text-[9px] font-black tracking-[0.5em] text-slate-500">
+                        <span className="text-[9px] font-black tracking-[0.5em] text-slate-600 dark:text-slate-300">
                           Service certifié excellence
                         </span>
                         <div className="h-px w-12 bg-slate-400" />
