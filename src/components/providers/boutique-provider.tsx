@@ -50,7 +50,7 @@ export function BoutiqueProvider({ children }: { children: React.ReactNode }) {
         setBoutiques(data || []);
 
         if (user && user.role !== "admin" && user.boutique_id) {
-          const userBoutique = data?.find((b) => b.id === user.boutique_id);
+          const userBoutique = data?.find((b: Boutique) => b.id === user.boutique_id);
           if (userBoutique) {
             setSelectedBoutiqueState(userBoutique);
 
@@ -66,7 +66,7 @@ export function BoutiqueProvider({ children }: { children: React.ReactNode }) {
           // Check URL first for admins
           const currentBoutiqueId = searchParams.get("boutiqueId");
           if (currentBoutiqueId) {
-            const urlBoutique = data?.find((b) => b.id === currentBoutiqueId);
+            const urlBoutique = data?.find((b: Boutique) => b.id === currentBoutiqueId);
             if (urlBoutique) {
               setSelectedBoutiqueState(urlBoutique);
               return;
