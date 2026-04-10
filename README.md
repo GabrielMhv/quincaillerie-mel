@@ -20,12 +20,29 @@ Ce système n'est pas qu'un simple outil de gestion ; c'est le centre de contrô
 
 ## 🛠️ Stack Technique
 
-- **Framework** : [Next.js 15+](https://nextjs.org/) (App Router)
-- **Base de données & Auth** : [Supabase](https://supabase.com/) (PostgreSQL & Realtime)
-- **Styling** : Tailwind CSS & Shadcn/UI
+- **Framework** : [Next.js 16.1.6](https://nextjs.org/) (App Router & Turbopack)
+- **Base de données & Auth** : [Supabase](https://supabase.com/) (PostgreSQL SSR & RLS)
+- **Proxification** : Nouveau système `src/proxy.ts` pour Next.js 16+
+- **Styling** : Tailwind CSS & Shadcn/UI (Design Premium)
 - **Icons** : Lucide React
-- **Gestion d'images** : Cloudinary Integration
-- **Processing** : Canvas API pour la conversion WebP client-side
+- **Gestion d'images** : Cloudinary Integration & Supabase Storage (WebP/AVIF Ready)
+- **Performance** : Optimisation INP via `useTransition` et caching Supabase par requête via `React.cache()`
+
+## 📦 État du Projet & Roadmap
+
+### ✅ Réalisé (v1.0 Ready)
+- **Site Client Complet** : Catalogue, panier local (Zustand), formulaires de commande avec source d'entrée client.
+- **Multi-Boutiques (RLS)** : Ségrégation stricte des données entre Boutique A et Boutique B.
+- **Interface POS (Caisse)** : Panel dédié pour les employés avec recherche instantanée.
+- **Dashboard Admin** : Statistiques poussées via Recharts et gestion complète du catalogue.
+- **Système de Recommandations** : Triggers SQL automatiques pour le suivi des apports clients par les employés.
+
+### ⏳ À Venir (Roadmap)
+- **💳 Paiements Mobiles (MoMo)** : Intégration MTN MoMo et Orange Money (USSD & API).
+- **📊 Business Intelligence** : Analyses prédictives sur les stocks basés sur l'historique de ventes.
+- **📦 Multi-Entrepôts** : Gestion de stocks pivots hors magasins physiques.
+
+Retrouvez le [récapitulatif complet du projet](project_summary.md) pour plus de détails techniques.
 
 ## ⚙️ Installation & Configuration
 
