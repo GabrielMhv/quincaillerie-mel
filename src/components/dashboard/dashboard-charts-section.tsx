@@ -31,80 +31,61 @@ export async function DashboardChartsSection({
   // Orders query
   const ordersQuery = supabase
     .from("orders")
-    .select("id, total, status, created_at, boutique_id, source, client_name, phone");
+    .select(
+      "id, total, status, created_at, boutique_id, source, client_name, phone",
+    );
 
   if (filteredBoutiqueId) {
     ordersQuery.eq("boutique_id", filteredBoutiqueId);
   }
 
-  // NOTE: We don't apply dateFilter to the count of "Active Clients" as it represents 
+  // NOTE: We don't apply dateFilter to the count of "Active Clients" as it represents
   // the total CRM base, not just clients who ordered in the filtered range.
   const { data: dbOrders } = await ordersQuery;
   const orders = dbOrders || [];
 
-  // 2. Real Trend Calculation (Comparing current period vs previous)
+  // 2. Range calculation for filtering
   const now = new Date();
   let currentRangeStart: Date;
-  let previousRangeStart: Date;
-  let previousRangeEnd: Date;
 
   if (range === "today") {
     currentRangeStart = startOfDay(now);
-    previousRangeStart = subDays(currentRangeStart, 1);
-    previousRangeEnd = currentRangeStart;
   } else if (range === "7d") {
     currentRangeStart = subDays(now, 7);
-    previousRangeStart = subDays(currentRangeStart, 7);
-    previousRangeEnd = currentRangeStart;
   } else {
     // 30d or custom (fallback to 30d)
     currentRangeStart = subDays(now, 30);
-    previousRangeStart = subDays(currentRangeStart, 30);
-    previousRangeEnd = currentRangeStart;
   }
 
-  const currentOrders = orders.filter(o => o.created_at >= currentRangeStart.toISOString());
-  const previousOrders = orders.filter(o => o.created_at >= previousRangeStart.toISOString() && o.created_at < previousRangeEnd.toISOString());
-
-  const currentSales = currentOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-  const previousSales = previousOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-  const salesTrend = previousSales > 0 ? ((currentSales - previousSales) / previousSales) * 100 : 0;
-
-  const currentCount = currentOrders.length;
-  const previousCount = previousOrders.length;
-  const countTrend = previousCount > 0 ? ((currentCount - previousCount) / previousCount) * 100 : 0;
+  const currentOrders = orders.filter(
+    (o) => o.created_at >= currentRangeStart.toISOString(),
+  );
 
   // Real Clients Calculation (distinct non-anonymous clients from ALL orders)
   const clientsFromAllOrders = orders
-    .filter((o: any) => o.source !== "passage_boutique")
-    .map((o: any) => (o.phone || o.client_name || "").trim().toLowerCase());
-  const uniqueClients = new Set(clientsFromAllOrders.filter((c: string) => c !== ""));
+    .filter((o) => o.source !== "passage_boutique")
+    .map((o) => (o.phone || o.client_name || "").trim().toLowerCase());
+  const uniqueClients = new Set(
+    clientsFromAllOrders.filter((c: string) => c !== ""),
+  );
   const totalClients = uniqueClients.size;
 
-  // Client Trend (New clients in current period vs previous)
-  const currentClients = new Set(currentOrders
-    .filter((o: any) => o.source !== "passage_boutique")
-    .map((o: any) => (o.phone || o.client_name || "").trim().toLowerCase())
-    .filter(c => c !== "")
-  ).size;
-
-  const previousClients = new Set(previousOrders
-    .filter((o: any) => o.source !== "passage_boutique")
-    .map((o: any) => (o.phone || o.client_name || "").trim().toLowerCase())
-    .filter(c => c !== "")
-  ).size;
-
-  const clientTrend = previousClients > 0 ? ((currentClients - previousClients) / previousClients) * 100 : 0;
-
   // Apply date filter for main display stats
-  const filteredOrders = dateFilter 
-    ? orders.filter(o => o.created_at >= dateFilter)
+  const filteredOrders = dateFilter
+    ? orders.filter((o) => o.created_at >= dateFilter)
     : currentOrders;
 
-  const displaySales = filteredOrders.reduce((sum, order) => sum + (Number(order.total) || 0), 0);
+  const displaySales = filteredOrders.reduce(
+    (sum, order) => sum + (Number(order.total) || 0),
+    0,
+  );
   const displayCount = filteredOrders.length;
-  const pendingOrders = filteredOrders.filter((o) => o.status === "pending").length;
-  const completedOrders = filteredOrders.filter((o) => o.status === "completed").length;
+  const pendingOrders = filteredOrders.filter(
+    (o) => o.status === "pending",
+  ).length;
+  const completedOrders = filteredOrders.filter(
+    (o) => o.status === "completed",
+  ).length;
 
   // Products and Stocks queries
   const productsQuery = supabase
