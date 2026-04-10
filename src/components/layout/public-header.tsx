@@ -18,7 +18,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { useCartStore } from "@/store/cart";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { useBoutique } from "@/components/providers/boutique-provider";
 import {
@@ -38,6 +38,7 @@ export function PublicHeader() {
   const [mounted, setMounted] = useState(false);
   const { boutiques, selectedBoutique, setSelectedBoutique, isLoading } =
     useBoutique();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 0);
@@ -109,20 +110,26 @@ export function PublicHeader() {
                 ) : (
                   <Select
                     value={selectedBoutique?.id || ""}
+                    disabled={isPending}
                     onValueChange={(val) => {
                       const b = boutiques.find((bout) => bout.id === val);
                       if (b) {
-                        setSelectedBoutique(b);
-                        // If we are on products page, refresh with new boutiqueId
-                        if (window.location.pathname === "/products") {
-                          window.location.href = `/products?boutiqueId=${b.id}`;
-                        }
+                        startTransition(() => {
+                          setSelectedBoutique(b);
+                          // If we are on products page, refresh with new boutiqueId
+                          if (window.location.pathname === "/products") {
+                            window.location.href = `/products?boutiqueId=${b.id}`;
+                          }
+                        });
                       }
                     }}
                   >
-                    <SelectTrigger className="border-none bg-transparent h-full p-0 shadow-none focus:ring-0 min-w-55 text-[13px] font-bold tracking-tight text-foreground/80 hover:text-foreground transition-colors pr-4">
+                    <SelectTrigger className={cn(
+                      "border-none bg-transparent h-full p-0 shadow-none focus:ring-0 min-w-55 text-[13px] font-bold tracking-tight text-foreground/80 hover:text-foreground transition-colors pr-4",
+                      isPending && "opacity-50 cursor-wait"
+                    )}>
                       <span className="truncate max-w-50 text-left ml-2">
-                        {selectedBoutique?.name || "Boutique à proximité"}
+                        {isPending ? "Mise à jour..." : (selectedBoutique?.name || "Boutique à proximité")}
                       </span>
                     </SelectTrigger>
                     <SelectContent
