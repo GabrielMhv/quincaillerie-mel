@@ -9,7 +9,6 @@ import {
   MapPin,
   ShoppingBag,
   ArrowUpRight,
-  Sparkles,
 } from "lucide-react";
 import {
   Table,
@@ -31,10 +30,12 @@ export default async function ClientsPage(props: {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Fetch all orders to build client profiles
+  // Fetch only online orders to build real client profiles
+  // Excludes 'passage_boutique' which represents anonymous walk-in customers
   const { data: orders } = await supabase
     .from("orders")
     .select("client_name, phone, address, total, created_at")
+    .neq("source", "passage_boutique")
     .order("created_at", { ascending: false });
 
   const clientsMap: Record<
@@ -128,13 +129,6 @@ export default async function ClientsPage(props: {
               className="w-full h-12 pl-12 pr-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 font-bold text-sm focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all shadow-sm"
             />
           </form>
-
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20">
-            <Sparkles className="h-3 w-3 text-blue-500" />
-            <span className="text-[10px] font-black tracking-widest text-blue-600 dark:text-blue-400 ">
-              Top 10% Clients Actifs
-            </span>
-          </div>
         </div>
 
         <div className="max-w-full overflow-x-auto">

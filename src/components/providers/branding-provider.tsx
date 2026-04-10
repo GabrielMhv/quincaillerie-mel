@@ -1,6 +1,12 @@
 ﻿"use client";
 
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { createClient } from "@/lib/supabase/client";
 import { RealtimePostgresUpdatePayload } from "@supabase/supabase-js";
 
@@ -10,6 +16,7 @@ export interface BrandingSettings {
   address: string;
   phone: string;
   email: string;
+  logo_url?: string;
   facebook?: string;
   instagram?: string;
   whatsapp?: string;
@@ -28,6 +35,7 @@ const defaultSettings: BrandingSettings = {
   address: "Ségbé & Sanguera, Lomé, Togo",
   phone: "+228 00 00 00 00",
   email: "contact@lachampionne.com",
+  logo_url: "",
   facebook: "",
   instagram: "",
   whatsapp: "",

@@ -101,7 +101,7 @@ export function PremiumStatCard({
         </div>
 
         <div className="space-y-1 sm:space-y-2">
-          <h3 className="text-[10px] sm:text-[11px] font-black tracking-[0.2em] text-muted-foreground/60  italic">
+          <h3 className="text-[10px] sm:text-[11px] font-black tracking-[0.2em] text-muted-foreground/60 italic">
             {title}
           </h3>
           <p className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter text-foreground group-hover:text-primary transition-colors">

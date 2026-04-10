@@ -29,12 +29,12 @@ export function DashboardFilters() {
 
   const updateRange = (range: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    
+
     if (range === "custom") {
       setIsCustomMode(true);
       return; // Do not apply URL yet, wait for user to select dates
     }
-    
+
     setIsCustomMode(false);
     params.set("range", range);
     params.delete("from");
@@ -58,8 +58,9 @@ export function DashboardFilters() {
             key={r.value}
             onClick={() => updateRange(r.value)}
             className={cn(
-              "px-6 py-2 rounded-xl text-xs font-black tracking-tighter transition-all duration-300",
-              (currentRange === r.value && !isCustomMode) || (r.value === "custom" && isCustomMode)
+              "px-6 py-2 rounded-xl text-xs font-black tracking-tight transition-all duration-300",
+              (currentRange === r.value && !isCustomMode) ||
+                (r.value === "custom" && isCustomMode)
                 ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
                 : "hover:bg-primary/5 text-muted-foreground hover:text-primary",
             )}
@@ -84,8 +85,8 @@ export function DashboardFilters() {
             onChange={(e) => setToDate(e.target.value)}
             className="px-3 py-2 rounded-xl bg-transparent border-none text-xs font-bold text-foreground focus:ring-0 cursor-pointer"
           />
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             onClick={applyCustomFilter}
             className="rounded-xl h-8 text-xs font-black"
           >

@@ -105,7 +105,7 @@ export default async function DashboardTeamPage() {
         <div className="max-w-full overflow-x-auto custom-scrollbar">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-[10px] font-black text-muted-foreground/50 tracking-[0.2em] border-b border-border/30 h-16 bg-muted/10">
+              <tr className="text-[10px] font-black text-muted-foreground/50 tracking-tight border-b border-border/30 h-16 bg-muted/10">
                 <th className="px-10 text-left">Utilisateur</th>
                 <th className="px-10 text-left">Contact & Mail</th>
                 <th className="px-10 text-left">Rôle & Privilèges</th>
@@ -123,15 +123,18 @@ export default async function DashboardTeamPage() {
                     <div className="flex items-center gap-4">
                       <div className="h-14 w-14 rounded-full bg-secondary/50 flex items-center justify-center text-primary group-hover:scale-110 transition-all duration-500 border-2 border-background shadow-sm overflow-hidden">
                         {u.avatar_url ? (
-                          <Image
-                            src={u.avatar_url}
-                            alt={u.name}
-                            width={56}
-                            height={56}
-                            className="h-full w-full object-cover"
-                          />
+                          <div className="relative h-full w-full">
+                            <Image
+                              src={u.avatar_url}
+                              alt={u.name || "User"}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
                         ) : (
-                          <UserCircle className="h-8 w-8 opacity-40" />
+                          <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary font-black text-xl">
+                            {u.name?.charAt(0).toUpperCase() || "U"}
+                          </div>
                         )}
                       </div>
                       <div>

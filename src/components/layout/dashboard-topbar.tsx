@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Menu,
   LogOut,
@@ -170,6 +170,10 @@ export function DashboardTopbar() {
             }
           >
             <Avatar className="h-full w-full rounded-none border border-primary/5">
+              <AvatarImage
+                src={user?.avatar_url || ""}
+                className="object-cover"
+              />
               <AvatarFallback className="bg-linear-to-br from-primary/20 to-secondary/20 text-primary font-black text-xs">
                 {user ? getInitials(user.name) : <User className="h-5 w-5" />}
               </AvatarFallback>
@@ -182,10 +186,17 @@ export function DashboardTopbar() {
             <DropdownMenuGroup>
               <DropdownMenuLabel className="font-normal p-4 bg-muted/30 rounded-2xl border border-primary/5 mb-2">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-base font-black tracking-tight leading-none">
+                  <p className="text-base font-black tracking-tight leading-none italic">
                     {user?.name}
                   </p>
-                  <p className="text-[10px] font-bold text-muted-foreground/60 italic mt-1">
+                  <p className="text-[10px] font-bold text-primary/70 mb-1">
+                    {user?.role === "admin"
+                      ? "Administrateur"
+                      : user?.role === "manager"
+                        ? "Manager"
+                        : "Employé"}
+                  </p>
+                  <p className="text-[10px] font-bold text-muted-foreground/60 italic">
                     {user?.email}
                   </p>
                 </div>

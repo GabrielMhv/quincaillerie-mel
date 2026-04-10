@@ -238,18 +238,31 @@ export function DashboardSidebar() {
 
       <div className="flex-1 overflow-y-auto px-6 space-y-12 pb-10 custom-scrollbar relative">
         {/* User Card inside Sidebar */}
-        <div className="p-5 rounded-3xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/5 dark:border-white/5 space-y-4">
+        <Link
+          href="/dashboard/profile"
+          className="p-5 rounded-3xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/5 dark:border-white/5 space-y-4 hover:bg-primary/5 hover:border-primary/20 transition-all group/usercard"
+        >
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg">
-              {user.name.charAt(0).toUpperCase()}
-            </div>
+            {user.avatar_url ? (
+              <div className="h-12 w-12 rounded-2xl border-2 border-primary/20 overflow-hidden shrink-0">
+                <img
+                  src={user.avatar_url}
+                  alt={user.name}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg shrink-0">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="flex flex-col min-w-0">
-              <span className="text-sm font-black tracking-tight truncate dark:text-white">
+              <span className="text-sm font-black tracking-tight truncate dark:text-white group-hover/usercard:text-primary transition-colors">
                 {user.name}
               </span>
               <Badge
                 variant="outline"
-                className="w-fit text-[9px] font-black tracking-widest py-0 px-2 rounded-md bg-primary/10 text-primary border-none mt-1"
+                className="w-fit text-[9px] font-black tracking-tight py-0 px-2 rounded-md bg-primary/10 text-primary border-none mt-1"
               >
                 {user.role === "admin"
                   ? "Administrateur"
@@ -259,7 +272,7 @@ export function DashboardSidebar() {
               </Badge>
             </div>
           </div>
-        </div>
+        </Link>
         {/* GLOBAL SECTION - Only for Admin */}
         {user.role === "admin" && (
           <div className="space-y-6">

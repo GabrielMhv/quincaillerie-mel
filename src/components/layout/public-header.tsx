@@ -21,6 +21,7 @@ import { useTheme } from "next-themes";
 import { useState, useEffect, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { useBoutique } from "@/components/providers/boutique-provider";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -56,9 +57,23 @@ export function PublicHeader() {
             href="/"
             className="flex items-center space-x-2 sm:space-x-3 group"
           >
-            <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
-              <Store className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            </div>
+            {settings.logo_url ? (
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl overflow-hidden bg-primary/5 p-1.5 transition-all group-hover:scale-105">
+                <Avatar className="h-full w-full rounded-lg">
+                  <AvatarImage
+                    src={settings.logo_url}
+                    className="object-contain"
+                  />
+                  <AvatarFallback className="bg-primary/10 text-primary font-black">
+                    <Store className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+            ) : (
+              <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
+                <Store className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              </div>
+            )}
             <span className="font-black text-lg sm:text-2xl tracking-tighter text-gradient leading-none">
               {settings.name}
               <span className="hidden md:inline">
@@ -124,12 +139,16 @@ export function PublicHeader() {
                       }
                     }}
                   >
-                    <SelectTrigger className={cn(
-                      "border-none bg-transparent h-full p-0 shadow-none focus:ring-0 min-w-55 text-[13px] font-bold tracking-tight text-foreground/80 hover:text-foreground transition-colors pr-4",
-                      isPending && "opacity-50 cursor-wait"
-                    )}>
+                    <SelectTrigger
+                      className={cn(
+                        "border-none bg-transparent h-full p-0 shadow-none focus:ring-0 min-w-55 text-[13px] font-bold tracking-tight text-foreground/80 hover:text-foreground transition-colors pr-4",
+                        isPending && "opacity-50 cursor-wait",
+                      )}
+                    >
                       <span className="truncate max-w-50 text-left ml-2">
-                        {isPending ? "Mise à jour..." : (selectedBoutique?.name || "Boutique à proximité")}
+                        {isPending
+                          ? "Mise à jour..."
+                          : selectedBoutique?.name || "Boutique à proximité"}
                       </span>
                     </SelectTrigger>
                     <SelectContent
@@ -212,12 +231,41 @@ export function PublicHeader() {
             <div className="hidden md:flex items-center gap-4 border-l pl-6 border-white/10 ml-2">
               {user ? (
                 <>
+                  <div className="flex items-center gap-4 group">
+                    <div className="flex flex-col items-end">
+                      <p className="text-[12px] font-black tracking-tight leading-none italic">
+                        {user.name}
+                      </p>
+                      <p className="text-[9px] font-bold text-primary/70 mt-1 tracking-tight">
+                        {user.role === "admin"
+                          ? "Administrateur"
+                          : user.role === "manager"
+                            ? "Manager"
+                            : "Employé"}
+                      </p>
+                    </div>
+                    <Link
+                      href="/dashboard/profile"
+                      className="relative h-12 w-12 rounded-2xl overflow-hidden ring-primary/20 hover:ring-4 transition-all"
+                    >
+                      <Avatar className="h-full w-full rounded-none">
+                        <AvatarImage
+                          src={user.avatar_url || ""}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="bg-primary/10 text-primary font-black text-xs">
+                          {user.name.substring(0, 2)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Link>
+                  </div>
+
                   {canAccessDashboard && (
                     <Link href="/dashboard">
                       <Button
                         variant="default"
                         size="sm"
-                        className="rounded-full px-8 h-12 font-bold tracking-tight text-[12px] shadow-lg shadow-primary/20 hover:-translate-y-0.5 active:scale-95 transition-all"
+                        className="rounded-full px-6 h-10 font-bold tracking-tight text-[11px] shadow-lg shadow-primary/20 transition-all"
                       >
                         Console
                       </Button>
@@ -226,7 +274,7 @@ export function PublicHeader() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-11 w-11 rounded-full hover:bg-destructive/10 hover:text-destructive transition-all"
+                    className="h-10 w-10 rounded-full hover:bg-destructive/10 hover:text-destructive transition-all"
                     onClick={() => signOut()}
                   >
                     <LogOut className="h-5 w-5" />

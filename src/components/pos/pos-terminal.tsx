@@ -337,16 +337,29 @@ export function POSTerminal({ boutiqueId }: { boutiqueId: string }) {
       <div className="w-full lg:w-105 flex flex-col rounded-2xl sm:rounded-[3rem] border border-border/50 bg-card/60 backdrop-blur-2xl shadow-xl sm:shadow-premium overflow-hidden h-125 lg:h-auto shrink-0">
         <div className="p-4 sm:p-8 border-b border-border/50 bg-primary/5 shrink-0">
           <div className="flex items-center justify-between mb-4 sm:mb-8">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                <Zap className="h-4 w-4 sm:h-5 sm:w-5 fill-current" />
-              </div>
+            <div className="flex items-center gap-3">
+              {user?.avatar_url ? (
+                <div className="h-10 w-10 rounded-full border-2 border-primary/20 p-0.5 overflow-hidden">
+                  <Image
+                    src={user.avatar_url}
+                    alt="Operator"
+                    width={40}
+                    height={40}
+                    className="h-full w-full object-cover rounded-full"
+                  />
+                </div>
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary font-black text-xs">
+                  {user?.name?.charAt(0).toUpperCase() || "OP"}
+                </div>
+              )}
               <div>
                 <h2 className="text-sm sm:text-lg font-black tracking-tighter leading-none">
                   Ticket de caisse
                 </h2>
-                <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground/60 tracking-widest mt-1">
-                  Session active
+                <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground/60 tracking-widest mt-1 italic">
+                  Opérateur : {user?.name || "Invité"} —{" "}
+                  {user?.role || "Inconnu"}
                 </p>
               </div>
             </div>

@@ -44,7 +44,13 @@ export function OrdersTable({ orders, currentUserId }: OrdersTableProps) {
                     >
                       {order.source === "passage_boutique"
                         ? "Boutique"
-                        : order.source.replace("_", " ")}
+                        : order.source
+                            .split("_")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1),
+                            )
+                            .join(" ")}
                     </Badge>
                   </div>
                   <p className="text-xs text-slate-400 font-medium lowercase">

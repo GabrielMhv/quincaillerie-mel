@@ -6,6 +6,8 @@ export interface User {
   name: string;
   role: UserRole;
   boutique_id: string | null;
+  avatar_url: string | null;
+  phone: string | null;
   created_at: string;
 }
 

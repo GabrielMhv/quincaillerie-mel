@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatCurrency } from "@/lib/utils";
-import { Store as StoreIcon, Clock } from "lucide-react";
+import { Store as StoreIcon, Clock, User as UserIcon } from "lucide-react";
 import { subDays, startOfDay } from "date-fns";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
 import { Suspense } from "react";
 import { DashboardSkeleton } from "@/components/ui/skeletons";
 import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts-section";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function DashboardPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -152,18 +153,39 @@ export default async function DashboardPage(props: {
     <div className="space-y-12 pb-20 max-w-7xl mx-auto animate-in fade-in duration-1000">
       {/* Hero Section */}
       <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-4 sm:px-0">
-        <div className="space-y-4">
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight animate-in slide-in-from-left duration-700">
-            {greeting},{" "}
-            <span className="text-gradient leading-relaxed outline-none">
-              {profile?.name || "Admin"}
-            </span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground/80 font-medium max-w-2xl leading-relaxed">
-            {isGlobalScope
-              ? "Heureux de vous revoir. Voici l'état global du réseau."
-              : `Aperçu de la boutique ${currentBoutiqueName}.`}
-          </p>
+        <div className="flex items-center gap-10">
+          <div className="hidden md:block">
+            <div className="h-32 w-32 rounded-[2.5rem] bg-indigo-500/10 p-1 flex items-center justify-center border-4 border-white dark:border-white/5 shadow-2xl relative">
+              <Avatar className="h-full w-full rounded-[2.4rem]">
+                <AvatarImage
+                  src={profile?.avatar_url || ""}
+                  className="object-cover"
+                />
+                <AvatarFallback className="text-4xl font-black bg-indigo-500 text-white">
+                  {profile?.name?.substring(0, 2) || "AD"}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div className="flex flex-col">
+              <p className="text-[10px] font-bold text-primary tracking-tight mb-1">
+                {profile?.role === "admin"
+                  ? "Administrateur Système"
+                  : profile?.role === "manager"
+                    ? "Manager Boutique"
+                    : "Poste de Vente"}
+              </p>
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight animate-in slide-in-from-left duration-700 italic">
+                {greeting}, {profile?.name || "Admin"}
+              </h1>
+            </div>
+            <p className="text-lg md:text-xl text-muted-foreground/80 font-medium max-w-2xl leading-relaxed">
+              {isGlobalScope
+                ? "Heureux de vous revoir. Voici l'état global du réseau."
+                : `Aperçu de la boutique ${currentBoutiqueName}.`}
+            </p>
+          </div>
         </div>
       </section>
 

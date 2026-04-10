@@ -24,8 +24,12 @@ export async function updateProfile(input: UserProfileInput) {
   }
 
   const { error } = await supabase
-    .from("profiles")
-    .update(validated.data)
+    .from("users")
+    .update({
+      name: validated.data.full_name,
+      phone: validated.data.phone,
+      avatar_url: validated.data.avatar_url,
+    })
     .eq("id", user.id);
 
   if (error) {

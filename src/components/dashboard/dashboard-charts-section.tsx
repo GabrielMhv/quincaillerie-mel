@@ -31,26 +31,80 @@ export async function DashboardChartsSection({
   // Orders query
   const ordersQuery = supabase
     .from("orders")
-    .select("id, total, status, created_at, boutique_id");
+    .select("id, total, status, created_at, boutique_id, source, client_name, phone");
 
   if (filteredBoutiqueId) {
     ordersQuery.eq("boutique_id", filteredBoutiqueId);
   }
 
-  if (dateFilter) {
-    ordersQuery.gte("created_at", dateFilter);
-  }
-
+  // NOTE: We don't apply dateFilter to the count of "Active Clients" as it represents 
+  // the total CRM base, not just clients who ordered in the filtered range.
   const { data: dbOrders } = await ordersQuery;
   const orders = dbOrders || [];
 
-  const totalSales =
-    orders.reduce((sum, order) => sum + (Number(order.total) || 0), 0) || 0;
-  const numOrders = orders.length || 0;
-  const pendingOrders =
-    orders.filter((o) => o.status === "pending").length || 0;
-  const completedOrders =
-    orders.filter((o) => o.status === "completed").length || 0;
+  // 2. Real Trend Calculation (Comparing current period vs previous)
+  const now = new Date();
+  let currentRangeStart: Date;
+  let previousRangeStart: Date;
+  let previousRangeEnd: Date;
+
+  if (range === "today") {
+    currentRangeStart = startOfDay(now);
+    previousRangeStart = subDays(currentRangeStart, 1);
+    previousRangeEnd = currentRangeStart;
+  } else if (range === "7d") {
+    currentRangeStart = subDays(now, 7);
+    previousRangeStart = subDays(currentRangeStart, 7);
+    previousRangeEnd = currentRangeStart;
+  } else {
+    // 30d or custom (fallback to 30d)
+    currentRangeStart = subDays(now, 30);
+    previousRangeStart = subDays(currentRangeStart, 30);
+    previousRangeEnd = currentRangeStart;
+  }
+
+  const currentOrders = orders.filter(o => o.created_at >= currentRangeStart.toISOString());
+  const previousOrders = orders.filter(o => o.created_at >= previousRangeStart.toISOString() && o.created_at < previousRangeEnd.toISOString());
+
+  const currentSales = currentOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+  const previousSales = previousOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+  const salesTrend = previousSales > 0 ? ((currentSales - previousSales) / previousSales) * 100 : 0;
+
+  const currentCount = currentOrders.length;
+  const previousCount = previousOrders.length;
+  const countTrend = previousCount > 0 ? ((currentCount - previousCount) / previousCount) * 100 : 0;
+
+  // Real Clients Calculation (distinct non-anonymous clients from ALL orders)
+  const clientsFromAllOrders = orders
+    .filter((o: any) => o.source !== "passage_boutique")
+    .map((o: any) => (o.phone || o.client_name || "").trim().toLowerCase());
+  const uniqueClients = new Set(clientsFromAllOrders.filter((c: string) => c !== ""));
+  const totalClients = uniqueClients.size;
+
+  // Client Trend (New clients in current period vs previous)
+  const currentClients = new Set(currentOrders
+    .filter((o: any) => o.source !== "passage_boutique")
+    .map((o: any) => (o.phone || o.client_name || "").trim().toLowerCase())
+    .filter(c => c !== "")
+  ).size;
+
+  const previousClients = new Set(previousOrders
+    .filter((o: any) => o.source !== "passage_boutique")
+    .map((o: any) => (o.phone || o.client_name || "").trim().toLowerCase())
+    .filter(c => c !== "")
+  ).size;
+
+  const clientTrend = previousClients > 0 ? ((currentClients - previousClients) / previousClients) * 100 : 0;
+
+  // Apply date filter for main display stats
+  const filteredOrders = dateFilter 
+    ? orders.filter(o => o.created_at >= dateFilter)
+    : currentOrders;
+
+  const displaySales = filteredOrders.reduce((sum, order) => sum + (Number(order.total) || 0), 0);
+  const displayCount = filteredOrders.length;
+  const pendingOrders = filteredOrders.filter((o) => o.status === "pending").length;
+  const completedOrders = filteredOrders.filter((o) => o.status === "completed").length;
 
   // Products and Stocks queries
   const productsQuery = supabase
@@ -64,7 +118,7 @@ export async function DashboardChartsSection({
   const { data: products } = await productsQuery;
   const totalProducts = products?.length || 0;
 
-  // 3. REAL Chart Data Generation (Basing it on actual DB orders)
+  // 3. REAL Chart Data Generation (Basing it on date-filtered orders)
   let chartData: { value: number; date: string }[] = [];
   const chartColors = [
     "#2563eb",
@@ -82,7 +136,7 @@ export async function DashboardChartsSection({
     const hours = eachHourOfInterval({ start, end });
 
     chartData = hours.map((hour) => {
-      const value = orders
+      const value = filteredOrders
         .filter((o) => isSameHour(new Date(o.created_at), hour))
         .reduce((sum, o) => sum + Number(o.total), 0);
       return { value, date: format(hour, "HH:mm") };
@@ -94,7 +148,7 @@ export async function DashboardChartsSection({
     const intervals = eachDayOfInterval({ start, end });
 
     chartData = intervals.map((day) => {
-      const value = orders
+      const value = filteredOrders
         .filter((o) => isSameDay(new Date(o.created_at), day))
         .reduce((sum, o) => sum + Number(o.total), 0);
       return { value, date: format(day, "EEE d", { locale: fr }) };
@@ -107,26 +161,23 @@ export async function DashboardChartsSection({
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <PremiumStatCard
           title="Chiffre d'Affaires"
-          value={formatCurrency(totalSales)}
+          value={formatCurrency(displaySales)}
           iconName="DollarSign"
-          trend={12.4}
           description="Revenus réels encaissés"
           className="bg-primary/5 rounded-4xl"
         />
         <PremiumStatCard
           title="Commandes"
-          value={numOrders.toString()}
+          value={displayCount.toString()}
           iconName="ShoppingBag"
-          trend={8}
           description="Volume de transactions"
           className="bg-indigo-500/5 shadow-indigo-500/5 border-indigo-500/20 rounded-4xl"
         />
         <PremiumStatCard
           title="Clients Actifs"
-          value="1,284"
+          value={totalClients.toString()}
           iconName="Users"
-          trend={22}
-          description="Nouveaux comptes"
+          description="Clients identifiés (en ligne)"
           className="bg-emerald-500/5 shadow-emerald-500/5 border-emerald-500/20 rounded-4xl"
         />
         <PremiumStatCard
@@ -193,7 +244,7 @@ export async function DashboardChartsSection({
               <div
                 className="bg-amber-500 h-full rounded-full"
                 style={{
-                  width: `${numOrders > 0 ? (pendingOrders / numOrders) * 100 : 0}%`,
+                  width: `${displayCount > 0 ? (pendingOrders / displayCount) * 100 : 0}%`,
                 }}
               />
             </div>
@@ -218,7 +269,7 @@ export async function DashboardChartsSection({
               <div
                 className="bg-emerald-500 h-full rounded-full"
                 style={{
-                  width: `${numOrders > 0 ? (completedOrders / numOrders) * 100 : 0}%`,
+                  width: `${displayCount > 0 ? (completedOrders / displayCount) * 100 : 0}%`,
                 }}
               />
             </div>

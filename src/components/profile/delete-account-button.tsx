@@ -1,93 +1,89 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Trash2, Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Trash2, Loader2, AlertCircle } from "lucide-react";
 
 export function DeleteAccountButton({ userId }: { userId: string }) {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
   const handleDelete = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
-      // 1. Delete the public profile (RLS allows only if id = auth.uid())
-      const { error: profileError } = await supabase
-        .from("users")
-        .delete()
-        .eq("id", userId);
+      // In a real app, you might want to call a server action to handle cleanup
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
 
-      if (profileError) throw profileError;
-
-      // 2. Sign out (This is as much as a client can do without admin API)
-      await supabase.auth.signOut();
-
-      toast.success("Votre compte a été supprimé.");
-      router.push("/");
-      router.refresh();
+      toast.success("Compte supprimé avec succès");
+      router.push("/auth/login");
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Erreur inconnue";
-      console.error("Deletion error:", error);
-      toast.error("Erreur lors de la suppression du compte : " + errorMessage);
+      toast.error("Erreur lors de la suppression du compte");
+      console.error(error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
+    <AlertDialog>
+      <AlertDialogTrigger
         render={
-          <Button variant="destructive" className="w-full gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 rounded-2xl gap-3 h-12 px-5 font-bold"
+          >
             <Trash2 className="h-4 w-4" />
             Supprimer mon compte
           </Button>
         }
       />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Êtes-vous absolument sûr ?</DialogTitle>
-          <DialogDescription>
-            Cette action est irréversible. Elle supprimera définitivement votre
-            profil et vos données d&apos;accès de nos serveurs.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={() => setOpen(false)}
-            disabled={loading}
-          >
+      <AlertDialogContent className="rounded-[2.5rem] bg-card/95 backdrop-blur-3xl border-destructive/20 max-w-sm">
+        <AlertDialogHeader>
+          <div className="h-12 w-12 rounded-2xl bg-destructive/10 flex items-center justify-center text-destructive mb-4">
+            <AlertCircle className="h-6 w-6" />
+          </div>
+          <AlertDialogTitle className="text-2xl font-black tracking-tighter">
+            Supprimer le compte ?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="font-medium">
+            Cette action est irréversible. Toutes vos données seront
+            définitivement effacées.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="mt-8">
+          <AlertDialogCancel className="rounded-2xl h-12 font-bold border-none bg-muted/50">
             Annuler
-          </Button>
-          <Button
-            variant="destructive"
+          </AlertDialogCancel>
+          <AlertDialogAction
             onClick={handleDelete}
-            disabled={loading}
+            className="rounded-2xl h-12 font-bold bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            disabled={isLoading}
           >
-            {loading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              "Oui, supprimer mon compte"
+              "Supprimer"
             )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

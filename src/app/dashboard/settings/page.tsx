@@ -19,12 +19,17 @@ import {
   MapPin,
   Settings2,
   MessageCircle,
+  Image as ImageIcon,
+  Upload,
 } from "lucide-react";
+import { convertToWebP } from "@/lib/image-utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function SettingsPage() {
   const { refreshSettings } = useBranding();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [settings, setSettings] = useState({
     name: "",
     description: "",
@@ -35,6 +40,7 @@ export default function SettingsPage() {
     instagram: "",
     whatsapp: "",
     linkedin: "",
+    logo_url: "",
   });
 
   const supabase = createClient();
@@ -57,7 +63,10 @@ export default function SettingsPage() {
         }
 
         if (data?.value) {
-          setSettings(data.value);
+          setSettings((prev) => ({
+            ...prev,
+            ...data.value,
+          }));
         }
       } catch (error: unknown) {
         console.error("Error fetching settings:", error);
@@ -69,6 +78,38 @@ export default function SettingsPage() {
 
     fetchSettings();
   }, [supabase]);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const webpBlob = await convertToWebP(file, 0.9);
+      const fileName = `site/logo-${Date.now()}.webp`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("branding")
+        .upload(fileName, webpBlob, {
+          contentType: "image/webp",
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("branding").getPublicUrl(fileName);
+
+      setSettings((prev) => ({ ...prev, logo_url: publicUrl }));
+      toast.success("Logo chargé avec succès");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur lors du chargement du logo");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,18 +190,69 @@ export default function SettingsPage() {
           </div>
 
           <div className="p-10 lg:p-14 space-y-10">
-            {/* Corporate Identity */}
+            {/* Identity & Logo */}
             <div className="grid lg:grid-cols-3 gap-10">
               <div className="space-y-2">
                 <h4 className="text-xl font-black tracking-tight flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-primary/60" /> Marque
+                  <ImageIcon className="h-5 w-5 text-primary/60" /> Identité
+                  Visuelle
                 </h4>
                 <p className="text-sm text-muted-foreground font-medium italic">
-                  Le nom et la vision de votre établissement.
+                  Le logo et la marque de votre établissement.
                 </p>
               </div>
-              <div className="lg:col-span-2 space-y-6">
-                <div className="grid gap-2">
+              <div className="lg:col-span-2 space-y-8">
+                {/* Logo Upload */}
+                <div className="flex items-center gap-8 p-6 rounded-3xl bg-primary/5 border border-primary/10 border-dashed">
+                  <div className="relative group">
+                    <div className="h-24 w-24 rounded-2xl bg-background border border-border flex items-center justify-center overflow-hidden shadow-sm transition-all group-hover:border-primary/50 relative">
+                      {uploading ? (
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                      ) : settings.logo_url ? (
+                        <Avatar className="h-full w-full rounded-xl">
+                          <AvatarImage
+                            src={settings.logo_url}
+                            className="object-contain p-2"
+                          />
+                          <AvatarFallback>
+                            <ImageIcon className="h-8 w-8 text-muted-foreground/20" />
+                          </AvatarFallback>
+                        </Avatar>
+                      ) : (
+                        <ImageIcon className="h-8 w-8 text-muted-foreground/20" />
+                      )}
+                      <label
+                        htmlFor="logo-upload"
+                        className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white"
+                      >
+                        <Upload className="h-5 w-5" />
+                      </label>
+                    </div>
+                    <input
+                      id="logo-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleLogoUpload}
+                      disabled={uploading}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <h5 className="font-black tracking-tight">
+                      Logo de l&apos;entreprise
+                    </h5>
+                    <p className="text-xs text-muted-foreground font-medium italic">
+                      Recommandé : Fond transparent, max 2Mo.
+                    </p>
+                    {settings.logo_url && (
+                      <p className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 uppercase tracking-widest mt-2">
+                        <Sparkles className="h-3 w-3" /> Logo Actif
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid gap-2 text-left">
                   <Label
                     htmlFor="name"
                     className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
@@ -178,7 +270,7 @@ export default function SettingsPage() {
                     required
                   />
                 </div>
-                <div className="grid gap-2">
+                <div className="grid gap-2 text-left">
                   <Label
                     htmlFor="description"
                     className="text-[10px] font-black tracking-widest text-muted-foreground/60 ml-1"
