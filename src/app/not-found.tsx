@@ -22,8 +22,8 @@ export default function NotFound() {
         </h1>
 
         <p className="mt-6 text-lg leading-7 text-muted-foreground max-w-lg mx-auto font-medium">
-          Désolé, nous n&apos;avons pas pu trouver la page que vous recherchez. Il
-          semble que ce lien soit brisé ou que la page ait été déplacée.
+          Désolé, nous n&apos;avons pas pu trouver la page que vous recherchez.
+          Il semble que ce lien soit brisé ou que la page ait été déplacée.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
