@@ -199,7 +199,9 @@ function StatCard({ title, value, subValue, icon, trend }: any) {
         <div className="p-4 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
           {icon}
         </div>
-        <div className={lex items-center gap-1 text-sm font-bold }>
+        <div className={`flex items-center gap-1 text-sm font-bold ${
+          trend === 'up' ? 'text-emerald-500' : trend === 'down' ? 'text-rose-500' : 'text-slate-400'
+        }`}>
           {trend === 'up' && <ArrowUpRight className="h-4 w-4" />}
           {trend === 'down' && <ArrowDownRight className="h-4 w-4" />}
           {trend === 'up' ? '12%' : trend === 'down' ? '5%' : '-'}
