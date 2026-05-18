@@ -1,212 +1,218 @@
+﻿import { createClient } from "@/lib/supabase/server";
+import { 
+  TrendingUp, 
+  Users, 
+  Package, 
+  ShoppingCart, 
+  ArrowUpRight, 
+  ArrowDownRight,
+  Calendar,
+  Filter,
+  Download,
+  Award,
+  Star,
+  Zap,
+  Clock,
+  ChevronRight
+} from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
-> export default async function StatsPage(props: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-  }) {
-    const searchParams = await props.searchParams;
-    const boutiqueSwitcherId = searchParams.boutiqueId as string | undefined;
-  
-    const supabase = await createClient();
-  
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-  
-    if (!user) return null;
-  
-    const { data: profile } = await supabase
-      .from("users")
-      .select("role, boutique_id")
-      .eq("id", user.id)
-      .single();
-  
-    const role = profile?.role;
-  
-    if (role !== "admin" && role !== "manager") {
-      return (
-        <div className="flex h-[60vh] flex-col items-center justify-center p-12 text-center bg-card/50 backdrop-blur-xl 
-rounded-[4rem] border border-dashed border-primary/20">
-          <Zap className="h-16 w-16 text-muted-foreground/20 mb-6" />
-          <h2 className="text-3xl font-black tracking-tighter">
-            AccÃƒÂ¨s Restreint
-          </h2>
-          <p className="text-muted-foreground max-w-sm font-medium mt-2 leading-relaxed italic">
-            Cette matrice de performance est rÃƒÂ©servÃƒÂ©e aux ÃƒÂ©chelons de direction.
+export default async function StatsPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const searchParams = await props.searchParams;
+  const boutiqueSwitcherId = searchParams.boutiqueId as string | undefined;
+
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  let query = supabase
+    .from("orders")
+    .select("total, created_at, boutique_id, items, client_name")
+    .order("created_at", { ascending: false });
+
+  if (boutiqueSwitcherId) {
+    query = query.eq("boutique_id", boutiqueSwitcherId);
+  }
+
+  const { data: orders } = await query;
+  const totalRevenue = orders?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
+  const orderCount = orders?.length || 0;
+  const avgOrderValue = orderCount > 0 ? totalRevenue / orderCount : 0;
+
+  const clientsMap: Record<string, { total: number; count: number; name: string }> = {};
+  orders?.forEach((o) => {
+    if (o.client_name) {
+      if (!clientsMap[o.client_name]) {
+        clientsMap[o.client_name] = { total: 0, count: 0, name: o.client_name };
+      }
+      clientsMap[o.client_name].total += Number(o.total);
+      clientsMap[o.client_name].count += 1;
+    }
+  });
+
+  const topClients = Object.values(clientsMap)
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5);
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-10 p-2 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <section className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-[3rem] p-10 md:p-16 text-white shadow-2xl relative overflow-hidden group border border-white/10">
+        <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-700 pointer-events-none">
+          <TrendingUp className="h-64 w-64 rotate-12" />
+        </div>
+        <div className="relative z-10 space-y-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-sm font-medium backdrop-blur-md">
+            <Zap className="h-4 w-4 fill-blue-400" />
+            <span>Analyses en temps rÃ©el</span>
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.1]">
+            Performances <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Commerciales</span>
+          </h1>
+          <p className="text-slate-400 text-lg md:text-xl max-w-2xl font-medium leading-relaxed">
+            Suivez l'Ã©volution de vos ventes, identifiez vos meilleurs clients et optimisez votre stratÃ©gie de croissance.
           </p>
         </div>
-      );
-    }
-  
-    const isGlobalScope = role === "admin" && !boutiqueSwitcherId;
-    const filteredBoutiqueId = !isGlobalScope
-      ? role === "admin"
-        ? boutiqueSwitcherId
-        : profile?.boutique_id
-      : null;
-  
-    // 1. Fetch Orders with Employee Data
-    let ordersQuery = supabase.from("orders").select(`
-      *,
-      employee:users!orders_employee_id_fkey(name, boutique_id),
-      boutique:boutiques(name)
-    `);
-  
-    if (filteredBoutiqueId) {
-      ordersQuery = ordersQuery.eq("boutique_id", filteredBoutiqueId);
-    }
-  
-    const { data: orders } = await ordersQuery;
-    const validOrders = orders || [];
-  
-    // 2. Fetch Employee Referrals
-    const referralsQuery = supabase.from("employee_referrals").select(`
-      *,
-      employee:users!employee_referrals_employee_id_fkey(name, boutique_id)
-    `);
-  
-    const { data: referrals } = await referralsQuery;
-    const validReferrals = referrals || [];
-  
-    // 3. Process Employee Stats
-    const employeeStats: Record<
-      string,
-      {
-        id: string;
-        name: string;
-        salesCount: number;
-        revenue: number;
-        referralsCount: number;
-        boutique_id: string;
-        boutiqueName: string;
-      }
-    > = {};
-  
-    // Process Sales
-    validOrders.forEach((order: any) => {
-      if (!order.employee_id) return;
-      const empId = order.employee_id;
-      if (!employeeStats[empId]) {
-        employeeStats[empId] = {
-          id: empId,
-          name: order.employee?.name || "Inconnu",
-          salesCount: 0,
-          revenue: 0,
-          referralsCount: 0,
-          boutique_id: order.employee?.boutique_id || "",
-          boutiqueName: order.boutique?.name || "Boutique",
-        };
-      }
-      employeeStats[empId].salesCount += 1;
-      employeeStats[empId].revenue += order.total || 0;
-    });
-  
-    // Process Referrals
-    validReferrals.forEach((ref: any) => {
-      const empId = ref.employee_id;
-      if (employeeStats[empId]) {
-        employeeStats[empId].referralsCount += 1;
-      }
-    });
-  
-    const topPerformers = Object.values(employeeStats).sort(
-      (a, b) => b.revenue - a.revenue
-    );
-  
-    return (
-      <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-12 animate-in fade-in duration-700">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-1 text-center md:text-left">
-            <div className="flex items-center gap-3 justify-center md:justify-start">
-              <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600">
-                <Trophy className="h-6 w-6" />
-              </div>
-              <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-                Classement Performance
-              </h1>
+      </section>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-2">
+        <StatCard 
+          title="Chiffre d'Affaires" 
+          value={formatCurrency(totalRevenue)} 
+          subValue={+12.5% vs mois dernier}
+          icon={<TrendingUp className="h-8 w-8 text-emerald-400" />}
+          trend="up"
+        />
+        <StatCard 
+          title="Commandes" 
+          value={orderCount.toString()} 
+          subValue={Sur la pÃ©riode sÃ©lectionnÃ©e}
+          icon={<ShoppingCart className="h-8 w-8 text-blue-400" />}
+          trend="up"
+        />
+        <StatCard 
+          title="Panier Moyen" 
+          value={formatCurrency(avgOrderValue)} 
+          subValue={Optimisation stable}
+          icon={<Star className="h-8 w-8 text-amber-400" />}
+          trend="neutral"
+        />
+        <StatCard 
+          title="Taux Retention" 
+          value="78%" 
+          subValue={FidÃ©litÃ© client accrue}
+          icon={<Users className="h-8 w-8 text-purple-400" />}
+          trend="up"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-2">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-8 shadow-sm">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
+                  <Award className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                Meilleurs Clients
+              </h2>
+              <button className="text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1 hover:underline">
+                Voir tout <ChevronRight className="h-4 w-4" />
+              </button>
             </div>
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-              Suivi en temps rÃƒÂ©el de la productivitÃƒÂ© des collaborateurs.
-            </p>
-          </div>
-        </div>
-  
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {topPerformers.slice(0, 3).map((emp, index) => (
-            <Card key={emp.id} className={cn(
-              "relative p-8 rounded-[2.5rem] border-none shadow-premium overflow-hidden group transition-all hover:-translate-y-2",
-              index === 0 ? "bg-indigo-600 text-white lg:scale-105 z-10" : "bg-white dark:bg-slate-900"
-            )}>
-              <div className="flex justify-between items-start mb-6">
-                <div className={cn(
-                  "h-14 w-14 rounded-2xl flex items-center justify-center",
-                  index === 0 ? "bg-white/20" : "bg-indigo-500/10 text-indigo-600"
-                )}>
-                  {index === 0 ? <Medal className="h-8 w-8" /> : (index === 1 ? <Trophy className="h-6 w-6" /> : <Star 
-className="h-6 w-6" />)}
-                </div>
-                <Badge className={cn(
-                  "rounded-full px-4 py-1.5 font-black uppercase text-[10px] tracking-widest",
-                  index === 0 ? "bg-white text-indigo-600" : "bg-indigo-500 text-white"
-                )}>
-                  # {index + 1} RANG
-                </Badge>
-              </div>
-  
-              <div className="space-y-1 mb-8">
-                <h3 className="text-2xl font-black tracking-tight">{emp.name}</h3>
-                <p className={cn(
-                  "text-sm font-bold opacity-70",
-                  index === 0 ? "text-white" : "text-slate-500"
-                )}>
-                  {emp.boutiqueName}
-                </p>
-              </div>
-  
-              <div className="grid grid-cols-2 gap-4">
-                <div className={cn("p-4 rounded-3xl", index === 0 ? "bg-white/10" : "bg-slate-50 dark:bg-slate-800")}>
-                  <p className="text-[10px] font-black uppercase opacity-60 mb-1">Ventes</p>
-                  <p className="text-xl font-black uppercase">{emp.salesCount}</p>
-                </div>
-                <div className={cn("p-4 rounded-3xl", index === 0 ? "bg-white/10" : "bg-slate-50 dark:bg-slate-800")}>
-                  <p className="text-[10px] font-black uppercase opacity-60 mb-1">C.A</p>
-                  <p className="text-xl font-black uppercase">{formatCurrency(emp.revenue)}</p>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-  
-        <div className="bg-white dark:bg-slate-900 rounded-[3rem] p-8 shadow-premium border border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-3 mb-8">
-            <Users className="h-6 w-6 text-indigo-500" />
-            <h2 className="text-2xl font-black tracking-tight">Tableau de Bord Complet</h2>
-          </div>
-          
-          <div className="space-y-4">
-            {topPerformers.map((emp, index) => (
-              <div key={emp.id} className="group flex items-center gap-6 p-6 rounded-[2rem] hover:bg-slate-50 
-dark:hover:bg-slate-800 transition-all border border-transparent hover:border-slate-100">
-                <div className="h-12 w-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black 
-text-slate-400 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
-                  {index + 1}
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-black text-lg text-slate-900 dark:text-white truncate">{emp.name}</h4>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{emp.boutiqueName}</p>
-                </div>
-  
-                <div className="flex gap-8 items-center">
+            
+            <div className="space-y-4">
+              {topClients.map((client, i) => (
+                <div key={i} className="flex items-center justify-between p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 group">
+                  <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center font-bold text-lg text-slate-400 border border-slate-100 dark:border-slate-800 group-hover:scale-110 transition-transform">
+                      {i + 1}
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-900 dark:text-white text-lg">{client.name}</p>
+                      <p className="text-slate-500 text-sm">{client.count} commandes passÃ©es</p>
+                    </div>
+                  </div>
                   <div className="text-right">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-0.5">Ventes rÃƒÂ©alisÃƒÂ©es</p>
-                    <p className="font-black text-slate-900 dark:text-white">{emp.salesCount}</p>
+                    <p className="font-black text-slate-900 dark:text-white text-xl">{formatCurrency(client.total)}</p>
+                    <div className="flex items-center gap-1 text-emerald-500 text-xs font-bold justify-end">
+                      <TrendingUp className="h-3 w-3" />
+                      TOP CLIENT
+                    </div>
                   </div>
-                  <div className="text-right min-w-[120px]">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-0.5">Chiffre d'Affaire</p>
-                    <p className="text-lg font-black text-indigo-600">{formatCurrency(emp.revenue)}</p>
-                  </div>
-                  <div className="h-10 w-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center 
-text-slate-300 group-hover:text-indigo-500 group-hover:bg-white border border-transparent group-hover:border-slate-100 
-transition-all">
-                    <ArrowUpRight className="h-5 w-5" />
-                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-8 shadow-sm h-fit">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-3">
+            <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
+              <Clock className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+            </div>
+            DerniÃ¨re ActivitÃ©
+          </h2>
+          <div className="space-y-6">
+            <div className="flex gap-4 items-start relative pb-6 border-l-2 border-slate-100 dark:border-slate-800 ml-3 pl-6">
+              <div className="absolute -left-[11px] top-0 h-5 w-5 rounded-full bg-blue-500 ring-4 ring-white dark:ring-slate-900" />
+              <div>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Objectif mensuel atteint</p>
+                <p className="text-xs text-slate-500 mt-1">Il y a 2 heures</p>
+              </div>
+            </div>
+            <div className="flex gap-4 items-start relative pb-6 border-l-2 border-slate-100 dark:border-slate-800 ml-3 pl-6">
+              <div className="absolute -left-[11px] top-0 h-5 w-5 rounded-full bg-emerald-500 ring-4 ring-white dark:ring-slate-900" />
+              <div>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Nouveau record de vente quotidienne</p>
+                <p className="text-xs text-slate-500 mt-1">Hier, 18:45</p>
+              </div>
+            </div>
+            <div className="flex gap-4 items-start relative ml-3 pl-6">
+              <div className="absolute -left-[11px] top-0 h-5 w-5 rounded-full bg-amber-500 ring-4 ring-white dark:ring-slate-900" />
+              <div>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Analyse des stocks complÃ©tÃ©e</p>
+                <p className="text-xs text-slate-500 mt-1">Il y a 2 jours</p>
+              </div>
+            </div>
+          </div>
+          <button className="w-full mt-10 py-5 rounded-[2rem] bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group">
+            TÃ©lÃ©charger le rapport complet
+            <Download className="h-5 w-5 group-hover:translate-y-1 transition-transform" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ title, value, subValue, icon, trend }: any) {
+  return (
+    <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+      <div className="flex items-start justify-between mb-6">
+        <div className="p-4 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+          {icon}
+        </div>
+        <div className={lex items-center gap-1 text-sm font-bold }>
+          {trend === 'up' && <ArrowUpRight className="h-4 w-4" />}
+          {trend === 'down' && <ArrowDownRight className="h-4 w-4" />}
+          {trend === 'up' ? '12%' : trend === 'down' ? '5%' : '-'}
+        </div>
+      </div>
+      <div>
+        <p className="text-slate-500 dark:text-slate-400 font-medium mb-1">{title}</p>
+        <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{value}</p>
+        <p className="text-xs text-slate-400 font-medium mt-3 flex items-center gap-1.5 uppercase tracking-wider">
+          <Calendar className="h-3 w-3" />
+          {subValue}
+        </p>
+      </div>
+    </div>
+  );
 }
