@@ -98,7 +98,7 @@ export async function updateBoutique(
       updateData.name = validated.data.name;
     if (validated.data.location !== undefined)
       updateData.address = validated.data.location;
-    if (validated.data.phone !== undefined)
+    if (validated.data.phone !== undefined && validated.data.phone !== null)
       updateData.phone = validated.data.phone;
     if (validated.data.is_active !== undefined)
       updateData.is_active = validated.data.is_active;
