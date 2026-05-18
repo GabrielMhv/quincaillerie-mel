@@ -49,7 +49,7 @@ export function NotificationsList({
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications" },
-        (payload) => {
+        (payload: { new: { boutique_id: string | null; title: string; message: string } }) => {
           // Si c'est pour notre boutique ou si on est admin (boutique_id est null/all)
           if (!userBoutiqueId || payload.new.boutique_id === userBoutiqueId) {
             toast.info(`Nouvelle alerte : ${payload.new.title}`, {
