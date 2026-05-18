@@ -7,11 +7,22 @@ import { ProductFilters } from "@/components/products/product-filters";
 import Image from "next/image";
 import { ShoppingBag, Edit2, Trash2, Plus } from "lucide-react";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { ProductsGridSkeleton } from "@/components/ui/skeleton";
 
 export default async function DashboardProductsPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = await props.searchParams;
+
+  return (
+    <Suspense fallback={<ProductsGridSkeleton />}>
+      <ProductsContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function ProductsContent({ searchParams }: { searchParams: any }) {
   const searchQuery = searchParams.q as string | undefined;
   const categoryFilter = searchParams.category as string | undefined;
 

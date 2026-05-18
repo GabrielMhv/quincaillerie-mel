@@ -245,9 +245,9 @@ export function DashboardSidebar() {
           <div className="flex items-center gap-4">
             {user.avatar_url ? (
               <div className="h-12 w-12 rounded-2xl border-2 border-primary/20 overflow-hidden shrink-0">
-                <img
+                <Image
                   src={user.avatar_url}
-                  alt={user.name}
+                  width={48} height={48} alt={user.name}
                   className="h-full w-full object-cover"
                 />
               </div>

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters";
 import { Suspense } from "react";
-import { DashboardSkeleton } from "@/components/ui/skeletons";
+import { DashboardSkeleton } from "@/components/ui/skeleton";
 import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts-section";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -18,8 +18,25 @@ export default async function DashboardPage(props: {
   const fromParam = searchParams.from as string | undefined;
   const toParam = searchParams.to as string | undefined;
 
-  const supabase = await createClient();
+  return (
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardContent
+        searchParams={searchParams}
+        boutiqueSwitcherId={boutiqueSwitcherId}
+        fromParam={fromParam}
+        toParam={toParam}
+      />
+    </Suspense>
+  );
+}
 
+async function DashboardContent({
+  searchParams,
+  boutiqueSwitcherId,
+  fromParam,
+  toParam,
+}: any) {
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -60,15 +77,6 @@ export default async function DashboardPage(props: {
       ? boutiqueSwitcherId
       : profile?.boutique_id
     : null;
-
-  // Strict enforcement: if non-admin tries to use a different boutiqueId in URL, redirect or force their own
-  if (
-    role !== "admin" &&
-    boutiqueSwitcherId &&
-    boutiqueSwitcherId !== profile?.boutique_id
-  ) {
-    // Hidden enforcement: we use profile?.boutique_id anyway but let's be clean
-  }
 
   // Fetch selected boutique name for display
   let currentBoutiqueName = "";
@@ -125,25 +133,6 @@ export default async function DashboardPage(props: {
 
   const { data: orders } = await ordersQuery;
   const validOrders = orders || [];
-
-  // Fetch all boutiques for the Global HUD (Admin only)
-  const { data: boutiques } = await supabase
-    .from("boutiques")
-    .select("*")
-    .order("name");
-
-  // Today's metrics
-  const today = startOfDay(new Date());
-  const todayIso = today.toISOString();
-
-  const todayOrders = validOrders.filter((o) => o.created_at >= todayIso);
-
-  // Team Performance (for Manager/Admin)
-  if (role === "admin" || role === "manager") {
-    todayOrders.forEach(() => {
-      // Removed team sales tracking as it is not used in the minimal dashboard
-    });
-  }
 
   const hoursNow = new Date().getHours();
   const greeting =

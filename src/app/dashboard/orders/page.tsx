@@ -5,11 +5,22 @@ import { OrdersTable } from "@/components/orders/orders-table";
 import { OrderFilters } from "@/components/orders/order-filters";
 import { cn } from "@/lib/utils";
 import { format, startOfDay } from "date-fns";
+import { Suspense } from "react";
+import { OrdersTableSkeleton } from "@/components/ui/skeleton";
 
 export default async function OrdersPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = await props.searchParams;
+
+  return (
+    <Suspense fallback={<OrdersTableSkeleton />}>
+      <OrdersContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function OrdersContent({ searchParams }: { searchParams: any }) {
   const boutiqueSwitcherId = searchParams.boutiqueId as string | undefined;
   const statusFilter = searchParams.status as string | undefined;
 
@@ -67,15 +78,6 @@ export default async function OrdersPage(props: {
 
   if (endDate) {
     query = query.lte("created_at", endDate);
-  }
-
-  // Fetch current boutique name for display if filtered
-  if (filteredBoutiqueId) {
-    await supabase
-      .from("boutiques")
-      .select("name")
-      .eq("id", filteredBoutiqueId)
-      .single();
   }
 
   const { data: orders, error } = await query;

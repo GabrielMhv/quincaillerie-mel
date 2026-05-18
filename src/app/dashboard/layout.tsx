@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
 import { DashboardTopbar } from "@/components/layout/dashboard-topbar";
+import { RealtimeSync } from "@/components/providers/realtime-sync";
 
 export default function DashboardLayout({
   children,
@@ -9,6 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex min-h-screen w-full bg-slate-50 dark:bg-[#020617] transition-colors duration-500">
+      <RealtimeSync />
       <Suspense
         fallback={
           <div className="w-80 hidden lg:block bg-card/50 border-r border-primary/5 animate-pulse" />
