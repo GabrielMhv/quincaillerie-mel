@@ -85,28 +85,28 @@ export default async function StatsPage(props: {
         <StatCard 
           title="Chiffre d'Affaires" 
           value={formatCurrency(totalRevenue)} 
-          subValue={+12.5% vs mois dernier}
+          subValue="+12.5% vs mois dernier"
           icon={<TrendingUp className="h-8 w-8 text-emerald-400" />}
           trend="up"
         />
         <StatCard 
           title="Commandes" 
           value={orderCount.toString()} 
-          subValue={Sur la pÃ©riode sÃ©lectionnÃ©e}
+          subValue="Sur la période sélectionnée"
           icon={<ShoppingCart className="h-8 w-8 text-blue-400" />}
           trend="up"
         />
         <StatCard 
           title="Panier Moyen" 
           value={formatCurrency(avgOrderValue)} 
-          subValue={Optimisation stable}
+          subValue="Optimisation stable"
           icon={<Star className="h-8 w-8 text-amber-400" />}
           trend="neutral"
         />
         <StatCard 
           title="Taux Retention" 
           value="78%" 
-          subValue={FidÃ©litÃ© client accrue}
+          subValue="Fidélité client accrue"
           icon={<Users className="h-8 w-8 text-purple-400" />}
           trend="up"
         />

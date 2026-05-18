@@ -1,18 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import {
   Bell,
-  Search,
-  Trash2,
-  CheckCircle2,
-  AlertTriangle,
-  Package,
-  Info,
-  Clock,
-  Sparkles,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { NotificationsList } from "@/components/notifications/notifications-list";
 import { redirect } from "next/navigation";
 
