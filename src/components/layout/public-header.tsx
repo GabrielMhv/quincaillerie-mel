@@ -22,13 +22,8 @@ import { useState, useEffect, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { useBoutique } from "@/components/providers/boutique-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
 import { useBranding } from "@/components/providers/branding-provider";
+import { PublicBoutiqueSwitcher } from "./public-boutique-switcher";
 
 export function PublicHeader() {
   const { user, signOut, isAdmin, isManager, isEmployee } = useAuth();
@@ -112,90 +107,6 @@ export function PublicHeader() {
         </div>
 
         <div className="flex items-center gap-6">
-          {/* Boutique Selector - Desktop */}
-          <div className="hidden xl:flex items-center">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-primary/10 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative p-1 rounded-3xl bg-secondary/80 dark:bg-card/80 border border-white/10 flex items-center gap-3 px-5 h-13 hover:bg-secondary transition-all cursor-pointer shadow-premium overflow-hidden">
-                <div className="bg-primary/10 p-2 rounded-xl text-primary">
-                  <MapPin className="h-4 w-4" />
-                </div>
-                {isLoading ? (
-                  <div className="h-4 w-30 animate-pulse bg-muted rounded" />
-                ) : (
-                  <Select
-                    value={selectedBoutique?.id || ""}
-                    disabled={isPending}
-                    onValueChange={(val) => {
-                      const b = boutiques.find((bout) => bout.id === val);
-                      if (b) {
-                        startTransition(() => {
-                          setSelectedBoutique(b);
-                          // If we are on products page, refresh with new boutiqueId
-                          if (window.location.pathname === "/products") {
-                            window.location.href = `/products?boutiqueId=${b.id}`;
-                          }
-                        });
-                      }
-                    }}
-                  >
-                    <SelectTrigger
-                      className={cn(
-                        "border-none bg-transparent h-full p-0 shadow-none focus:ring-0 min-w-55 text-[13px] font-bold tracking-tight text-foreground/80 hover:text-foreground transition-colors pr-4",
-                        isPending && "opacity-50 cursor-wait",
-                      )}
-                    >
-                      <span className="truncate max-w-50 text-left ml-2">
-                        {isPending
-                          ? "Mise à jour..."
-                          : selectedBoutique?.name || "Boutique à proximité"}
-                      </span>
-                    </SelectTrigger>
-                    <SelectContent
-                      align="start"
-                      sideOffset={24}
-                      alignOffset={-40}
-                      alignItemWithTrigger={false}
-                      className="glass border-border/50 rounded-4xl p-3 shadow-2xl animate-in fade-in zoom-in duration-200 min-w-[320px]"
-                    >
-                      <div className="px-4 py-3 mb-2">
-                        <p className="text-[10px] font-bold text-primary tracking-tight mb-1">
-                          Nos points de vente
-                        </p>
-                        <p className="text-[11px] text-muted-foreground font-medium">
-                          Choisissez votre boutique de référence
-                        </p>
-                      </div>
-                      {boutiques.map((b) => (
-                        <SelectItem
-                          key={b.id}
-                          value={b.id}
-                          className={cn(
-                            "rounded-2xl text-[14px] font-bold tracking-tight my-1 p-3 focus:bg-primary/10 focus:text-primary transition-all border border-transparent",
-                            selectedBoutique?.id === b.id &&
-                              "bg-primary/5 border-primary/20 text-primary",
-                          )}
-                        >
-                          <div className="flex items-center gap-3 py-1">
-                            <MapPin
-                              className={cn(
-                                "h-4 w-4 shrink-0",
-                                selectedBoutique?.id === b.id
-                                  ? "text-primary"
-                                  : "text-muted-foreground",
-                              )}
-                            />
-                            <span className="truncate">{b.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
-            </div>
-          </div>
-
           <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
             <Button
               variant="ghost"

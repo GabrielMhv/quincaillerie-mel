@@ -18,6 +18,8 @@ import {
 import { Product, Category } from "@/types";
 import { cn } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
+import { PublicBoutiqueSwitcher } from "@/components/layout/public-boutique-switcher";
+import { MapPin } from "lucide-react";
 
 function ProductsContent() {
   const searchParams = useSearchParams();
@@ -67,7 +69,12 @@ function ProductsContent() {
 
       if (search) query = query.ilike("name", `%${search}%`);
       if (categoryId) query = query.eq("category_id", categoryId);
-      if (boutiqueId) query = query.eq("stocks.boutique_id", boutiqueId);
+      
+      // Filtrer par boutique si un ID est présent
+      if (boutiqueId) {
+        query = query.eq("stocks.boutique_id", boutiqueId);
+      }
+
       if (inStock) query = query.gt("stocks.quantity", 0);
       if (minPrice > 0) query = query.gte("price", minPrice);
       if (maxPrice > 0) query = query.lte("price", maxPrice);
@@ -167,8 +174,13 @@ function ProductsContent() {
                   </SheetHeader>
 
                   <div className="space-y-6">
-                    <div className="space-y-4">
-                      <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300">
+                    <div className="space-y-4">                      <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300 flex items-center gap-2">
+                        <MapPin className="h-3 w-3" /> BOUTIQUE
+                      </h4>
+                      <PublicBoutiqueSwitcher />
+                    </div>
+
+                    <div className="space-y-4">                      <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300">
                         CATÉGORIES
                       </h4>
                       <div className="flex flex-col gap-2">
@@ -221,6 +233,13 @@ function ProductsContent() {
                   <Filter className="h-5 w-5 text-primary" /> Filtres
                 </h3>
                 <div className="w-full h-px bg-slate-200 dark:bg-white/10" />
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300">
+                  BOUTIQUE DE RÉFÉRENCE
+                </h4>
+                <PublicBoutiqueSwitcher />
               </div>
 
               <div className="space-y-4">
