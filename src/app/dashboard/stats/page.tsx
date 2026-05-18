@@ -2,12 +2,10 @@
 import {
   TrendingUp,
   Users,
-  Package,
   ShoppingCart,
   ArrowUpRight,
   ArrowDownRight,
   Calendar,
-  Filter,
   Download,
   Award,
   Star,
@@ -82,8 +80,8 @@ export default async function StatsPage(props: {
             </span>
           </h1>
           <p className="text-slate-400 text-lg md:text-xl max-w-2xl font-medium leading-relaxed">
-            Suivez l'Ã©volution de vos ventes, identifiez vos meilleurs clients
-            et optimisez votre stratÃ©gie de croissance.
+            Suivez l&apos;évolution de vos ventes, identifiez vos meilleurs clients
+            et optimisez votre stratégie de croissance.
           </p>
         </div>
       </section>
@@ -149,7 +147,7 @@ export default async function StatsPage(props: {
                         {client.name}
                       </p>
                       <p className="text-slate-500 text-sm">
-                        {client.count} commandes passÃ©es
+                        {client.count} commandes passées
                       </p>
                     </div>
                   </div>
@@ -173,7 +171,7 @@ export default async function StatsPage(props: {
             <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
               <Clock className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
-            DerniÃ¨re ActivitÃ©
+            Dernière Activité
           </h2>
           <div className="space-y-6">
             <div className="flex gap-4 items-start relative pb-6 border-l-2 border-slate-100 dark:border-slate-800 ml-3 pl-6">
@@ -198,14 +196,14 @@ export default async function StatsPage(props: {
               <div className="absolute -left-[11px] top-0 h-5 w-5 rounded-full bg-amber-500 ring-4 ring-white dark:ring-slate-900" />
               <div>
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                  Analyse des stocks complÃ©tÃ©e
+                  Analyse des stocks complétée
                 </p>
                 <p className="text-xs text-slate-500 mt-1">Il y a 2 jours</p>
               </div>
             </div>
           </div>
           <button className="w-full mt-10 py-5 rounded-[2rem] bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group">
-            TÃ©lÃ©charger le rapport complet
+            Télécharger le rapport complet
             <Download className="h-5 w-5 group-hover:translate-y-1 transition-transform" />
           </button>
         </div>
@@ -214,7 +212,15 @@ export default async function StatsPage(props: {
   );
 }
 
-function StatCard({ title, value, subValue, icon, trend }: any) {
+interface StatCardProps {
+  title: string;
+  value: string;
+  subValue: string;
+  icon: React.ReactNode;
+  trend: "up" | "down" | "neutral";
+}
+
+function StatCard({ title, value, subValue, icon, trend }: StatCardProps) {
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
       <div className="flex items-start justify-between mb-6">

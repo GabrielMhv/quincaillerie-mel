@@ -1,7 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import {
-  Bell,
-} from "lucide-react";
+import { Bell } from "lucide-react";
 import { Suspense } from "react";
 import { NotificationsList } from "@/components/notifications/notifications-list";
 import { redirect } from "next/navigation";
@@ -11,7 +9,7 @@ export default async function NotificationsPage(props: {
 }) {
   const searchParams = await props.searchParams;
   const filter = (searchParams.filter as string) || "all";
-  
+
   const supabase = await createClient();
 
   const {
@@ -49,9 +47,9 @@ export default async function NotificationsPage(props: {
       </div>
 
       <Suspense fallback={<NotificationsSkeleton />}>
-        <NotificationsContent 
-          userRole={profile.role} 
-          userBoutiqueId={profile.boutique_id} 
+        <NotificationsContent
+          userRole={profile.role}
+          userBoutiqueId={profile.boutique_id}
           filter={filter}
         />
       </Suspense>
@@ -59,12 +57,12 @@ export default async function NotificationsPage(props: {
   );
 }
 
-async function NotificationsContent({ 
-  userRole, 
+async function NotificationsContent({
+  userRole,
   userBoutiqueId,
-  filter 
-}: { 
-  userRole: string; 
+  filter,
+}: {
+  userRole: string;
   userBoutiqueId: string | null;
   filter: string;
 }) {
@@ -86,8 +84,8 @@ async function NotificationsContent({
   const { data: notifications } = await query;
 
   return (
-    <NotificationsList 
-      initialNotifications={notifications || []} 
+    <NotificationsList
+      initialNotifications={notifications || []}
       userBoutiqueId={userBoutiqueId}
     />
   );
@@ -97,7 +95,10 @@ function NotificationsSkeleton() {
   return (
     <div className="space-y-4">
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="h-24 w-full bg-slate-100 dark:bg-slate-800 rounded-3xl animate-pulse" />
+        <div
+          key={i}
+          className="h-24 w-full bg-slate-100 dark:bg-slate-800 rounded-3xl animate-pulse"
+        />
       ))}
     </div>
   );
