@@ -84,12 +84,12 @@ async function DashboardContent({
     : null;
 
   const boutiques = isGlobalScope
-    ? (
+    ? ((
         await supabase
           .from("boutiques")
           .select("id, name, address")
           .order("name")
-      ).data ?? []
+      ).data ?? [])
     : [];
 
   // Fetch selected boutique name for display

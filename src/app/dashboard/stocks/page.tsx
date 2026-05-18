@@ -98,12 +98,14 @@ async function StocksContent({ searchParams }: { searchParams: any }) {
   // Fetch existing transfers
   const { data: transfers } = await supabase
     .from("stock_transfers")
-    .select(`
+    .select(
+      `
       *,
       product:products(name),
       from_boutique:boutiques!stock_transfers_from_boutique_id_fkey(name),
       to_boutique:boutiques!stock_transfers_to_boutique_id_fkey(name)
-    `)
+    `,
+    )
     .order("created_at", { ascending: false });
 
   // Fetch current boutique name for display if filtered
@@ -152,10 +154,20 @@ async function StocksContent({ searchParams }: { searchParams: any }) {
 
       <Tabs defaultValue="inventory" className="w-full">
         <TabsList className="grid w-64 md:w-96 grid-cols-2 rounded-2xl h-12 mb-8 bg-slate-100 dark:bg-slate-800 p-1">
-          <TabsTrigger value="inventory" className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">Inventaire</TabsTrigger>
-          <TabsTrigger value="transfers" className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">Transferts</TabsTrigger>
+          <TabsTrigger
+            value="inventory"
+            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm"
+          >
+            Inventaire
+          </TabsTrigger>
+          <TabsTrigger
+            value="transfers"
+            className="rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm"
+          >
+            Transferts
+          </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="inventory" className="focus-visible:outline-none">
           <StockEditor
             products={products || []}

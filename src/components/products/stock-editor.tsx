@@ -140,12 +140,16 @@ function StockControls({
 
 export function StockEditor(props: StockEditorProps) {
   if ("products" in props) {
-    const { products, boutiques, currentBoutiqueId, onStockUpdated, disabled } = props;
+    const { products, boutiques, currentBoutiqueId, onStockUpdated, disabled } =
+      props;
 
     if (!currentBoutiqueId) {
       return (
         <div className="rounded-3xl border border-dashed border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/70 p-8 text-sm font-medium text-slate-500 dark:text-slate-400">
-          Sélectionnez une boutique pour ajuster les stocks. {boutiques.length > 0 ? "La liste des produits restera disponible une fois la boutique choisie." : ""}
+          Sélectionnez une boutique pour ajuster les stocks.{" "}
+          {boutiques.length > 0
+            ? "La liste des produits restera disponible une fois la boutique choisie."
+            : ""}
         </div>
       );
     }
@@ -162,8 +166,9 @@ export function StockEditor(props: StockEditorProps) {
       <div className="space-y-4">
         {products.map((product) => {
           const currentStock =
-            product.stocks?.find((stock) => stock.boutique_id === currentBoutiqueId)
-              ?.quantity ?? 0;
+            product.stocks?.find(
+              (stock) => stock.boutique_id === currentBoutiqueId,
+            )?.quantity ?? 0;
 
           return (
             <div
