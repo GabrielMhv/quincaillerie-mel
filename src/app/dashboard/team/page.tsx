@@ -1,4 +1,4 @@
-﻿import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { UserFormModal } from "@/components/team/user-form-modal";
 import { TeamTable } from "@/components/team/team-table";

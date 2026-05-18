@@ -1,4 +1,4 @@
-﻿
+
 > export default async function StatsPage(props: {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
   }) {
