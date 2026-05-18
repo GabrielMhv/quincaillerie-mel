@@ -1,10 +1,10 @@
 ﻿import { createClient } from "@/lib/supabase/server";
-import { 
-  TrendingUp, 
-  Users, 
-  Package, 
-  ShoppingCart, 
-  ArrowUpRight, 
+import {
+  TrendingUp,
+  Users,
+  Package,
+  ShoppingCart,
+  ArrowUpRight,
   ArrowDownRight,
   Calendar,
   Filter,
@@ -13,7 +13,7 @@ import {
   Star,
   Zap,
   Clock,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
@@ -41,11 +41,15 @@ export default async function StatsPage(props: {
   }
 
   const { data: orders } = await query;
-  const totalRevenue = orders?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
+  const totalRevenue =
+    orders?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
   const orderCount = orders?.length || 0;
   const avgOrderValue = orderCount > 0 ? totalRevenue / orderCount : 0;
 
-  const clientsMap: Record<string, { total: number; count: number; name: string }> = {};
+  const clientsMap: Record<
+    string,
+    { total: number; count: number; name: string }
+  > = {};
   orders?.forEach((o) => {
     if (o.client_name) {
       if (!clientsMap[o.client_name]) {
@@ -73,39 +77,42 @@ export default async function StatsPage(props: {
           </div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.1]">
             Performances <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Commerciales</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+              Commerciales
+            </span>
           </h1>
           <p className="text-slate-400 text-lg md:text-xl max-w-2xl font-medium leading-relaxed">
-            Suivez l'Ã©volution de vos ventes, identifiez vos meilleurs clients et optimisez votre stratÃ©gie de croissance.
+            Suivez l'Ã©volution de vos ventes, identifiez vos meilleurs clients
+            et optimisez votre stratÃ©gie de croissance.
           </p>
         </div>
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-2">
-        <StatCard 
-          title="Chiffre d'Affaires" 
-          value={formatCurrency(totalRevenue)} 
+        <StatCard
+          title="Chiffre d'Affaires"
+          value={formatCurrency(totalRevenue)}
           subValue="+12.5% vs mois dernier"
           icon={<TrendingUp className="h-8 w-8 text-emerald-400" />}
           trend="up"
         />
-        <StatCard 
-          title="Commandes" 
-          value={orderCount.toString()} 
+        <StatCard
+          title="Commandes"
+          value={orderCount.toString()}
           subValue="Sur la période sélectionnée"
           icon={<ShoppingCart className="h-8 w-8 text-blue-400" />}
           trend="up"
         />
-        <StatCard 
-          title="Panier Moyen" 
-          value={formatCurrency(avgOrderValue)} 
+        <StatCard
+          title="Panier Moyen"
+          value={formatCurrency(avgOrderValue)}
           subValue="Optimisation stable"
           icon={<Star className="h-8 w-8 text-amber-400" />}
           trend="neutral"
         />
-        <StatCard 
-          title="Taux Retention" 
-          value="78%" 
+        <StatCard
+          title="Taux Retention"
+          value="78%"
           subValue="Fidélité client accrue"
           icon={<Users className="h-8 w-8 text-purple-400" />}
           trend="up"
@@ -126,21 +133,30 @@ export default async function StatsPage(props: {
                 Voir tout <ChevronRight className="h-4 w-4" />
               </button>
             </div>
-            
+
             <div className="space-y-4">
               {topClients.map((client, i) => (
-                <div key={i} className="flex items-center justify-between p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 group">
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-5 rounded-3xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700 group"
+                >
                   <div className="flex items-center gap-4">
                     <div className="h-14 w-14 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center font-bold text-lg text-slate-400 border border-slate-100 dark:border-slate-800 group-hover:scale-110 transition-transform">
                       {i + 1}
                     </div>
                     <div>
-                      <p className="font-bold text-slate-900 dark:text-white text-lg">{client.name}</p>
-                      <p className="text-slate-500 text-sm">{client.count} commandes passÃ©es</p>
+                      <p className="font-bold text-slate-900 dark:text-white text-lg">
+                        {client.name}
+                      </p>
+                      <p className="text-slate-500 text-sm">
+                        {client.count} commandes passÃ©es
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-black text-slate-900 dark:text-white text-xl">{formatCurrency(client.total)}</p>
+                    <p className="font-black text-slate-900 dark:text-white text-xl">
+                      {formatCurrency(client.total)}
+                    </p>
                     <div className="flex items-center gap-1 text-emerald-500 text-xs font-bold justify-end">
                       <TrendingUp className="h-3 w-3" />
                       TOP CLIENT
@@ -163,21 +179,27 @@ export default async function StatsPage(props: {
             <div className="flex gap-4 items-start relative pb-6 border-l-2 border-slate-100 dark:border-slate-800 ml-3 pl-6">
               <div className="absolute -left-[11px] top-0 h-5 w-5 rounded-full bg-blue-500 ring-4 ring-white dark:ring-slate-900" />
               <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">Objectif mensuel atteint</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Objectif mensuel atteint
+                </p>
                 <p className="text-xs text-slate-500 mt-1">Il y a 2 heures</p>
               </div>
             </div>
             <div className="flex gap-4 items-start relative pb-6 border-l-2 border-slate-100 dark:border-slate-800 ml-3 pl-6">
               <div className="absolute -left-[11px] top-0 h-5 w-5 rounded-full bg-emerald-500 ring-4 ring-white dark:ring-slate-900" />
               <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">Nouveau record de vente quotidienne</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Nouveau record de vente quotidienne
+                </p>
                 <p className="text-xs text-slate-500 mt-1">Hier, 18:45</p>
               </div>
             </div>
             <div className="flex gap-4 items-start relative ml-3 pl-6">
               <div className="absolute -left-[11px] top-0 h-5 w-5 rounded-full bg-amber-500 ring-4 ring-white dark:ring-slate-900" />
               <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">Analyse des stocks complÃ©tÃ©e</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  Analyse des stocks complÃ©tÃ©e
+                </p>
                 <p className="text-xs text-slate-500 mt-1">Il y a 2 jours</p>
               </div>
             </div>
@@ -199,17 +221,27 @@ function StatCard({ title, value, subValue, icon, trend }: any) {
         <div className="p-4 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
           {icon}
         </div>
-        <div className={`flex items-center gap-1 text-sm font-bold ${
-          trend === 'up' ? 'text-emerald-500' : trend === 'down' ? 'text-rose-500' : 'text-slate-400'
-        }`}>
-          {trend === 'up' && <ArrowUpRight className="h-4 w-4" />}
-          {trend === 'down' && <ArrowDownRight className="h-4 w-4" />}
-          {trend === 'up' ? '12%' : trend === 'down' ? '5%' : '-'}
+        <div
+          className={`flex items-center gap-1 text-sm font-bold ${
+            trend === "up"
+              ? "text-emerald-500"
+              : trend === "down"
+                ? "text-rose-500"
+                : "text-slate-400"
+          }`}
+        >
+          {trend === "up" && <ArrowUpRight className="h-4 w-4" />}
+          {trend === "down" && <ArrowDownRight className="h-4 w-4" />}
+          {trend === "up" ? "12%" : trend === "down" ? "5%" : "-"}
         </div>
       </div>
       <div>
-        <p className="text-slate-500 dark:text-slate-400 font-medium mb-1">{title}</p>
-        <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{value}</p>
+        <p className="text-slate-500 dark:text-slate-400 font-medium mb-1">
+          {title}
+        </p>
+        <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+          {value}
+        </p>
         <p className="text-xs text-slate-400 font-medium mt-3 flex items-center gap-1.5 uppercase tracking-wider">
           <Calendar className="h-3 w-3" />
           {subValue}
