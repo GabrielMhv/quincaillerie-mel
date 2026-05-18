@@ -157,8 +157,8 @@ async function StocksContent({ searchParams }: { searchParams: any }) {
         </TabsList>
         
         <TabsContent value="inventory" className="focus-visible:outline-none">
-          <StockEditor 
-            products={processedProducts(products)} // Assuming some processing or just pass products
+          <StockEditor
+            products={products || []}
             boutiques={boutiques || []}
             currentBoutiqueId={filteredBoutiqueId}
           />

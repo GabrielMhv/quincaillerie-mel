@@ -5,8 +5,9 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { Plus, Minus, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import type { Boutique, Product } from "@/types";
 
-interface StockEditorProps {
+interface SingleStockEditorProps {
   initialStock: number;
   productId: string;
   boutiqueId: string;
@@ -14,13 +15,23 @@ interface StockEditorProps {
   disabled?: boolean;
 }
 
-export function StockEditor({
+interface InventoryStockEditorProps {
+  products: Product[];
+  boutiques: Boutique[];
+  currentBoutiqueId: string | null;
+  onStockUpdated?: () => void;
+  disabled?: boolean;
+}
+
+type StockEditorProps = SingleStockEditorProps | InventoryStockEditorProps;
+
+function StockControls({
   initialStock,
   productId,
   boutiqueId,
   onStockUpdated,
   disabled,
-}: StockEditorProps) {
+}: SingleStockEditorProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const supabase = createClient();
   const router = useRouter();
@@ -93,7 +104,7 @@ export function StockEditor({
         <span className="text-[14px] font-black text-slate-900 dark:text-white tabular-nums leading-none">
           {initialStock}
         </span>
-        <span className="text-[8px] font-bold text-slate-400  tracking-tighter mt-1">
+        <span className="text-[8px] font-bold text-slate-400 tracking-tighter mt-1">
           Stock
         </span>
       </div>
@@ -125,4 +136,61 @@ export function StockEditor({
       )}
     </div>
   );
+}
+
+export function StockEditor(props: StockEditorProps) {
+  if ("products" in props) {
+    const { products, boutiques, currentBoutiqueId, onStockUpdated, disabled } = props;
+
+    if (!currentBoutiqueId) {
+      return (
+        <div className="rounded-3xl border border-dashed border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/70 p-8 text-sm font-medium text-slate-500 dark:text-slate-400">
+          Sélectionnez une boutique pour ajuster les stocks. {boutiques.length > 0 ? "La liste des produits restera disponible une fois la boutique choisie." : ""}
+        </div>
+      );
+    }
+
+    if (products.length === 0) {
+      return (
+        <div className="rounded-3xl border border-dashed border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/70 p-8 text-sm font-medium text-slate-500 dark:text-slate-400">
+          Aucun produit trouvé pour cette sélection.
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        {products.map((product) => {
+          const currentStock =
+            product.stocks?.find((stock) => stock.boutique_id === currentBoutiqueId)
+              ?.quantity ?? 0;
+
+          return (
+            <div
+              key={product.id}
+              className="flex flex-col gap-4 rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm md:flex-row md:items-center md:justify-between"
+            >
+              <div>
+                <p className="text-lg font-black text-slate-900 dark:text-white">
+                  {product.name}
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {product.category?.name || "Produit"}
+                </p>
+              </div>
+              <StockControls
+                initialStock={currentStock}
+                productId={product.id}
+                boutiqueId={currentBoutiqueId}
+                onStockUpdated={onStockUpdated}
+                disabled={disabled}
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return <StockControls {...props} />;
 }

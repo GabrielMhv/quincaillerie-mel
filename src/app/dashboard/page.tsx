@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatCurrency } from "@/lib/utils";
-import { Store as StoreIcon, Clock, User as UserIcon } from "lucide-react";
+import { Store as StoreIcon, Clock } from "lucide-react";
 import { subDays, startOfDay } from "date-fns";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,12 @@ async function DashboardContent({
   boutiqueSwitcherId,
   fromParam,
   toParam,
-}: any) {
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+  boutiqueSwitcherId?: string;
+  fromParam?: string;
+  toParam?: string;
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -77,6 +82,15 @@ async function DashboardContent({
       ? boutiqueSwitcherId
       : profile?.boutique_id
     : null;
+
+  const boutiques = isGlobalScope
+    ? (
+        await supabase
+          .from("boutiques")
+          .select("id, name, address")
+          .order("name")
+      ).data ?? []
+    : [];
 
   // Fetch selected boutique name for display
   let currentBoutiqueName = "";
