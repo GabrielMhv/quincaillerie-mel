@@ -27,7 +27,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 interface Notification {
-  /* ... existing code ... */
+  id: string;
+  title: string;
+  message: string;
+  type: "low_stock" | "out_of_stock" | "transfer" | "info";
+  is_read: boolean;
+  created_at: string;
+  boutique_id: string | null;
+  boutique?: {
+    name: string;
+  };
 }
 
 export function NotificationsList({
@@ -49,7 +58,9 @@ export function NotificationsList({
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications" },
-        (payload: { new: { boutique_id: string | null; title: string; message: string } }) => {
+        (payload: {
+          new: { boutique_id: string | null; title: string; message: string };
+        }) => {
           // Si c'est pour notre boutique ou si on est admin (boutique_id est null/all)
           if (!userBoutiqueId || payload.new.boutique_id === userBoutiqueId) {
             toast.info(`Nouvelle alerte : ${payload.new.title}`, {
