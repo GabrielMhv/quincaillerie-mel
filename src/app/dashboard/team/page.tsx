@@ -22,10 +22,10 @@ export default async function DashboardTeamPage() {
       <div className="flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-1 text-center md:text-left">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-            Gestion de l'Ã‰quipe
+            Gestion de l&apos;Équipe
           </h1>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            GÃ©rez les accÃ¨s, les rÃ´les et les performances de votre personnel.
+            Gérez les accès, les rôles et les performances de votre personnel
           </p>
         </div>
       </div>
@@ -59,10 +59,10 @@ async function TeamContent() {
           <Shield className="h-8 w-8" />
         </div>
         <p className="text-xl font-black tracking-tighter italic">
-          PÃ©rimÃ¨tre Administrateur
+          Périmètre Administrateur
         </p>
         <p className="text-sm text-muted-foreground font-medium">
-          L&apos;accÃ¨s Ã  la gestion du personnel est restreint.
+          L&apos;accès à la gestion du personnel est restreint.
         </p>
       </div>
     );
@@ -86,7 +86,7 @@ async function TeamContent() {
 
   if (error) {
     console.error("Error fetching team:", error);
-    return <div>Erreur lors du chargement de l'Ã©quipe.</div>;
+    return <div className="p-8 text-center text-slate-500">Erreur lors du chargement de l&apos;équipe.</div>;
   }
 
   // Calculate quick stats
@@ -94,24 +94,58 @@ async function TeamContent() {
     total: members?.length || 0,
     admins: members?.filter(m => m.role === 'admin').length || 0,
     managers: members?.filter(m => m.role === 'manager').length || 0,
+    employees: members?.filter(m => m.role === 'employee').length || 0,
   };
 
   return (
     <div className="space-y-8">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* KPI Cards Grid matches Orders/Products style */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Total Ã‰quipe", value: stats.total, icon: Users, color: "text-blue-600 bg-blue-50" },
-          { label: "Administrateurs", value: stats.admins, icon: UserCheck, color: "text-indigo-600 bg-indigo-50" },
-          { label: "Managers", value: stats.managers, icon: UserCheck, color: "text-emerald-600 bg-emerald-50" },
+          {
+            label: "Total Équipe",
+            value: stats.total,
+            color: "text-blue-600 bg-blue-50/50",
+            icon: Users,
+          },
+          {
+            label: "Administrateurs",
+            value: stats.admins,
+            color: "text-indigo-600 bg-indigo-50/50",
+            icon: Shield,
+          },
+          {
+            label: "Managers",
+            value: stats.managers,
+            color: "text-emerald-600 bg-emerald-50/50",
+            icon: UserCheck,
+          },
+          {
+            label: "Employés",
+            value: stats.employees,
+            color: "text-amber-600 bg-amber-50/50",
+            icon: UserCircle,
+          },
         ].map((stat, i) => (
-          <div key={i} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-3xl flex items-center gap-4 shadow-sm">
-            <div className={`h-12 w-12 rounded-2xl flex items-center justify-center ${stat.color}`}>
-              <stat.icon className="h-6 w-6" />
+          <div
+            key={i}
+            className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-4"
+          >
+            <div
+              className={cn(
+                "h-12 w-12 rounded-xl flex items-center justify-center shadow-sm",
+                stat.color,
+              )}
+            >
+              <stat.icon className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
-              <h3 className="text-2xl font-black">{stat.value}</h3>
+              <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                {stat.label}
+              </p>
+              <p className="text-xl font-black text-slate-900 dark:text-white leading-none mt-0.5">
+                {stat.value}
+              </p>
             </div>
           </div>
         ))}
