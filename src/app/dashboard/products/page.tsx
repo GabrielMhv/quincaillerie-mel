@@ -100,8 +100,10 @@ async function ProductsContent({ searchParams }: { searchParams: any }) {
 
   // Simple stats for the header
   const totalProducts = processedProducts.length;
-  const outOfStock = processedProducts.filter(p => p.totalStock === 0).length;
-  const lowStock = processedProducts.filter(p => p.totalStock > 0 && p.totalStock <= (p.min_stock_alert || 5)).length;
+  const outOfStock = processedProducts.filter((p) => p.totalStock === 0).length;
+  const lowStock = processedProducts.filter(
+    (p) => p.totalStock > 0 && p.totalStock <= (p.min_stock_alert || 5),
+  ).length;
 
   return (
     <div className="max-w-400 mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-700">

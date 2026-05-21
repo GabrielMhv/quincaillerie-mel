@@ -20,7 +20,8 @@ export function PublicBoutiqueSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleBoutiqueChange = (val: string) => {
+  const handleBoutiqueChange = (val: string | null) => {
+    if (!val) return;
     const b = boutiques.find((bout) => bout.id === val);
     if (b) {
       startTransition(() => {
