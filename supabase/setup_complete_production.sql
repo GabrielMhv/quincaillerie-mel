@@ -100,6 +100,22 @@ CREATE TABLE public.orders (
 );
 
 -- ============================================
+-- UTILITY FUNCTIONS (Needed by RLS Policies)
+-- ============================================
+
+-- Helper function to get current user's role
+CREATE OR REPLACE FUNCTION public.get_user_role()
+RETURNS user_role AS $$
+  SELECT role FROM public.users WHERE id = auth.uid();
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- Helper function to get current user's boutique
+CREATE OR REPLACE FUNCTION public.get_user_boutique_id()
+RETURNS UUID AS $$
+  SELECT boutique_id FROM public.users WHERE id = auth.uid();
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- ============================================
 -- TABLE: order_items
 -- ============================================
 CREATE TABLE public.order_items (
@@ -469,95 +485,114 @@ CREATE POLICY "items_insert_involved" ON public.stock_transfer_items
     )
   );
 
--- Helper function to get current user's role
-CREATE OR REPLACE FUNCTION public.get_user_role()
-RETURNS user_role AS $$
-  SELECT role FROM public.users WHERE id = auth.uid();
-$$ LANGUAGE sql SECURITY DEFINER STABLE;
-
--- Helper function to get current user's boutique
-CREATE OR REPLACE FUNCTION public.get_user_boutique_id()
-RETURNS UUID AS $$
-  SELECT boutique_id FROM public.users WHERE id = auth.uid();
-$$ LANGUAGE sql SECURITY DEFINER STABLE;
-
 -- BOUTIQUES: Readable by all, writable only by admin
+DROP POLICY IF EXISTS "boutiques_read_all" ON public.boutiques;
 CREATE POLICY "boutiques_read_all" ON public.boutiques FOR SELECT USING (true);
+DROP POLICY IF EXISTS "boutiques_admin_write" ON public.boutiques;
 CREATE POLICY "boutiques_admin_write" ON public.boutiques FOR ALL USING (get_user_role() = 'admin');
 
 -- USERS policies
+DROP POLICY IF EXISTS "users_read_all" ON public.users;
 CREATE POLICY "users_read_all" ON public.users FOR SELECT USING (true);
+DROP POLICY IF EXISTS "users_update_self" ON public.users;
 CREATE POLICY "users_update_self" ON public.users FOR UPDATE USING (id = auth.uid());
+DROP POLICY IF EXISTS "users_admin_update" ON public.users;
 CREATE POLICY "users_admin_update" ON public.users FOR UPDATE USING (get_user_role() = 'admin');
+DROP POLICY IF EXISTS "users_delete_self" ON public.users;
 CREATE POLICY "users_delete_self" ON public.users FOR DELETE USING (id = auth.uid()); -- Restricted to self per user request
 
 -- CATEGORIES: Readable by all, writable only by admin
+DROP POLICY IF EXISTS "categories_read_all" ON public.categories;
 CREATE POLICY "categories_read_all" ON public.categories FOR SELECT USING (true);
+DROP POLICY IF EXISTS "categories_admin_write" ON public.categories;
 CREATE POLICY "categories_admin_write" ON public.categories FOR ALL USING (get_user_role() = 'admin');
 
 -- PRODUCTS: Readable by all (public site), writable by admin and managers
+DROP POLICY IF EXISTS "products_read_all" ON public.products;
 CREATE POLICY "products_read_all" ON public.products FOR SELECT USING (true);
+DROP POLICY IF EXISTS "products_write_access" ON public.products;
 CREATE POLICY "products_write_access" ON public.products FOR ALL USING (get_user_role() IN ('admin', 'manager'));
 
 -- STOCKS: Readable by authenticated (employees, managers), writable by admin and manager (for their boutique)
+DROP POLICY IF EXISTS "stocks_read_authenticated" ON public.stocks;
 CREATE POLICY "stocks_read_authenticated" ON public.stocks FOR SELECT USING (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "stocks_public_read" ON public.stocks;
 CREATE POLICY "stocks_public_read" ON public.stocks FOR SELECT USING (true);
+DROP POLICY IF EXISTS "stocks_admin_write" ON public.stocks;
 CREATE POLICY "stocks_admin_write" ON public.stocks FOR ALL USING (get_user_role() = 'admin');
+DROP POLICY IF EXISTS "stocks_manager_write" ON public.stocks;
 CREATE POLICY "stocks_manager_write" ON public.stocks FOR ALL USING (
   get_user_role() = 'manager' AND boutique_id = get_user_boutique_id()
 );
+DROP POLICY IF EXISTS "stocks_employee_decrement" ON public.stocks;
 CREATE POLICY "stocks_employee_decrement" ON public.stocks FOR UPDATE USING (
   get_user_role() = 'employee' AND boutique_id = get_user_boutique_id()
 );
 
 -- ORDERS: Admin sees all, manager/employee sees their boutique
+DROP POLICY IF EXISTS "orders_admin_all" ON public.orders;
 CREATE POLICY "orders_admin_all" ON public.orders FOR ALL USING (get_user_role() = 'admin');
+DROP POLICY IF EXISTS "orders_manager_boutique" ON public.orders;
 CREATE POLICY "orders_manager_boutique" ON public.orders FOR ALL USING (
   get_user_role() = 'manager' AND boutique_id = get_user_boutique_id()
 );
+DROP POLICY IF EXISTS "orders_employee_boutique" ON public.orders;
 CREATE POLICY "orders_employee_boutique" ON public.orders FOR ALL USING (
   get_user_role() = 'employee' AND boutique_id = get_user_boutique_id()
 );
+DROP POLICY IF EXISTS "orders_public_insert" ON public.orders;
 CREATE POLICY "orders_public_insert" ON public.orders FOR INSERT WITH CHECK (true);
 
 -- ORDER_ITEMS: Same as orders
+DROP POLICY IF EXISTS "order_items_admin_all" ON public.order_items;
 CREATE POLICY "order_items_admin_all" ON public.order_items FOR ALL USING (get_user_role() = 'admin');
+DROP POLICY IF EXISTS "order_items_read_by_order" ON public.order_items;
 CREATE POLICY "order_items_read_by_order" ON public.order_items FOR SELECT USING (
   get_user_role() IN ('manager', 'employee')
 );
+DROP POLICY IF EXISTS "order_items_public_insert" ON public.order_items;
 CREATE POLICY "order_items_public_insert" ON public.order_items FOR INSERT WITH CHECK (true);
 
 -- EMPLOYEE_REFERRALS: Admin sees all, manager sees boutique's
+DROP POLICY IF EXISTS "referrals_admin_all" ON public.employee_referrals;
 CREATE POLICY "referrals_admin_all" ON public.employee_referrals FOR ALL USING (get_user_role() = 'admin');
+DROP POLICY IF EXISTS "referrals_manager_read" ON public.employee_referrals;
 CREATE POLICY "referrals_manager_read" ON public.employee_referrals FOR SELECT USING (
   get_user_role() = 'manager'
 );
+DROP POLICY IF EXISTS "referrals_employee_read_self" ON public.employee_referrals;
 CREATE POLICY "referrals_employee_read_self" ON public.employee_referrals FOR SELECT USING (
   employee_id = auth.uid()
 );
 
 -- NOTIFICATIONS: System table, readable by everyone but specific logic for display
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "notifications_authenticated_read" ON public.notifications;
 CREATE POLICY "notifications_authenticated_read" ON public.notifications FOR SELECT USING (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "notifications_admin_all" ON public.notifications;
 CREATE POLICY "notifications_admin_all" ON public.notifications FOR ALL USING (get_user_role() = 'admin');
+DROP POLICY IF EXISTS "notifications_manager_update" ON public.notifications;
 CREATE POLICY "notifications_manager_update" ON public.notifications FOR UPDATE USING (get_user_role() = 'manager');
 
 -- SITE_SETTINGS: Readable by all, writable only by admin
+DROP POLICY IF EXISTS "site_settings_read_all" ON public.site_settings;
 CREATE POLICY "site_settings_read_all" ON public.site_settings FOR SELECT USING (true);
+DROP POLICY IF EXISTS "site_settings_admin_all" ON public.site_settings;
 CREATE POLICY "site_settings_admin_all" ON public.site_settings FOR ALL USING (get_user_role() = 'admin');
 
 -- STOCK_TRANSFERS: Accessible by admin and involved boutiques
 ALTER TABLE public.stock_transfers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "transfers_admin_all" ON public.stock_transfers;
 CREATE POLICY "transfers_admin_all" ON public.stock_transfers FOR ALL USING (get_user_role() = 'admin');
+DROP POLICY IF EXISTS "transfers_involved_boutique" ON public.stock_transfers;
 CREATE POLICY "transfers_involved_boutique" ON public.stock_transfers FOR SELECT USING (
   from_boutique_id = get_user_boutique_id() OR to_boutique_id = get_user_boutique_id()
 );
+DROP POLICY IF EXISTS "transfers_create_outgoing" ON public.stock_transfers;
 CREATE POLICY "transfers_create_outgoing" ON public.stock_transfers FOR INSERT WITH CHECK (
   get_user_role() IN ('manager', 'employee') AND to_boutique_id = get_user_boutique_id()
-  -- Wait, user said: "lancer une requette aux autres boutiques pour leur permettre de demander du stock"
-  -- So Boutique A (receiver) asks Boutique B (sender).
 );
--- If Boutique A asks for stock, from_boutique_id is Sender (B), to_boutique_id is Receiver (A).
+DROP POLICY IF EXISTS "transfers_handle_incoming" ON public.stock_transfers;
 CREATE POLICY "transfers_handle_incoming" ON public.stock_transfers FOR UPDATE USING (
   get_user_role() = 'manager' AND from_boutique_id = get_user_boutique_id()
 );

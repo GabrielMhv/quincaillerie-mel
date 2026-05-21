@@ -9,7 +9,7 @@ import {
   Mail,
   Building2,
   UserCircle,
-  UserCheck
+  UserCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -77,24 +77,30 @@ async function TeamContent() {
   // Fetch Team
   const { data: members, error } = await supabase
     .from("users")
-    .select(`
+    .select(
+      `
       *,
       boutique:boutiques(name)
-    `)
+    `,
+    )
     .neq("role", "client")
     .order("name");
 
   if (error) {
     console.error("Error fetching team:", error);
-    return <div className="p-8 text-center text-slate-500">Erreur lors du chargement de l&apos;équipe.</div>;
+    return (
+      <div className="p-8 text-center text-slate-500">
+        Erreur lors du chargement de l&apos;équipe.
+      </div>
+    );
   }
 
   // Calculate quick stats
   const stats = {
     total: members?.length || 0,
-    admins: members?.filter(m => m.role === 'admin').length || 0,
-    managers: members?.filter(m => m.role === 'manager').length || 0,
-    employees: members?.filter(m => m.role === 'employee').length || 0,
+    admins: members?.filter((m) => m.role === "admin").length || 0,
+    managers: members?.filter((m) => m.role === "manager").length || 0,
+    employees: members?.filter((m) => m.role === "employee").length || 0,
   };
 
   return (

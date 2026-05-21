@@ -18,7 +18,14 @@ import { Product, Category, Boutique } from "@/types";
 import { cn } from "@/lib/utils";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PublicBoutiqueSwitcher } from "@/components/layout/public-boutique-switcher";
-import { MapPin, ArrowRight, Search, Filter, Hammer, Warehouse } from "lucide-react";
+import {
+  MapPin,
+  ArrowRight,
+  Search,
+  Filter,
+  Hammer,
+  Warehouse,
+} from "lucide-react";
 
 function ProductsContent() {
   const searchParams = useSearchParams();
@@ -81,7 +88,7 @@ function ProductsContent() {
 
       if (search) query = query.ilike("name", `%${search}%`);
       if (categoryId) query = query.eq("category_id", categoryId);
-      
+
       // Filtrer par boutique si un ID est présent
       if (boutiqueId) {
         query = query.eq("stocks.boutique_id", boutiqueId);
@@ -129,49 +136,54 @@ function ProductsContent() {
               </span>
             </h1>
             <p className="text-slate-600 dark:text-slate-300 font-medium max-w-xl mx-auto text-lg">
-              Sélectionnez un point de vente pour accéder à l&apos;inventaire en temps réel et aux services de proximité.
+              Sélectionnez un point de vente pour accéder à l&apos;inventaire en
+              temps réel et aux services de proximité.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            {isLoading ? (
-              [1, 2].map((i) => (
-                <div key={i} className="h-48 rounded-4xl bg-slate-200 dark:bg-white/5 animate-pulse" />
-              ))
-            ) : (
-              allBoutiques.map((boutique) => (
-                <button
-                  key={boutique.id}
-                  onClick={() => updateFilters({ boutiqueId: boutique.id })}
-                  className="group relative p-8 rounded-[2.5rem] bg-white dark:bg-card border border-slate-200/50 dark:border-white/5 shadow-xl hover:shadow-2xl hover:border-primary/50 transition-all duration-500 text-left overflow-hidden flex flex-col justify-between h-56"
-                >
-                  <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-10 scale-150 group-hover:scale-125 transition-all duration-700">
-                    <Warehouse className="h-32 w-32 text-primary" />
-                  </div>
-                  
-                  <div className="relative z-10 space-y-4">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-500 shadow-inner">
-                      <Warehouse className="h-6 w-6" />
+            {isLoading
+              ? [1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="h-48 rounded-4xl bg-slate-200 dark:bg-white/5 animate-pulse"
+                  />
+                ))
+              : allBoutiques.map((boutique) => (
+                  <button
+                    key={boutique.id}
+                    onClick={() => updateFilters({ boutiqueId: boutique.id })}
+                    className="group relative p-8 rounded-[2.5rem] bg-white dark:bg-card border border-slate-200/50 dark:border-white/5 shadow-xl hover:shadow-2xl hover:border-primary/50 transition-all duration-500 text-left overflow-hidden flex flex-col justify-between h-56"
+                  >
+                    <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-10 scale-150 group-hover:scale-125 transition-all duration-700">
+                      <Warehouse className="h-32 w-32 text-primary" />
                     </div>
-                    <div>
-                      <h3 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                        {boutique.name}
-                      </h3>
-                      <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1 flex items-center gap-1.5">
-                        <MapPin className="h-3.5 w-3.5" /> {boutique.address || "Adresse non spécifiée"}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="relative z-10 flex items-center justify-between mt-auto">
-                    <span className="text-[10px] font-black tracking-widest text-primary/60 uppercase">Voir le catalogue</span>
-                    <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                      <ArrowRight className="h-5 w-5" />
+                    <div className="relative z-10 space-y-4">
+                      <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-500 shadow-inner">
+                        <Warehouse className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                          {boutique.name}
+                        </h3>
+                        <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1 flex items-center gap-1.5">
+                          <MapPin className="h-3.5 w-3.5" />{" "}
+                          {boutique.address || "Adresse non spécifiée"}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </button>
-              ))
-            )}
+
+                    <div className="relative z-10 flex items-center justify-between mt-auto">
+                      <span className="text-[10px] font-black tracking-widest text-primary/60 uppercase">
+                        Voir le catalogue
+                      </span>
+                      <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                        <ArrowRight className="h-5 w-5" />
+                      </div>
+                    </div>
+                  </button>
+                ))}
           </div>
         </div>
       </div>
@@ -255,13 +267,17 @@ function ProductsContent() {
                   </SheetHeader>
 
                   <div className="space-y-6">
-                    <div className="space-y-4">                      <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300 flex items-center gap-2">
+                    <div className="space-y-4">
+                      {" "}
+                      <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300 flex items-center gap-2">
                         <MapPin className="h-3 w-3" /> BOUTIQUE
                       </h4>
                       <PublicBoutiqueSwitcher />
                     </div>
 
-                    <div className="space-y-4">                      <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300">
+                    <div className="space-y-4">
+                      {" "}
+                      <h4 className="text-[10px] font-black tracking-[0.2em] text-slate-500 dark:text-slate-300">
                         CATÉGORIES
                       </h4>
                       <div className="flex flex-col gap-2">

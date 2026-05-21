@@ -1,10 +1,25 @@
 ﻿import { createClient } from "@/lib/supabase/server";
 import { formatCurrency, cn } from "@/lib/utils";
-import { Users, Search, Phone, MapPin, UserCircle, ShoppingBag, ArrowUpRight, TrendingUp } from "lucide-react";
+import {
+  Users,
+  Search,
+  Phone,
+  MapPin,
+  UserCircle,
+  ShoppingBag,
+  ArrowUpRight,
+  TrendingUp,
+} from "lucide-react";
 import { Suspense } from "react";
 import { OrdersTableSkeleton } from "@/components/ui/skeleton";
 import { ClientsTable } from "@/components/clients/clients-table";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default async function ClientsPage() {
   return (
@@ -19,7 +34,7 @@ export default async function ClientsPage() {
           </p>
         </div>
       </div>
-      
+
       <Suspense fallback={<OrdersTableSkeleton />}>
         <ClientsContent />
       </Suspense>
@@ -83,7 +98,11 @@ async function ClientsContent() {
           },
           {
             label: "Nouveaux (30j)",
-            value: clients.filter(c => new Date(c.lastOrderDate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length,
+            value: clients.filter(
+              (c) =>
+                new Date(c.lastOrderDate) >
+                new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+            ).length,
             color: "text-amber-600 bg-amber-50/50",
             icon: Users,
           },

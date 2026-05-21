@@ -22,28 +22,44 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      // Use server-side proxy to perform auth (helps when direct requests fail)
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (error) {
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
         toast.error("Échec d'authentification", {
-          description:
-            error.message === "Invalid login credentials"
-              ? "L'email ou le mot de passe est invalide."
-              : error.message,
+          description: body?.error || "L'email ou le mot de passe est invalide.",
         });
         setIsLoading(false);
         return;
       }
 
-      if (data.user) {
-        toast.success("Authentification réussie", {
-          description: "Redirection vers votre console de gestion...",
-        });
-        router.push("/dashboard");
-        router.refresh();
+      const payload = await res.json().catch(() => ({}));
+
+      // If Supabase returned tokens, set session on client
+      if (payload?.access_token && payload?.refresh_token) {
+        try {
+          await supabase.auth.setSession({
+            access_token: payload.access_token,
+            refresh_token: payload.refresh_token,
+          });
+
+          toast.success("Authentification réussie", {
+            description: "Redirection vers votre console de gestion...",
+          });
+          router.push("/dashboard");
+          router.refresh();
+          return;
+        } catch (e) {
+          console.error("Failed to set session:", e);
+          toast.error("Système indisponible");
+          setIsLoading(false);
+          return;
+        }
       }
     } catch (err) {
       console.error(err);
