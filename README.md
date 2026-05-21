@@ -64,6 +64,12 @@ NEXT_PUBLIC_SUPABASE_URL=votre_url_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anon
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=votre_cloud_name
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=votre_preset
+
+### Notes sur l'authentification locale
+
+- Ce projet inclut un proxy d'authentification côté serveur disponible à `/api/auth/login` qui relaie les identifiants vers Supabase et pose des cookies HttpOnly (`sb-access-token`, `sb-refresh-token`) pour permettre aux pages server-side de reconnaître la session quand le navigateur ne peut pas joindre Supabase directement.
+- Utilisez `POST /api/auth/logout` pour effacer les cookies de session.
+- Le proxy utilise la clé anon depuis `.env.local`. Effectuez une revue de sécurité avant de déployer en production.
 ```
 
 ### 3. Installation des dépendances
