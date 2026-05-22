@@ -78,7 +78,6 @@ export default function AuthLayout({
           </div>
 
           <div className="mt-auto pt-10 border-t border-white/10 flex items-center justify-between text-[10px] font-black tracking-widest text-white/30">
-            <span>Propulsé par Nexus v3.0</span>
             <span>&copy; 2026 {settings.name}</span>
           </div>
         </div>

@@ -6,14 +6,20 @@ export async function POST(request: Request) {
     const { email, password } = body || {};
 
     if (!email || !password) {
-      return NextResponse.json({ error: "Missing credentials" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing credentials" },
+        { status: 400 },
+      );
     }
 
     const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!SUPABASE_URL || !SUPABASE_ANON) {
-      return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Supabase not configured" },
+        { status: 500 },
+      );
     }
 
     const url = `${SUPABASE_URL.replace(/\/$/, "")}/auth/v1/token?grant_type=password`;
@@ -31,7 +37,13 @@ export async function POST(request: Request) {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      return NextResponse.json({ error: data?.error_description || data?.error || 'Invalid credentials' }, { status: res.status });
+      return NextResponse.json(
+        {
+          error:
+            data?.error_description || data?.error || "Invalid credentials",
+        },
+        { status: res.status },
+      );
     }
 
     // Build response and set HttpOnly cookies so server-side requests can read session
@@ -40,7 +52,9 @@ export async function POST(request: Request) {
     try {
       const accessToken = data.access_token;
       const refreshToken = data.refresh_token;
-      const expiresAt = data.expires_at ? new Date(data.expires_at * 1000) : undefined;
+      const expiresAt = data.expires_at
+        ? new Date(data.expires_at * 1000)
+        : undefined;
 
       if (accessToken) {
         response.cookies.set("sb-access-token", accessToken, {
@@ -69,6 +83,6 @@ export async function POST(request: Request) {
 
     return response;
   } catch (err) {
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json({ error: "Server error", err }, { status: 500 });
   }
 }
