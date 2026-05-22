@@ -33,7 +33,8 @@ export function LoginForm() {
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         toast.error("Échec d'authentification", {
-          description: body?.error || "L'email ou le mot de passe est invalide.",
+          description:
+            body?.error || "L'email ou le mot de passe est invalide.",
         });
         setIsLoading(false);
         return;
@@ -54,7 +55,7 @@ export function LoginForm() {
           });
 
           const timeout = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('setSession timeout')), 4000),
+            setTimeout(() => reject(new Error("setSession timeout")), 4000),
           );
 
           await Promise.race([setSessionPromise, timeout]);
@@ -67,12 +68,16 @@ export function LoginForm() {
             router.refresh();
             // Fallback: force navigation if router doesn't move
             setTimeout(() => {
-              if (typeof window !== 'undefined' && window.location.pathname !== '/dashboard') {
-                window.location.href = '/dashboard';
+              if (
+                typeof window !== "undefined" &&
+                window.location.pathname !== "/dashboard"
+              ) {
+                window.location.href = "/dashboard";
               }
             }, 600);
           } catch (e) {
-            if (typeof window !== 'undefined') window.location.href = '/dashboard';
+            if (typeof window !== "undefined")
+              window.location.href = "/dashboard";
           }
 
           setIsLoading(false);
@@ -83,12 +88,16 @@ export function LoginForm() {
             router.push("/dashboard");
             router.refresh();
             setTimeout(() => {
-              if (typeof window !== 'undefined' && window.location.pathname !== '/dashboard') {
-                window.location.href = '/dashboard';
+              if (
+                typeof window !== "undefined" &&
+                window.location.pathname !== "/dashboard"
+              ) {
+                window.location.href = "/dashboard";
               }
             }, 600);
           } catch (err) {
-            if (typeof window !== 'undefined') window.location.href = '/dashboard';
+            if (typeof window !== "undefined")
+              window.location.href = "/dashboard";
           }
           setIsLoading(false);
           return;

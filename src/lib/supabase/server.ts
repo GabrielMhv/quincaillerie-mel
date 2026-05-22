@@ -24,7 +24,7 @@ export const createClient = async () => {
             return cookieStore.getAll();
           }
 
-          const known = ["sb-access-token", "sb-refresh-token"]; 
+          const known = ["sb-access-token", "sb-refresh-token"];
           const out: { name: string; value: string; options?: any }[] = [];
           for (const name of known) {
             // cookieStore.get may return { name, value }

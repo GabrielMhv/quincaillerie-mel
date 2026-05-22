@@ -43,7 +43,9 @@ export default async function MessagesPage() {
     .order("created_at", { ascending: false });
 
   const rows = (messages || []) as MessageRow[];
-  const unreadCount = rows.filter((message) => message.status !== "read").length;
+  const unreadCount = rows.filter(
+    (message) => message.status !== "read",
+  ).length;
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-700">
@@ -103,8 +105,8 @@ export default async function MessagesPage() {
             Aucun message pour le moment
           </h2>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            Les prochains messages envoyés depuis la page de contact apparaîtront
-            ici.
+            Les prochains messages envoyés depuis la page de contact
+            apparaîtront ici.
           </p>
         </div>
       ) : (
@@ -121,10 +123,15 @@ export default async function MessagesPage() {
                   <div className="space-y-3">
                     <div className="flex flex-wrap items-center gap-3">
                       <h2 className="text-lg font-black tracking-tight text-slate-900 dark:text-white">
-                        {message.first_name || "Prénom"} {message.last_name || "Nom"}
+                        {message.first_name || "Prénom"}{" "}
+                        {message.last_name || "Nom"}
                       </h2>
                       <Badge
-                        variant={message.status === "read" ? "secondary" : "destructive"}
+                        variant={
+                          message.status === "read"
+                            ? "secondary"
+                            : "destructive"
+                        }
                         className="rounded-full px-3 py-1 text-[10px] font-black tracking-widest uppercase"
                       >
                         {status}
@@ -133,9 +140,13 @@ export default async function MessagesPage() {
                     <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
                       <span>{message.email || "Email non renseigné"}</span>
                       <span>
-                        {format(new Date(message.created_at), "dd MMM yyyy · HH:mm", {
-                          locale: fr,
-                        })}
+                        {format(
+                          new Date(message.created_at),
+                          "dd MMM yyyy · HH:mm",
+                          {
+                            locale: fr,
+                          },
+                        )}
                       </span>
                     </div>
                     <p className="text-base font-bold text-slate-900 dark:text-white">

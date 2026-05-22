@@ -43,9 +43,50 @@ export default function ContactPage() {
         status: "unread",
       };
 
-      const { error } = await supabase.from("messages").insert([data]);
+      // Insert with retry to handle transient AbortError from browser LockManager
+      const getErrorMessage = (e: unknown): string => {
+        if (typeof e === "string") return e;
+        if (e instanceof Error) return e.message;
+        try {
+          return JSON.stringify(e as any);
+        } catch {
+          return String(e);
+        }
+      };
 
-      if (error) throw error;
+      const isAbortLike = (e: unknown): boolean => {
+        try {
+          if (typeof DOMException !== "undefined" && e instanceof DOMException) {
+            return e.name === "AbortError";
+          }
+        } catch {
+          // ignore
+        }
+        const msg = getErrorMessage(e);
+        return /Lock broken|AbortError/.test(msg);
+      };
+
+      const insertWithRetry = async (payload: unknown, attempts = 3) => {
+        let lastErr: unknown = null;
+        for (let i = 0; i < attempts; i++) {
+          try {
+            const { error } = await supabase.from("messages").insert([payload]);
+            if (error) throw error;
+            return;
+          } catch (err) {
+            lastErr = err;
+
+            if (!isAbortLike(err)) throw err;
+
+            // transient abort: wait a bit then retry
+            const backoff = 150 * (i + 1);
+            await new Promise((r) => setTimeout(r, backoff));
+          }
+        }
+        throw lastErr;
+      };
+
+      await insertWithRetry(data, 3);
 
       setSubmitted(true);
       toast.success("Message envoyé avec succès !");
