@@ -43,56 +43,17 @@ export default function ContactPage() {
         status: "unread",
       };
 
-      // Insert with retry to handle transient AbortError from browser LockManager
-      const getErrorMessage = (e: unknown): string => {
-        if (typeof e === "string") return e;
-        if (e instanceof Error) return e.message;
-        try {
-          if (typeof e === "object" && e !== null) {
-            return JSON.stringify(e);
-          }
-          return String(e);
-        } catch {
-          return String(e);
-        }
-      };
-
-      const isAbortLike = (e: unknown): boolean => {
-        try {
-          if (
-            typeof DOMException !== "undefined" &&
-            e instanceof DOMException
-          ) {
-            return e.name === "AbortError";
-          }
-        } catch {
-          // ignore
-        }
-        const msg = getErrorMessage(e);
-        return /Lock broken|AbortError/.test(msg);
-      };
-
-      const insertWithRetry = async (payload: unknown, attempts = 3) => {
-        let lastErr: unknown = null;
-        for (let i = 0; i < attempts; i++) {
-          try {
-              const { error } = await supabase.from("messages").insert([payload]);
-            if (error) throw error;
-            return;
-          } catch (err) {
-            lastErr = err;
-
-            if (!isAbortLike(err)) throw err;
-
-            // transient abort: wait a bit then retry
-            const backoff = 150 * (i + 1);
-            await new Promise((r) => setTimeout(r, backoff));
-          }
-        }
-        throw lastErr;
-      };
-
-      await insertWithRetry(data, 3);
+      // Use shared retry util for transient errors
+      const { retry, isAbortLike } = await import("@/lib/retry");
+      await retry(
+        async () => {
+          const { error } = await supabase.from("messages").insert([data]);
+          if (error) throw error;
+          return true;
+        },
+        3,
+        isAbortLike,
+      );
 
       setSubmitted(true);
       toast.success("Message envoyé avec succès !");
