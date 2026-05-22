@@ -48,7 +48,10 @@ export default function ContactPage() {
         if (typeof e === "string") return e;
         if (e instanceof Error) return e.message;
         try {
-          return JSON.stringify(e as any);
+          if (typeof e === 'object' && e !== null) {
+            return JSON.stringify(e);
+          }
+          return String(e);
         } catch {
           return String(e);
         }
