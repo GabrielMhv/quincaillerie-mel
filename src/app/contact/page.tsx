@@ -48,7 +48,7 @@ export default function ContactPage() {
         if (typeof e === "string") return e;
         if (e instanceof Error) return e.message;
         try {
-          if (typeof e === 'object' && e !== null) {
+          if (typeof e === "object" && e !== null) {
             return JSON.stringify(e);
           }
           return String(e);
@@ -59,7 +59,10 @@ export default function ContactPage() {
 
       const isAbortLike = (e: unknown): boolean => {
         try {
-          if (typeof DOMException !== "undefined" && e instanceof DOMException) {
+          if (
+            typeof DOMException !== "undefined" &&
+            e instanceof DOMException
+          ) {
             return e.name === "AbortError";
           }
         } catch {
@@ -73,7 +76,7 @@ export default function ContactPage() {
         let lastErr: unknown = null;
         for (let i = 0; i < attempts; i++) {
           try {
-            const { error } = await supabase.from("messages").insert([payload]);
+              const { error } = await supabase.from("messages").insert([payload]);
             if (error) throw error;
             return;
           } catch (err) {
