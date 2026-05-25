@@ -6,6 +6,7 @@ import { DeleteProductButton } from "@/components/products/delete-product-button
 import { ProductFilters } from "@/components/products/product-filters";
 import Image from "next/image";
 import { ShoppingBag, Edit2, Trash2, Plus } from "lucide-react";
+import MultiProductForm from "@/components/products/multi-product-form";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { ProductsGridSkeleton } from "@/components/ui/skeleton";
@@ -136,6 +137,22 @@ async function ProductsContent({ searchParams }: { searchParams: any }) {
                 }
               />
             )}
+            {canManageProducts && (
+              <MultiProductForm
+                trigger={
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 bg-[#064e3b] hover:bg-[#065f46] text-white px-8 py-3.5 rounded-2xl font-bold text-sm shadow-sm transition-all active:scale-95 whitespace-nowrap"
+                  >
+                    Ajouter plusieurs
+                  </button>
+                }
+                categories={categories || []}
+                boutiques={boutiques || []}
+                userRole={profile.role}
+                userBoutiqueId={profile.boutique_id}
+              />
+            )}
           </div>
         </div>
 
@@ -203,9 +220,10 @@ async function ProductsContent({ searchParams }: { searchParams: any }) {
       {/* Grid catalogue */}
       {processedProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {processedProducts.map((product) => (
+            {processedProducts.map((product) => (
             <div
               key={product.id}
+              data-testid="product-card"
               className="group bg-white dark:bg-slate-900 rounded-4xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-none transition-all duration-500 flex flex-col"
             >
               {/* Product Image Wrapper */}

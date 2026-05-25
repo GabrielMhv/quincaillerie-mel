@@ -17,7 +17,6 @@ import {
   Globe,
   ShieldCheck,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useBranding } from "@/components/providers/branding-provider";
@@ -26,7 +25,6 @@ export default function ContactPage() {
   const { settings } = useBranding();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const supabase = createClient();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,7 +32,7 @@ export default function ContactPage() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const data = {
+      const payload = {
         first_name: formData.get("first_name"),
         last_name: formData.get("last_name"),
         email: formData.get("email"),
@@ -43,17 +41,17 @@ export default function ContactPage() {
         status: "unread",
       };
 
-      // Use shared retry util for transient errors
-      const { retry, isAbortLike } = await import("@/lib/retry");
-      await retry(
-        async () => {
-          const { error } = await supabase.from("messages").insert([data]);
-          if (error) throw error;
-          return true;
-        },
-        3,
-        isAbortLike,
-      );
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        credentials: "same-origin",
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error || "Erreur serveur lors de l'envoi");
+      }
 
       setSubmitted(true);
       toast.success("Message envoyé avec succès !");

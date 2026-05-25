@@ -4,6 +4,7 @@ import { Mail, Inbox, Clock3, MessageSquareText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import MarkReadButton from "@/components/dashboard/mark-read-button";
 
 type MessageRow = {
   id: string;
@@ -165,6 +166,9 @@ export default async function MessagesPage() {
                       Répondre
                     </a>
                   ) : null}
+                  <div className="mt-4 lg:mt-0">
+                    <MarkReadButton id={message.id} status={message.status} />
+                  </div>
                 </div>
               </article>
             );
