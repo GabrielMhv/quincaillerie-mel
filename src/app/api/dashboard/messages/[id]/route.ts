@@ -5,7 +5,10 @@ import { retry, isAbortLike } from "@/lib/retry";
 export async function PATCH(req: Request, context: any) {
   // `context.params` may be a Promise in some Next versions; normalize it.
   const rawParams = context?.params;
-  const params = rawParams && typeof rawParams.then === "function" ? await rawParams : rawParams;
+  const params =
+    rawParams && typeof rawParams.then === "function"
+      ? await rawParams
+      : rawParams;
   const { id } = params || {};
   try {
     const body = await req.json();
@@ -13,7 +16,10 @@ export async function PATCH(req: Request, context: any) {
 
     await retry(
       async () => {
-        const { error } = await supabase.from("messages").update(body).eq("id", id);
+        const { error } = await supabase
+          .from("messages")
+          .update(body)
+          .eq("id", id);
         if (error) throw error;
         return true;
       },

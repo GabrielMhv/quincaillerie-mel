@@ -5,11 +5,16 @@ export async function retry<T>(
   attempts = 3,
   isTransient: IsTransientFn = (err) => {
     try {
-      if (typeof DOMException !== 'undefined' && err instanceof DOMException) {
-        return err.name === 'AbortError';
+      if (typeof DOMException !== "undefined" && err instanceof DOMException) {
+        return err.name === "AbortError";
       }
     } catch {}
-    const msg = typeof err === 'string' ? err : err instanceof Error ? err.message : JSON.stringify(err || '');
+    const msg =
+      typeof err === "string"
+        ? err
+        : err instanceof Error
+          ? err.message
+          : JSON.stringify(err || "");
     return /Lock broken|AbortError/.test(msg);
   },
 ) {
@@ -29,10 +34,15 @@ export async function retry<T>(
 
 export const isAbortLike: IsTransientFn = (err) => {
   try {
-    if (typeof DOMException !== 'undefined' && err instanceof DOMException) {
-      return err.name === 'AbortError';
+    if (typeof DOMException !== "undefined" && err instanceof DOMException) {
+      return err.name === "AbortError";
     }
   } catch {}
-  const msg = typeof err === 'string' ? err : err instanceof Error ? err.message : JSON.stringify(err || '');
+  const msg =
+    typeof err === "string"
+      ? err
+      : err instanceof Error
+        ? err.message
+        : JSON.stringify(err || "");
   return /Lock broken|AbortError/.test(msg);
 };

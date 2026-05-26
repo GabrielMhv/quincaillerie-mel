@@ -23,7 +23,11 @@ export default async function DashboardProductsPage(props: {
   );
 }
 
-async function ProductsContent({ searchParams }: { searchParams: any }) {
+async function ProductsContent({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const searchQuery = searchParams.q as string | undefined;
   const categoryFilter = searchParams.category as string | undefined;
 
@@ -220,7 +224,7 @@ async function ProductsContent({ searchParams }: { searchParams: any }) {
       {/* Grid catalogue */}
       {processedProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {processedProducts.map((product) => (
+          {processedProducts.map((product) => (
             <div
               key={product.id}
               data-testid="product-card"
