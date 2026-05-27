@@ -167,13 +167,13 @@ export function DashboardSidebar() {
       title: "Caisse",
       href: "/dashboard/pos",
       icon: ShoppingCart,
-      roles: ["admin", "manager", "employee"],
+      roles: ["admin", "manager", "cashier", "employee"],
     },
     {
       title: "Ventes",
       href: "/dashboard/orders",
       icon: Package,
-      roles: ["admin", "manager", "employee"],
+      roles: ["admin", "manager", "cashier", "employee"],
     },
     {
       title: "Produits",
@@ -209,7 +209,7 @@ export function DashboardSidebar() {
       title: "Mon Profil",
       href: "/dashboard/profile",
       icon: User,
-      roles: ["admin", "manager", "employee"],
+      roles: ["admin", "manager", "cashier", "employee"],
     },
   ].filter((item) => item.roles.includes(user.role));
 
@@ -271,7 +271,9 @@ export function DashboardSidebar() {
                   ? "Administrateur"
                   : user.role === "manager"
                     ? "Manager"
-                    : "Employé"}
+                    : user.role === "cashier"
+                      ? "Caissier"
+                      : "Employé"}
               </Badge>
             </div>
           </div>
@@ -423,7 +425,9 @@ export function DashboardSidebar() {
                 ? "Administrateur"
                 : user.role === "manager"
                   ? "Directeur"
-                  : "Collaborateur"}
+                  : user.role === "cashier"
+                    ? "Caissier"
+                    : "Collaborateur"}
             </Badge>
             <button
               onClick={() => signOut()}

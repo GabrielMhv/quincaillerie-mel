@@ -40,7 +40,7 @@ interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "manager" | "employee";
+  role: "admin" | "manager" | "cashier" | "employee";
   avatar_url?: string;
   created_at: string;
   boutique_id?: string | null;
@@ -154,7 +154,7 @@ export function TeamTable({ members, boutiques }: TeamTableProps) {
                       {member.role === "admin" && (
                         <ShieldCheck className="h-3 w-3 mr-1" />
                       )}
-                      {member.role}
+                      {member.role === "cashier" ? "caissier" : member.role}
                     </Badge>
                   </td>
                   <td className="px-6 py-4">
@@ -170,13 +170,16 @@ export function TeamTable({ members, boutiques }: TeamTableProps) {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <UserFormModal boutiques={boutiques} userToEdit={{
-                        id: member.id,
-                        name: member.name,
-                        email: member.email,
-                        role: member.role,
-                        boutique_id: member.boutique_id || null,
-                      }} />
+                      <UserFormModal
+                        boutiques={boutiques}
+                        userToEdit={{
+                          id: member.id,
+                          name: member.name,
+                          email: member.email,
+                          role: member.role,
+                          boutique_id: member.boutique_id || null,
+                        }}
+                      />
                       <AlertDialog>
                         <AlertDialogTrigger
                           render={

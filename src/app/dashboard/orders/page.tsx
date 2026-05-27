@@ -80,6 +80,12 @@ async function OrdersContent({ searchParams }: { searchParams: any }) {
     query = query.lte("created_at", endDate);
   }
 
+  const { data: employees } = await supabase
+    .from("users")
+    .select("id, name, role, boutique_id")
+    .eq("role", "employee")
+    .order("name");
+
   const { data: orders, error } = await query;
 
   if (error) {
@@ -184,6 +190,7 @@ async function OrdersContent({ searchParams }: { searchParams: any }) {
           isGlobalScope={isGlobalScope}
           currentUserId={user.id}
           userRole={profile?.role || "employee"}
+          employees={employees || []}
         />
       </div>
     </div>

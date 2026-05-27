@@ -194,7 +194,9 @@ export function DashboardTopbar() {
                       ? "Administrateur"
                       : user?.role === "manager"
                         ? "Manager"
-                        : "Employé"}
+                        : user?.role === "cashier"
+                          ? "Caissier"
+                          : "Employé"}
                   </p>
                   <p className="text-[10px] font-bold text-muted-foreground/60 italic">
                     {user?.email}

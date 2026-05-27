@@ -49,7 +49,8 @@ async function ProductsContent({
     !profile ||
     (profile.role !== "admin" &&
       profile.role !== "manager" &&
-      profile.role !== "employee")
+      profile.role !== "employee" &&
+      profile.role !== "cashier")
   ) {
     redirect("/dashboard");
   }

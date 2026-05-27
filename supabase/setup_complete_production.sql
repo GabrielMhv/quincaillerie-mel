@@ -18,7 +18,7 @@ DROP TYPE IF EXISTS order_source CASCADE;
 DROP TYPE IF EXISTS order_status CASCADE;
 
 -- Create custom roles enum
-CREATE TYPE user_role AS ENUM ('admin', 'manager', 'employee', 'client');
+CREATE TYPE user_role AS ENUM ('admin', 'manager', 'cashier', 'employee', 'client');
 CREATE TYPE order_source AS ENUM ('reseaux_sociaux', 'ami', 'publicite', 'passage_boutique', 'employe');
 CREATE TYPE order_status AS ENUM ('pending', 'completed', 'cancelled');
 CREATE TYPE transfer_status AS ENUM ('pending', 'accepted', 'rejected', 'shipped', 'completed', 'cancelled');
@@ -536,6 +536,10 @@ DROP POLICY IF EXISTS "orders_manager_boutique" ON public.orders;
 CREATE POLICY "orders_manager_boutique" ON public.orders FOR ALL USING (
   get_user_role() = 'manager' AND boutique_id = get_user_boutique_id()
 );
+DROP POLICY IF EXISTS "orders_cashier_boutique" ON public.orders;
+CREATE POLICY "orders_cashier_boutique" ON public.orders FOR ALL USING (
+  get_user_role() = 'cashier' AND boutique_id = get_user_boutique_id()
+);
 DROP POLICY IF EXISTS "orders_employee_boutique" ON public.orders;
 CREATE POLICY "orders_employee_boutique" ON public.orders FOR ALL USING (
   get_user_role() = 'employee' AND boutique_id = get_user_boutique_id()
@@ -548,7 +552,7 @@ DROP POLICY IF EXISTS "order_items_admin_all" ON public.order_items;
 CREATE POLICY "order_items_admin_all" ON public.order_items FOR ALL USING (get_user_role() = 'admin');
 DROP POLICY IF EXISTS "order_items_read_by_order" ON public.order_items;
 CREATE POLICY "order_items_read_by_order" ON public.order_items FOR SELECT USING (
-  get_user_role() IN ('manager', 'employee')
+  get_user_role() IN ('manager', 'cashier', 'employee')
 );
 DROP POLICY IF EXISTS "order_items_public_insert" ON public.order_items;
 CREATE POLICY "order_items_public_insert" ON public.order_items FOR INSERT WITH CHECK (true);

@@ -46,7 +46,8 @@ async function StocksContent({ searchParams }: { searchParams: any }) {
     !profile ||
     (profile.role !== "admin" &&
       profile.role !== "manager" &&
-      profile.role !== "employee")
+      profile.role !== "employee" &&
+      profile.role !== "cashier")
   ) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">

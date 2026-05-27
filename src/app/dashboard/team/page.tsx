@@ -107,6 +107,7 @@ async function TeamContent({ boutiques }: { boutiques: any[] }) {
     total: members?.length || 0,
     admins: members?.filter((m) => m.role === "admin").length || 0,
     managers: members?.filter((m) => m.role === "manager").length || 0,
+    cashiers: members?.filter((m) => m.role === "cashier").length || 0,
     employees: members?.filter((m) => m.role === "employee").length || 0,
   };
 
@@ -132,6 +133,12 @@ async function TeamContent({ boutiques }: { boutiques: any[] }) {
             value: stats.managers,
             color: "text-emerald-600 bg-emerald-50/50",
             icon: UserCheck,
+          },
+          {
+            label: "Caissiers",
+            value: stats.cashiers,
+            color: "text-orange-600 bg-orange-50/50",
+            icon: UserCircle,
           },
           {
             label: "Employés",

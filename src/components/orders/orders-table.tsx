@@ -16,9 +16,10 @@ interface OrdersTableProps {
   isGlobalScope: boolean;
   currentUserId: string;
   userRole: string;
+  employees: { id: string; name: string; boutique_id: string | null; role: string }[];
 }
 
-export function OrdersTable({ orders, currentUserId }: OrdersTableProps) {
+export function OrdersTable({ orders, currentUserId, userRole, employees }: OrdersTableProps) {
   const [selectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -134,6 +135,8 @@ export function OrdersTable({ orders, currentUserId }: OrdersTableProps) {
                   currentStatus={order.status}
                   handlerId={order.handler_id}
                   currentUserId={currentUserId}
+                  currentUserRole={userRole}
+                  employees={employees}
                 />
                 <Button
                   size="lg"

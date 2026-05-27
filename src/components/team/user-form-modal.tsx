@@ -225,6 +225,9 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
                   <SelectItem value="employee" className="rounded-xl font-bold">
                     Employé (Caisse)
                   </SelectItem>
+                  <SelectItem value="cashier" className="rounded-xl font-bold">
+                    Caissier
+                  </SelectItem>
                   <SelectItem value="manager" className="rounded-xl font-bold">
                     Responsable Boutique
                   </SelectItem>

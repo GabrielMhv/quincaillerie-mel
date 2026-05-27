@@ -52,3 +52,57 @@ export async function createOrderAction(formData: CreateOrderInput) {
     };
   }
 }
+
+export async function assignOrderHandlerAction(orderId: string, handlerId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Non authentifié" };
+  }
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !["admin", "cashier"].includes(profile.role)) {
+    return { error: "Action réservée au caissier ou à l'administrateur" };
+  }
+
+  const { data: targetUser } = await supabase
+    .from("users")
+    .select("id, role")
+    .eq("id", handlerId)
+    .single();
+
+  if (!targetUser || targetUser.role !== "employee") {
+    return { error: "La commande doit être attribuée à un employé" };
+  }
+
+  const { data: order } = await supabase
+    .from("orders")
+    .select("handler_id")
+    .eq("id", orderId)
+    .single();
+
+  if (order?.handler_id) {
+    return { error: "Cette commande est déjà attribuée" };
+  }
+
+  const { error } = await supabase
+    .from("orders")
+    .update({ handler_id: handlerId })
+    .eq("id", orderId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard/orders");
+  return { success: true };
+}

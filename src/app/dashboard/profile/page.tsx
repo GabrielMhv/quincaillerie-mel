@@ -131,7 +131,9 @@ export default async function ProfilePage() {
                     ? "Administrateur Global"
                     : profile?.role === "manager"
                       ? "Manager Boutique"
-                      : "Employé"}
+                      : profile?.role === "cashier"
+                        ? "Caissier"
+                        : "Employé"}
                 </Badge>
                 {profile?.boutiques?.name && (
                   <div className="flex items-center gap-2 text-indigo-600/60 font-black tracking-tighter italic text-sm">

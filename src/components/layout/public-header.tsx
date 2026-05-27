@@ -26,7 +26,7 @@ import { useBranding } from "@/components/providers/branding-provider";
 import { PublicBoutiqueSwitcher } from "./public-boutique-switcher";
 
 export function PublicHeader() {
-  const { user, signOut, isAdmin, isManager, isEmployee } = useAuth();
+  const { user, signOut, isAdmin, isManager, isEmployee, isCashier } = useAuth();
   const { items } = useCartStore();
   const { resolvedTheme, setTheme } = useTheme();
   const { settings } = useBranding();
@@ -42,7 +42,7 @@ export function PublicHeader() {
   }, []);
 
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const canAccessDashboard = isAdmin || isManager || isEmployee;
+  const canAccessDashboard = isAdmin || isManager || isEmployee || isCashier;
 
   return (
     <header className="sticky top-0 z-100 w-full border-b border-white/10 dark:border-white/5 bg-background/60 backdrop-blur-2xl">
@@ -152,7 +152,9 @@ export function PublicHeader() {
                           ? "Administrateur"
                           : user.role === "manager"
                             ? "Manager"
-                            : "Employé"}
+                            : user.role === "cashier"
+                              ? "Caissier"
+                              : "Employé"}
                       </p>
                     </div>
                     <Link

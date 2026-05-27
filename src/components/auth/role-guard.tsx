@@ -22,7 +22,7 @@ export function RoleGuard({ children, allowedRoles }: RoleGuardProps) {
 
     if (!loading && user && !allowedRoles.includes(user.role)) {
       // If not allowed, redirect to dashboard root or POS if employee
-      if (user.role === "employee") {
+      if (user.role === "employee" || user.role === "cashier") {
         router.push("/dashboard/pos");
       } else {
         router.push("/dashboard");

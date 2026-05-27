@@ -3,9 +3,17 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Loader2, UserPlus, Lock } from "lucide-react";
+import { CheckCircle2, Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { assignOrderHandlerAction } from "@/app/actions/orders";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function OrderStatusUpdater({
   orderId,
@@ -13,44 +21,37 @@ export function OrderStatusUpdater({
   handlerId,
   handlerName,
   currentUserId,
+  currentUserRole,
+  employees,
 }: {
   orderId: string;
   currentStatus: string;
   handlerId?: string | null;
   handlerName?: string | null;
   currentUserId?: string;
+  currentUserRole?: string;
+  employees: { id: string; name: string; boutique_id: string | null; role: string }[];
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
   const router = useRouter();
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+  const canAssign = currentUserRole === "cashier" || currentUserRole === "admin";
 
   if (currentStatus === "completed") return null;
 
   const handleAssign = async () => {
+    if (!selectedEmployeeId) {
+      toast.error("Sélectionnez un employé");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Small real-time check
-      const { data: order } = await supabase
-        .from("orders")
-        .select("handler_id")
-        .eq("id", orderId)
-        .single();
-      if (order?.handler_id) {
-        toast.error("Déjà pris en charge", {
-          description: "Un autre employé a déjà pris cette commande.",
-        });
-        router.refresh();
-        return;
-      }
-
-      const { error } = await supabase
-        .from("orders")
-        .update({ handler_id: currentUserId })
-        .eq("id", orderId);
-
-      if (error) throw error;
+      const result = await assignOrderHandlerAction(orderId, selectedEmployeeId);
+      if (result.error) throw new Error(result.error);
       toast.success("Commande assignée", {
-        description: "Vous avez pris en charge cette commande.",
+        description: "La commande a été attribuée à l'employé choisi.",
       });
       router.refresh();
     } catch (error) {
@@ -82,21 +83,42 @@ export function OrderStatusUpdater({
     }
   };
 
-  if (!handlerId) {
+  if (!handlerId && canAssign) {
+    const availableEmployees = employees.filter(
+      (employee) => employee.role === "employee",
+    );
+
     return (
-      <Button
-        size="sm"
-        onClick={handleAssign}
-        disabled={isLoading || !currentUserId}
-        className="h-8 gap-1.5 bg-blue-600 hover:bg-blue-700"
-      >
-        {isLoading ? (
-          <Loader2 className="h-3 w-3 animate-spin" />
-        ) : (
-          <UserPlus className="h-3.5 w-3.5" />
-        )}
-        Prendre en charge
-      </Button>
+      <div className="flex flex-col gap-2 min-w-52">
+        <Select
+          value={selectedEmployeeId}
+          onValueChange={(value) => setSelectedEmployeeId(value ?? "")}
+        >
+          <SelectTrigger className="h-8 rounded-lg text-xs font-semibold">
+            <SelectValue placeholder="Attribuer à un employé" />
+          </SelectTrigger>
+          <SelectContent>
+            {availableEmployees.map((employee) => (
+              <SelectItem key={employee.id} value={employee.id}>
+                {employee.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          size="sm"
+          onClick={handleAssign}
+          disabled={isLoading || !selectedEmployeeId}
+          className="h-8 gap-1.5 bg-blue-600 hover:bg-blue-700"
+        >
+          {isLoading ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <CheckCircle2 className="h-3.5 w-3.5" />
+          )}
+          Attribuer
+        </Button>
+      </div>
     );
   }
 

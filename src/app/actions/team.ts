@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 const userUpdateSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(2, "Nom trop court"),
-  role: z.enum(["admin", "manager", "employee"]),
+  role: z.enum(["admin", "manager", "cashier", "employee"]),
   boutique_id: z.string().uuid().nullable(),
 });
 
