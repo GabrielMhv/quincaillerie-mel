@@ -39,7 +39,6 @@ export async function createBoutique(input: BoutiqueInput) {
       .insert({
         name: validated.data.name,
         address: validated.data.location,
-        phone: validated.data.phone,
       })
       .select()
       .single();
@@ -93,15 +92,11 @@ export async function updateBoutique(
       return { error: validated.error.issues[0].message };
     }
 
-    const updateData: Record<string, string | boolean> = {};
+    const updateData: Record<string, string> = {};
     if (validated.data.name !== undefined)
       updateData.name = validated.data.name;
     if (validated.data.location !== undefined)
       updateData.address = validated.data.location;
-    if (validated.data.phone !== undefined && validated.data.phone !== null)
-      updateData.phone = validated.data.phone;
-    if (validated.data.is_active !== undefined)
-      updateData.is_active = validated.data.is_active;
 
     const { data: boutique, error } = await supabase
       .from("boutiques")

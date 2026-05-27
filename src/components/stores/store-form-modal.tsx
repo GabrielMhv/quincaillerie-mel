@@ -56,7 +56,6 @@ export function StoreFormModal({ store }: StoreFormModalProps) {
     const rawData = {
       name: formData.name,
       location: formData.address, // Mapping 'address' to 'location' schema
-      is_active: true,
     };
 
     const validation = boutiqueSchema.safeParse(rawData);

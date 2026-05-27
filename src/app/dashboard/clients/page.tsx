@@ -1,4 +1,4 @@
-﻿import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { formatCurrency, cn } from "@/lib/utils";
 import {
   Users,
@@ -59,7 +59,7 @@ async function ClientsContent() {
         address: o.address || "Non spécifiée",
         totalSpent: 0,
         orderCount: 0,
-        lastOrderDate: o.created_at,
+        lastOrder: o.created_at,
       };
     }
     clientsMap[key].totalSpent += Number(o.total);

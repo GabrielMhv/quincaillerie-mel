@@ -12,6 +12,7 @@ import {
   Calendar,
   Trash2,
   Edit2,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { UserFormModal } from "./user-form-modal";
+import { deleteTeamMember } from "@/app/actions/team";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface TeamMember {
   id: string;
@@ -27,23 +43,49 @@ interface TeamMember {
   role: "admin" | "manager" | "employee";
   avatar_url?: string;
   created_at: string;
+  boutique_id?: string | null;
   boutique?: {
     name: string;
   };
 }
 
-interface TeamTableProps {
-  members: TeamMember[];
+interface Boutique {
+  id: string;
+  name: string;
 }
 
-export function TeamTable({ members }: TeamTableProps) {
+interface TeamTableProps {
+  members: TeamMember[];
+  boutiques: Boutique[];
+}
+
+export function TeamTable({ members, boutiques }: TeamTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   const filteredMembers = members.filter(
     (m) =>
       m.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.email?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
+
+  const handleDelete = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      const res = await deleteTeamMember(id);
+      if (res.success) {
+        toast.success("Membre d'équipe désactivé avec succès");
+        router.refresh();
+      }
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Erreur lors de la désactivation",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -58,10 +100,7 @@ export function TeamTable({ members }: TeamTableProps) {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button className="w-full md:w-auto gap-2">
-          <UserPlus className="h-4 w-4" />
-          Nouveau Membre
-        </Button>
+        <UserFormModal boutiques={boutiques} />
       </div>
 
       {/* Table */}
@@ -131,20 +170,46 @@ export function TeamTable({ members }: TeamTableProps) {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-slate-500"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-rose-500"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <UserFormModal boutiques={boutiques} userToEdit={{
+                        id: member.id,
+                        name: member.name,
+                        email: member.email,
+                        role: member.role,
+                        boutique_id: member.boutique_id || null,
+                      }} />
+                      <AlertDialog>
+                        <AlertDialogTrigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-rose-500"
+                              disabled={isDeleting}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          }
+                        />
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Désactiver le membre ?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Le membre sera rétrogradé au rôle de client et perdra tout accès aux dashboards.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(member.id)}
+                              className="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl"
+                            >
+                              Désactiver
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </td>
                 </tr>

@@ -1,7 +1,7 @@
-"use client";
+"use server";
 
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 const clientSchema = z.object({
@@ -16,7 +16,7 @@ const clientSchema = z.object({
  * Update client information manually
  */
 export async function upsertClient(data: z.infer<typeof clientSchema>) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

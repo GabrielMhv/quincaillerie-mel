@@ -17,30 +17,9 @@ import { Suspense } from "react";
 import { OrdersTableSkeleton } from "@/components/ui/skeleton";
 
 export default async function DashboardTeamPage() {
-  return (
-    <div className="max-w-400 mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="space-y-1 text-center md:text-left">
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-            Gestion de l&apos;Équipe
-          </h1>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Gérez les accès, les rôles et les performances de votre personnel
-          </p>
-        </div>
-      </div>
-
-      <Suspense fallback={<OrdersTableSkeleton />}>
-        <TeamContent />
-      </Suspense>
-    </div>
-  );
-}
-
-async function TeamContent() {
   const supabase = await createClient();
 
-  // Enforce role-based access
+  // Enforce role-based access at page level
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -52,27 +31,55 @@ async function TeamContent() {
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-        <div className="h-16 w-16 rounded-4xl bg-rose-500/10 flex items-center justify-center text-rose-600">
-          <Shield className="h-8 w-8" />
-        </div>
-        <p className="text-xl font-black tracking-tighter italic">
-          Périmètre Administrateur
-        </p>
-        <p className="text-sm text-muted-foreground font-medium">
-          L&apos;accès à la gestion du personnel est restreint.
-        </p>
-      </div>
-    );
-  }
+  const isAdmin = profile?.role === "admin";
 
   // Fetch Boutiques
   const { data: boutiques } = await supabase
     .from("boutiques")
     .select("*")
     .order("name");
+
+  return (
+    <div className="max-w-400 mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-1 text-center md:text-left">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            Gestion de l&apos;Équipe
+          </h1>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            Gérez les accès, les rôles et les performances de votre personnel
+          </p>
+        </div>
+        {isAdmin && (
+          <div className="flex items-center gap-4">
+            <UserFormModal boutiques={boutiques || []} />
+          </div>
+        )}
+      </div>
+
+      {!isAdmin ? (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+          <div className="h-16 w-16 rounded-4xl bg-rose-500/10 flex items-center justify-center text-rose-600">
+            <Shield className="h-8 w-8" />
+          </div>
+          <p className="text-xl font-black tracking-tighter italic">
+            Périmètre Administrateur
+          </p>
+          <p className="text-sm text-muted-foreground font-medium">
+            L&apos;accès à la gestion du personnel est restreint.
+          </p>
+        </div>
+      ) : (
+        <Suspense fallback={<OrdersTableSkeleton />}>
+          <TeamContent boutiques={boutiques || []} />
+        </Suspense>
+      )}
+    </div>
+  );
+}
+
+async function TeamContent({ boutiques }: { boutiques: any[] }) {
+  const supabase = await createClient();
 
   // Fetch Team
   const { data: members, error } = await supabase
@@ -157,7 +164,7 @@ async function TeamContent() {
         ))}
       </div>
 
-      <TeamTable members={members || []} />
+      <TeamTable members={members || []} boutiques={boutiques} />
     </div>
   );
 }

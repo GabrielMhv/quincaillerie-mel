@@ -32,8 +32,6 @@ export const boutiqueSchema = z.object({
     .string()
     .min(2, "Le nom de la boutique doit contenir au moins 2 caractères"),
   location: z.string().min(2, "La localisation est requise"),
-  phone: z.string().optional().nullable(),
-  is_active: z.boolean().default(true),
 });
 
 export type BoutiqueInput = z.infer<typeof boutiqueSchema>;

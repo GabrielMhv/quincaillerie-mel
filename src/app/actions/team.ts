@@ -1,7 +1,7 @@
-"use client";
+"use server";
 
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 // Schemas
@@ -17,7 +17,7 @@ const userUpdateSchema = z.object({
  * Admin only
  */
 export async function updateTeamMember(data: z.infer<typeof userUpdateSchema>) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Verify admin requester
   const {
@@ -58,7 +58,7 @@ export async function updateTeamMember(data: z.infer<typeof userUpdateSchema>) {
  * if you want to truly delete from auth.users
  */
 export async function deleteTeamMember(userId: string) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Admin check
   const {

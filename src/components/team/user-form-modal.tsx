@@ -23,6 +23,7 @@ import {
   Mail,
   Lock,
   User,
+  Pencil,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createTeamMember } from "@/app/dashboard/team/actions";
@@ -115,8 +116,16 @@ export function UserFormModal({ boutiques, userToEdit }: UserEditorProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {userToEdit ? (
-        <DialogTrigger render={<Button variant="outline" size="sm" />}>
-          Gérer
+        <DialogTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-slate-500"
+            />
+          }
+        >
+          <Pencil className="h-4 w-4" />
         </DialogTrigger>
       ) : (
         <DialogTrigger render={<Button className="gap-2" />}>
