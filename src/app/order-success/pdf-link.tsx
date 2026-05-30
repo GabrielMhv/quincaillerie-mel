@@ -81,7 +81,11 @@ export function OrderPDFLink({ order }: OrderPDFLinkProps) {
 
     Object.entries(groups).forEach(([boutiqueName, items], gIndex) => {
       // Boutique header
-      const color = palette[gIndex % palette.length] as [number, number, number];
+      const color = palette[gIndex % palette.length] as [
+        number,
+        number,
+        number,
+      ];
       const [red, green, blue] = color;
       doc.setFillColor(red, green, blue);
       doc.rect(20, currentY - 6, 6, 6, "F");

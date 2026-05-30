@@ -32,7 +32,7 @@ export function PrintOrderButton({ order }: PrintOrderButtonProps) {
     });
 
     let y = 44;
-    const palette = [
+    const palette: [number, number, number][] = [
       [37, 99, 235],
       [99, 102, 241],
       [16, 185, 129],
@@ -41,8 +41,8 @@ export function PrintOrderButton({ order }: PrintOrderButtonProps) {
     ];
 
     Object.entries(groups).forEach(([name, items], idx) => {
-      const color = palette[idx % palette.length];
-      doc.setTextColor(...color);
+      const [red, green, blue] = palette[idx % palette.length];
+      doc.setTextColor(red, green, blue);
       doc.setFontSize(12);
       doc.text(name, 20, y);
       doc.setTextColor(0, 0, 0);

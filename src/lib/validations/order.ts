@@ -4,7 +4,7 @@ export const orderItemSchema = z.object({
   product_id: z.string().uuid(),
   quantity: z.number().int().positive(),
   price: z.number().positive(),
-  boutique_id: z.string().uuid().optional(),
+  boutique_id: z.string().uuid().optional().nullable(),
 });
 
 export const createOrderSchema = z.object({
