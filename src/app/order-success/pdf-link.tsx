@@ -18,11 +18,15 @@ interface OrderPDFLinkProps {
     boutique?: { name: string };
     order_items: Array<{
       products?: { name: string };
+      boutique_id?: string | null;
+      boutique?: { name: string };
       unit_price: number;
       quantity: number;
     }>;
   };
 }
+
+type OrderPDFItem = OrderPDFLinkProps["order"]["order_items"][number];
 
 export function OrderPDFLink({ order }: OrderPDFLinkProps) {
   const generatePDF = () => {
@@ -59,7 +63,7 @@ export function OrderPDFLink({ order }: OrderPDFLinkProps) {
     doc.text(order.client_phone || "N/A", 120, 55);
 
     // Group items by boutique
-    const groups: Record<string, any[]> = {};
+    const groups: Record<string, OrderPDFItem[]> = {};
     (order.order_items || []).forEach((item) => {
       const key = item.boutique?.name || item.boutique_id || "Réseau central";
       if (!groups[key]) groups[key] = [];
@@ -67,7 +71,7 @@ export function OrderPDFLink({ order }: OrderPDFLinkProps) {
     });
 
     let currentY = 70;
-    const palette = [
+    const palette: [number, number, number][] = [
       [37, 99, 235],
       [99, 102, 241],
       [16, 185, 129],
@@ -77,11 +81,12 @@ export function OrderPDFLink({ order }: OrderPDFLinkProps) {
 
     Object.entries(groups).forEach(([boutiqueName, items], gIndex) => {
       // Boutique header
-      const color = palette[gIndex % palette.length];
-      doc.setFillColor(...color);
+      const color = palette[gIndex % palette.length] as [number, number, number];
+      const [red, green, blue] = color;
+      doc.setFillColor(red, green, blue);
       doc.rect(20, currentY - 6, 6, 6, "F");
       doc.setFontSize(11);
-      doc.setTextColor(...color);
+      doc.setTextColor(red, green, blue);
       doc.setFont("helvetica", "bold");
       doc.text(` ${boutiqueName}`, 28, currentY);
 
@@ -99,7 +104,7 @@ export function OrderPDFLink({ order }: OrderPDFLinkProps) {
         body: rows,
         theme: "grid",
         headStyles: {
-          fillColor: color,
+          fillColor: [red, green, blue],
           textColor: 255,
           fontStyle: "bold",
         },
