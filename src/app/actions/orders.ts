@@ -17,6 +17,7 @@ export async function createOrderAction(formData: CreateOrderInput) {
   }
 
   const { items, ...orderData } = result.data;
+  const orderSource = orderData.source ?? "site_web";
   const orderBoutiqueId =
     orderData.boutique_id ?? items[0]?.boutique_id ?? null;
 
@@ -32,6 +33,7 @@ export async function createOrderAction(formData: CreateOrderInput) {
       .from("orders")
       .insert({
         ...orderData,
+        source: orderSource,
         boutique_id: orderBoutiqueId,
         created_at: new Date().toISOString(),
       })
