@@ -119,12 +119,13 @@ export default function MultiProductForm({
         </DialogTrigger>
       )}
 
-      <DialogContent className="sm:max-w-4xl p-0 overflow-hidden bg-[#0f172a] border-slate-800 text-white shadow-2xl">
-        <div className="flex flex-col gap-4 p-6">
+      <DialogContent className="sm:max-w-4xl p-0 overflow-hidden bg-[#0f172a] border-slate-800 text-white shadow-2xl max-h-[90vh] flex flex-col">
+        <div className="flex flex-col gap-4 p-6 flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 min-h-0 space-y-4 overflow-y-auto pr-1">
           {rows.map((row, idx) => (
             <div
               key={idx}
-              className="flex flex-col md:flex-row h-full max-h-[90vh] bg-transparent rounded-2xl border border-slate-800 overflow-hidden"
+              className="flex flex-col md:flex-row bg-transparent rounded-2xl border border-slate-800 overflow-hidden"
             >
               <div className="w-full md:w-1/3 bg-[#1e293b]/50 p-6 flex flex-col items-center justify-start space-y-6">
                 <div className="text-center space-y-2">
@@ -367,18 +368,19 @@ export default function MultiProductForm({
               </div>
             </div>
           ))}
+          </div>
 
-          <div className="flex items-center gap-3">
-            <Button onClick={addRow} variant="ghost">
+          <div className="flex items-center gap-3 flex-none">
+            <Button type="button" onClick={addRow} variant="ghost">
               <Plus /> Ajouter une ligne
             </Button>
           </div>
 
-          <div className="flex justify-end gap-3 p-4">
-            <Button variant="outline" onClick={() => setOpen(false)}>
+          <div className="flex justify-end gap-3 p-4 flex-none border-t border-slate-800/80 bg-[#0f172a] sticky bottom-0">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
-            <Button onClick={submitAll} disabled={loading}>
+            <Button type="button" onClick={submitAll} disabled={loading}>
               {loading ? <Loader2 className="animate-spin" /> : "Créer tous"}
             </Button>
           </div>
