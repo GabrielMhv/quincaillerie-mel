@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers/providers";
 import { createClient } from "@/lib/supabase/server";
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,6 +65,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} font-outfit antialiased`}
       >
         <Providers initialBranding={branding}>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
