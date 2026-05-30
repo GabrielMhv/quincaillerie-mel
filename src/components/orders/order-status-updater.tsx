@@ -7,13 +7,6 @@ import { CheckCircle2, Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { assignOrderHandlerAction } from "@/app/actions/orders";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export function OrderStatusUpdater({
   orderId,
@@ -30,13 +23,19 @@ export function OrderStatusUpdater({
   handlerName?: string | null;
   currentUserId?: string;
   currentUserRole?: string;
-  employees: { id: string; name: string; boutique_id: string | null; role: string }[];
+  employees: {
+    id: string;
+    name: string;
+    boutique_id: string | null;
+    role: string;
+  }[];
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
   const router = useRouter();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
-  const canAssign = currentUserRole === "cashier" || currentUserRole === "admin";
+  const canAssign =
+    currentUserRole === "cashier" || currentUserRole === "admin";
 
   if (currentStatus === "completed") return null;
 
@@ -48,7 +47,10 @@ export function OrderStatusUpdater({
 
     setIsLoading(true);
     try {
-      const result = await assignOrderHandlerAction(orderId, selectedEmployeeId);
+      const result = await assignOrderHandlerAction(
+        orderId,
+        selectedEmployeeId,
+      );
       if (result.error) throw new Error(result.error);
       toast.success("Commande assignée", {
         description: "La commande a été attribuée à l'employé choisi.",
@@ -90,21 +92,18 @@ export function OrderStatusUpdater({
 
     return (
       <div className="flex flex-col gap-2 min-w-52">
-        <Select
+        <select
           value={selectedEmployeeId}
-          onValueChange={(value) => setSelectedEmployeeId(value ?? "")}
+          onChange={(event) => setSelectedEmployeeId(event.target.value)}
+          className="h-8 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm outline-none transition-colors focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
         >
-          <SelectTrigger className="h-8 rounded-lg text-xs font-semibold">
-            <SelectValue placeholder="Attribuer à un employé" />
-          </SelectTrigger>
-          <SelectContent>
-            {availableEmployees.map((employee) => (
-              <SelectItem key={employee.id} value={employee.id}>
-                {employee.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <option value="">Attribuer à un employé</option>
+          {availableEmployees.map((employee) => (
+            <option key={employee.id} value={employee.id}>
+              {employee.name}
+            </option>
+          ))}
+        </select>
         <Button
           size="sm"
           onClick={handleAssign}

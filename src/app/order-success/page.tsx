@@ -62,7 +62,9 @@ export default function OrderSuccessPage(props: {
       const fetchOrder = async () => {
         const { data, error } = await supabase
           .from("orders")
-          .select("*, order_items(*, products(*)), boutique:boutiques(name)")
+          .select(
+            "*, order_items(*, products(*), boutique:boutiques(name)), boutique:boutiques(name)",
+          )
           .eq("id", orderId)
           .maybeSingle();
 

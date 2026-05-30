@@ -41,7 +41,7 @@ export default async function NotificationsPage(props: {
             </h1>
           </div>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-            Restez informÃ© des activitÃ©s de vos boutiques
+            Restez informé des activités de vos boutiques
           </p>
         </div>
       </div>

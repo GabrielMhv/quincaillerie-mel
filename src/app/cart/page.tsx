@@ -17,7 +17,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function CartPage() {
-  const { items, updateQuantity, removeItem, getTotal } = useCartStore();
+  const { items, updateQuantity, removeItem, getTotal, hasMultipleBoutiques } =
+    useCartStore();
 
   if (items.length === 0) {
     return (
@@ -74,6 +75,13 @@ export default function CartPage() {
             <h1 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-tight mx-auto lg:mx-0">
               Votre <span className="text-gradient">Panier.</span>
             </h1>
+            {hasMultipleBoutiques() && (
+              <div className="mt-4 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-bold">
+                Attention — votre panier contient des produits provenant de
+                plusieurs boutiques. Pour des raisons logistiques, passez des
+                commandes séparées par boutique.
+              </div>
+            )}
           </div>
 
           <div className="grid gap-12 lg:grid-cols-12 items-start border-t border-border/50 pt-16 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">

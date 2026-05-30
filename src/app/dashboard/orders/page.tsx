@@ -59,13 +59,30 @@ async function OrdersContent({ searchParams }: { searchParams: any }) {
       boutique:boutiques(name),
       employee:users!orders_employee_id_fkey(name),
       handler:users!orders_handler_id_fkey(name),
-      order_items(*, product:products(name, price))
+      order_items(*, product:products(name, price), boutique:boutiques(name))
     `,
     )
     .order("created_at", { ascending: false });
 
   if (filteredBoutiqueId) {
-    query = query.eq("boutique_id", filteredBoutiqueId);
+    // Find orders that either have boutique_id set to the boutique,
+    // or contain order_items that belong to the boutique.
+    const { data: matchingItems } = await supabase
+      .from("order_items")
+      .select("order_id")
+      .eq("boutique_id", filteredBoutiqueId);
+
+    const matchingOrderIds = Array.from(
+      new Set((matchingItems || []).map((r: any) => r.order_id)),
+    );
+
+    if (matchingOrderIds.length > 0) {
+      query = query.or(
+        `boutique_id.eq.${filteredBoutiqueId},id.in.(${matchingOrderIds.join(",")})`,
+      );
+    } else {
+      query = query.eq("boutique_id", filteredBoutiqueId);
+    }
   }
 
   if (statusFilter && statusFilter !== "all") {
@@ -191,6 +208,7 @@ async function OrdersContent({ searchParams }: { searchParams: any }) {
           currentUserId={user.id}
           userRole={profile?.role || "employee"}
           employees={employees || []}
+          filteredBoutiqueId={filteredBoutiqueId}
         />
       </div>
     </div>

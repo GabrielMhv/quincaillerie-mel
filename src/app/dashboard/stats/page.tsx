@@ -71,7 +71,7 @@ export default async function StatsPage(props: {
         <div className="relative z-10 space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-sm font-medium backdrop-blur-md">
             <Zap className="h-4 w-4 fill-blue-400" />
-            <span>Analyses en temps rÃ©el</span>
+            <span>Analyses en temps réel</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.1]">
             Performances <br />
@@ -80,7 +80,7 @@ export default async function StatsPage(props: {
             </span>
           </h1>
           <p className="text-slate-400 text-lg md:text-xl max-w-2xl font-medium leading-relaxed">
-            Suivez l&apos;évolution de vos ventes, identifiez vos meilleurs clients
+            Suivez l'évolution de vos ventes, identifiez vos meilleurs clients
             et optimisez votre stratégie de croissance.
           </p>
         </div>

@@ -19,7 +19,7 @@ export const createOrderSchema = z.object({
     .default("pending"),
   source: z.string().optional().nullable(),
   referred_employee_name: z.string().optional().nullable(),
-  boutique_id: z.string().uuid(),
+  boutique_id: z.string().uuid().optional().nullable(),
   is_scheduled: z.boolean().default(false),
   scheduled_at: z.string().optional().nullable(),
   items: z

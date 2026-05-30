@@ -1,19 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Users,
-  UserPlus,
-  Search,
-  MoreVertical,
-  ShieldCheck,
-  Store,
-  Mail,
-  Calendar,
-  Trash2,
-  Edit2,
-  Plus,
-} from "lucide-react";
+import { Search, ShieldCheck, Store, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -199,7 +187,8 @@ export function TeamTable({ members, boutiques }: TeamTableProps) {
                               Désactiver le membre ?
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Le membre sera rétrogradé au rôle de client et perdra tout accès aux dashboards.
+                              Le membre sera rétrogradé au rôle de client et
+                              perdra tout accès aux dashboards.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>

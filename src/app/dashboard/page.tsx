@@ -177,7 +177,9 @@ async function DashboardContent({
                   ? "Administrateur Système"
                   : profile?.role === "manager"
                     ? "Manager Boutique"
-                    : "Poste de Vente"}
+                    : profile?.role === "cashier"
+                      ? "Caissier"
+                      : "Poste de Vente"}
               </p>
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight animate-in slide-in-from-left duration-700 italic">
                 {greeting}, {profile?.name || "Admin"}

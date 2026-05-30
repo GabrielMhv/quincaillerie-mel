@@ -23,7 +23,8 @@ import {
 import { createOrderAction } from "@/app/actions/orders";
 
 export function CheckoutForm() {
-  const { items, getTotal, clearCart, boutiqueId } = useCartStore();
+  const { items, getTotal, clearCart, boutiqueId, hasMultipleBoutiques } =
+    useCartStore();
   const [employees, setEmployees] = useState<{ id: string; name: string }[]>(
     [],
   );
@@ -71,6 +72,9 @@ export function CheckoutForm() {
       return;
     }
 
+    // If the cart contains items from multiple boutiques, create a multi-boutique order
+    // by leaving `boutique_id` null. Individual items keep their `boutique_id`.
+
     setIsLoading(true);
 
     try {
@@ -86,7 +90,7 @@ export function CheckoutForm() {
             ? formData.referred_employee_name
             : null,
         total: getTotal(),
-        boutique_id: boutiqueId,
+        boutique_id: hasMultipleBoutiques() ? null : boutiqueId,
         status: "pending",
         is_scheduled: formData.is_scheduled,
         scheduled_at: formData.is_scheduled ? formData.scheduled_at : null,
@@ -94,6 +98,7 @@ export function CheckoutForm() {
           product_id: item.product.id,
           quantity: item.quantity,
           price: item.product.price,
+          boutique_id: item.boutique_id || null,
         })),
       });
 

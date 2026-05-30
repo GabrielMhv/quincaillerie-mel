@@ -26,13 +26,31 @@ interface OrderDetailsModalProps {
   order: Order | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  filteredBoutiqueId?: string | null;
 }
 
 export function OrderDetailsModal({
   order,
   isOpen,
   onOpenChange,
+  filteredBoutiqueId,
 }: OrderDetailsModalProps) {
+  const getBadge = (name?: string) => {
+    const label = (name || "Global").trim();
+    const initials = label
+      .split(" ")
+      .map((s) => s[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+    const colors = ["#2563EB", "#6366F1", "#10B981", "#EA580C", "#DC2626"];
+    const hash = Array.from(label).reduce(
+      (acc, ch) => acc + ch.charCodeAt(0),
+      0,
+    );
+    const color = colors[hash % colors.length];
+    return { initials, color };
+  };
   if (!order) return null;
 
   return (
@@ -219,37 +237,109 @@ export function OrderDetailsModal({
 
                 <ScrollArea className="h-107.5 pr-4">
                   <div className="space-y-3">
-                    {order.order_items?.map((item, idx: number) => (
-                      <div
-                        key={idx}
-                        className="group relative flex justify-between items-center p-4 rounded-2xl bg-secondary/5 hover:bg-white dark:hover:bg-card hover:shadow-lg transition-all border border-transparent hover:border-border/50"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary/40 font-black text-xs">
-                            {idx + 1}
-                          </div>
-                          <div className="space-y-1">
-                            <p className="font-black text-sm tracking-tight group-hover:text-primary transition-colors">
-                              {item.product?.name || "Produit supprimé"}
-                            </p>
-                            <div className="flex items-center gap-3">
-                              <Badge
-                                variant="secondary"
-                                className="rounded-lg px-2 py-0 text-[8px] font-bold tracking-tight bg-muted/40 border-none"
-                              >
-                                Qté: {item.quantity}
-                              </Badge>
-                              <span className="text-[9px] font-bold text-muted-foreground/40">
-                                {formatCurrency(item.price)}
+                    {filteredBoutiqueId
+                      ? // Boutique-scoped view: show only items for this boutique
+                        (order.order_items || [])
+                          .filter((it) => it.boutique_id === filteredBoutiqueId)
+                          .map((item, idx: number) => (
+                            <div
+                              key={idx}
+                              className="group relative flex justify-between items-center p-4 rounded-2xl bg-secondary/5 hover:bg-white dark:hover:bg-card hover:shadow-lg transition-all border border-transparent hover:border-border/50"
+                            >
+                              <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary/40 font-black text-xs">
+                                  {idx + 1}
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="font-black text-sm tracking-tight group-hover:text-primary transition-colors">
+                                    {item.product?.name || "Produit supprimé"}
+                                  </p>
+                                  <div className="flex items-center gap-3">
+                                    <Badge
+                                      variant="secondary"
+                                      className="rounded-lg px-2 py-0 text-[8px] font-bold tracking-tight bg-muted/40 border-none"
+                                    >
+                                      Qté: {item.quantity}
+                                    </Badge>
+                                    <span className="text-[9px] font-bold text-muted-foreground/40">
+                                      {formatCurrency(item.price)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <p className="font-black text-base tabular-nums tracking-tighter">
+                                {formatCurrency(item.quantity * item.price)}
+                              </p>
+                            </div>
+                          ))
+                      : // Admin/global view: group items by boutique
+                        Object.entries(
+                          (order.order_items || []).reduce((acc: any, it) => {
+                            const key =
+                              it.boutique?.name || it.boutique_id || "Global";
+                            if (!acc[key]) acc[key] = [];
+                            acc[key].push(it);
+                            return acc;
+                          }, {}),
+                        ).map(([boutiqueName, items]: any, gIdx: number) => (
+                          <div key={gIdx} className="space-y-4">
+                            <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-primary/5 border border-primary/10">
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className="h-6 w-6 rounded-full flex items-center justify-center text-white text-xs font-black"
+                                  style={{
+                                    backgroundColor:
+                                      getBadge(boutiqueName).color,
+                                  }}
+                                >
+                                  {getBadge(boutiqueName).initials}
+                                </div>
+                                <h5 className="font-black text-sm">
+                                  {boutiqueName}
+                                </h5>
+                              </div>
+                              <span className="text-xs font-bold text-muted-foreground">
+                                {items.length} articles
                               </span>
                             </div>
+
+                            <div className="space-y-2">
+                              {items.map((item: any, idx: number) => (
+                                <div
+                                  key={idx}
+                                  className="group relative flex justify-between items-center p-4 rounded-2xl bg-secondary/5 hover:bg-white dark:hover:bg-card hover:shadow-lg transition-all border border-transparent hover:border-border/50"
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary/40 font-black text-xs">
+                                      {idx + 1}
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="font-black text-sm tracking-tight group-hover:text-primary transition-colors">
+                                        {item.product?.name ||
+                                          "Produit supprimé"}
+                                      </p>
+                                      <div className="flex items-center gap-3">
+                                        <Badge
+                                          variant="secondary"
+                                          className="rounded-lg px-2 py-0 text-[8px] font-bold tracking-tight bg-muted/40 border-none"
+                                        >
+                                          Qté: {item.quantity}
+                                        </Badge>
+                                        <span className="text-[9px] font-bold text-muted-foreground/40">
+                                          {formatCurrency(item.price)}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <p className="font-black text-base tabular-nums tracking-tighter">
+                                    {formatCurrency(item.quantity * item.price)}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                        <p className="font-black text-base tabular-nums tracking-tighter">
-                          {formatCurrency(item.quantity * item.price)}
-                        </p>
-                      </div>
-                    ))}
+                        ))}
+
                     {(!order.order_items || order.order_items.length === 0) && (
                       <div className="h-full flex flex-col items-center justify-center py-20 opacity-20">
                         <PackageOpen className="h-12 w-12 mb-4" />

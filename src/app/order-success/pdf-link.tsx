@@ -58,35 +58,68 @@ export function OrderPDFLink({ order }: OrderPDFLinkProps) {
     doc.text(order.client_name || "Client particulier", 120, 50);
     doc.text(order.client_phone || "N/A", 120, 55);
 
-    // Table
-    const tableRows = order.order_items.map((item) => [
-      item.products?.name || "Produit inconnu",
-      formatCurrency(item.unit_price),
-      item.quantity,
-      formatCurrency(item.unit_price * item.quantity),
-    ]);
+    // Group items by boutique
+    const groups: Record<string, any[]> = {};
+    (order.order_items || []).forEach((item) => {
+      const key = item.boutique?.name || item.boutique_id || "Réseau central";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
 
-    autoTable(doc, {
-      startY: 70,
-      head: [["Désignation", "Prix unitaire", "Quantité", "Total"]],
-      body: tableRows,
-      theme: "grid",
-      headStyles: {
-        fillColor: [37, 99, 235],
-        textColor: 255,
-        fontStyle: "bold",
-      },
-      footStyles: {
-        fillColor: [243, 244, 246],
-        textColor: 31,
-        fontStyle: "bold",
-      },
-      margin: { left: 20, right: 20 },
+    let currentY = 70;
+    const palette = [
+      [37, 99, 235],
+      [99, 102, 241],
+      [16, 185, 129],
+      [234, 88, 12],
+      [220, 38, 38],
+    ];
+
+    Object.entries(groups).forEach(([boutiqueName, items], gIndex) => {
+      // Boutique header
+      const color = palette[gIndex % palette.length];
+      doc.setFillColor(...color);
+      doc.rect(20, currentY - 6, 6, 6, "F");
+      doc.setFontSize(11);
+      doc.setTextColor(...color);
+      doc.setFont("helvetica", "bold");
+      doc.text(` ${boutiqueName}`, 28, currentY);
+
+      // Table rows for this boutique
+      const rows = items.map((item) => [
+        item.products?.name || "Produit inconnu",
+        formatCurrency(item.unit_price),
+        item.quantity,
+        formatCurrency(item.unit_price * item.quantity),
+      ]);
+
+      autoTable(doc, {
+        startY: currentY + 6,
+        head: [["Désignation", "Prix unitaire", "Quantité", "Total"]],
+        body: rows,
+        theme: "grid",
+        headStyles: {
+          fillColor: color,
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        footStyles: {
+          fillColor: [243, 244, 246],
+          textColor: 31,
+          fontStyle: "bold",
+        },
+        margin: { left: 20, right: 20 },
+      });
+
+      currentY =
+        (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable
+          .finalY + 12;
     });
 
     // Total Section
-    const finalY = ((doc as unknown) as { lastAutoTable: { finalY: number } })
-      .lastAutoTable.finalY + 10;
+    const finalY =
+      (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable
+        .finalY + 10;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     doc.text(`Montant total HT :`, 120, finalY);

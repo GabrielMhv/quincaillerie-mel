@@ -26,7 +26,8 @@ import { useBranding } from "@/components/providers/branding-provider";
 import { PublicBoutiqueSwitcher } from "./public-boutique-switcher";
 
 export function PublicHeader() {
-  const { user, signOut, isAdmin, isManager, isEmployee, isCashier } = useAuth();
+  const { user, signOut, isAdmin, isManager, isEmployee, isCashier } =
+    useAuth();
   const { items } = useCartStore();
   const { resolvedTheme, setTheme } = useTheme();
   const { settings } = useBranding();

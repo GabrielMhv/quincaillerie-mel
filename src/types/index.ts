@@ -68,7 +68,7 @@ export interface Order {
   status: OrderStatus;
   employee_id?: string;
   handler_id?: string | null;
-  boutique_id: string;
+  boutique_id: string | null;
   is_scheduled?: boolean;
   scheduled_at?: string;
   created_at: string;
@@ -84,6 +84,8 @@ export interface OrderItem {
   product_id: string;
   quantity: number;
   price: number;
+  boutique_id?: string | null;
+  boutique?: Boutique;
   product?: Product;
 }
 

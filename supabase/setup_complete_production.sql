@@ -300,7 +300,7 @@ BEGIN
   VALUES (
     'new_order',
     'Nouvelle Commande',
-    'Une commande de ' || NEW.total || ' CFA a Ã©tÃ© passÃ©e par ' || NEW.client_name || ' (' || v_boutique_name || ').',
+    'Une commande de ' || NEW.total || ' CFA a été passée par ' || NEW.client_name || ' (' || v_boutique_name || ').',
     NEW.boutique_id,
     jsonb_build_object('order_id', NEW.id)
   );
@@ -331,7 +331,7 @@ BEGIN
     VALUES (
       'low_stock',
       'Stock Bas !',
-      'Le produit ' || v_product_name || ' est presque Ã©puisÃ© Ã  ' || v_boutique_name || ' (' || NEW.quantity || ' restants).',
+      'Le produit ' || v_product_name || ' est presque épuisé à ' || v_boutique_name || ' (' || NEW.quantity || ' restants).',
       NEW.boutique_id,
       jsonb_build_object('product_id', NEW.product_id)
     );
@@ -433,7 +433,7 @@ BEGIN
   INSERT INTO public.notifications (type, title, message, boutique_id, metadata)
   VALUES (
     'transfer_request',
-    'RequÃªte de Stock Entrante',
+    'Requête de Stock Entrante',
     'La boutique ' || v_requester_name || ' souhaite du stock de votre part.',
     NEW.from_boutique_id, -- The PROVIDER gets the notification
     jsonb_build_object('transfer_id', NEW.id)

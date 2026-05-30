@@ -11,6 +11,8 @@ interface CartState {
   clearCart: () => void;
   getTotal: () => number;
   getItemCount: () => number;
+  getBoutiqueIds: () => string[];
+  hasMultipleBoutiques: () => boolean;
 }
 
 export const useCartStore = create<CartState>()(
@@ -21,21 +23,19 @@ export const useCartStore = create<CartState>()(
 
       addItem: (product, boutique_id, quantity = 1) => {
         set((state) => {
-          const existing = state.items.find(
-            (i) => i.product.id === product.id
-          );
-          
+          const existing = state.items.find((i) => i.product.id === product.id);
+
           if (existing) {
             return {
               items: state.items.map((i) =>
                 i.product.id === product.id
                   ? { ...i, quantity: i.quantity + quantity }
-                  : i
+                  : i,
               ),
               boutiqueId: state.boutiqueId || boutique_id,
             };
           }
-          
+
           return {
             items: [...state.items, { product, quantity, boutique_id }],
             boutiqueId: state.boutiqueId || boutique_id,
@@ -56,7 +56,7 @@ export const useCartStore = create<CartState>()(
         }
         set((state) => ({
           items: state.items.map((i) =>
-            i.product.id === productId ? { ...i, quantity } : i
+            i.product.id === productId ? { ...i, quantity } : i,
           ),
         }));
       },
@@ -66,14 +66,30 @@ export const useCartStore = create<CartState>()(
       getTotal: () =>
         get().items.reduce(
           (sum, item) => sum + item.product.price * item.quantity,
-          0
+          0,
         ),
 
       getItemCount: () =>
         get().items.reduce((sum, item) => sum + item.quantity, 0),
+
+      getBoutiqueIds: () => {
+        const ids = Array.from(
+          new Set(
+            get()
+              .items.map((i) => i.boutique_id)
+              .filter(Boolean),
+          ),
+        );
+        return ids as string[];
+      },
+
+      hasMultipleBoutiques: () => {
+        const ids = get().getBoutiqueIds();
+        return ids.length > 1;
+      },
     }),
     {
       name: "quincaillerie-cart",
-    }
-  )
+    },
+  ),
 );

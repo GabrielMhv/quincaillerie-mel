@@ -40,6 +40,14 @@ let audioUnlocked = false;
 const SOUND_URL =
   "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
 
+const repairText = (value: string) => {
+  try {
+    return decodeURIComponent(escape(value));
+  } catch {
+    return value;
+  }
+};
+
 const playNotificationSound = () => {
   if (!notificationAudio) return;
   notificationAudio.currentTime = 0;
@@ -266,18 +274,18 @@ export function NotificationBell({
                         !n.is_read && "text-primary",
                       )}
                     >
-                      {n.title}
+                      {repairText(n.title)}
                     </p>
                     {userRole === "admin" && n.boutique?.name && (
                       <Badge
                         variant="outline"
                         className="text-[9px] h-4 px-1 py-0 bg-primary/5 text-primary border-primary/20 mb-1"
                       >
-                        {n.boutique.name}
+                        {repairText(n.boutique.name)}
                       </Badge>
                     )}
                     <p className="text-[11px] text-muted-foreground leading-snug">
-                      {n.message}
+                      {repairText(n.message)}
                     </p>
                     <p className="text-[10px] text-muted-foreground/60 italic">
                       {new Date(n.created_at).toLocaleTimeString([], {

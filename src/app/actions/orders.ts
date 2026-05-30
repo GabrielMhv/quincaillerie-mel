@@ -53,7 +53,10 @@ export async function createOrderAction(formData: CreateOrderInput) {
   }
 }
 
-export async function assignOrderHandlerAction(orderId: string, handlerId: string) {
+export async function assignOrderHandlerAction(
+  orderId: string,
+  handlerId: string,
+) {
   const supabase = await createClient();
 
   const {

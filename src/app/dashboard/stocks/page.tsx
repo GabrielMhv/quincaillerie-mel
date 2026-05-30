@@ -55,10 +55,10 @@ async function StocksContent({ searchParams }: { searchParams: any }) {
           <AlertTriangle className="h-8 w-8" />
         </div>
         <p className="text-xl font-black tracking-tighter italic">
-          AccÃ¨s hautement sÃ©curisÃ©
+          Accès hautement sécurisé
         </p>
         <p className="text-sm text-muted-foreground font-medium">
-          RÃ©servÃ© au personnel autorisÃ© de la direction.
+          Réservé au personnel autorisé de la direction.
         </p>
       </div>
     );
@@ -130,8 +130,8 @@ async function StocksContent({ searchParams }: { searchParams: any }) {
           </h1>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             {isGlobalScope
-              ? "Inventaire consolidÃ© du rÃ©seau"
-              : `Ã‰tat des stocks : ${currentBoutiqueName}`}
+              ? "Inventaire consolidé du réseau"
+              : `État des stocks : ${currentBoutiqueName}`}
           </p>
         </div>
 

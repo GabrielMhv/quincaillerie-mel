@@ -4,8 +4,8 @@ import { useState } from "react";
 import { formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { OrderStatusUpdater } from "@/components/orders/order-status-updater";
-import { Button } from "@/components/ui/button";
-import { FileText, History, ShoppingCart } from "lucide-react";
+import { History, ShoppingCart } from "lucide-react";
+import { PrintOrderButton } from "./print-order-button";
 import { OrderDetailsModal } from "./order-details-modal";
 import { Order } from "@/types";
 import { formatDistanceToNow } from "date-fns";
@@ -16,16 +16,67 @@ interface OrdersTableProps {
   isGlobalScope: boolean;
   currentUserId: string;
   userRole: string;
-  employees: { id: string; name: string; boutique_id: string | null; role: string }[];
+  employees: {
+    id: string;
+    name: string;
+    boutique_id: string | null;
+    role: string;
+  }[];
+  filteredBoutiqueId?: string | null;
 }
 
-export function OrdersTable({ orders, currentUserId, userRole, employees }: OrdersTableProps) {
+export function OrdersTable({
+  orders,
+  currentUserId,
+  userRole,
+  employees,
+  filteredBoutiqueId,
+}: OrdersTableProps) {
+  const getBadge = (label?: string) => {
+    const name = (label || "Global").trim();
+    const initials = name
+      .split(" ")
+      .map((s) => s[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+    const colors = ["#2563EB", "#6366F1", "#10B981", "#EA580C", "#DC2626"];
+    const hash = Array.from(name).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+    const color = colors[hash % colors.length];
+    return { initials, color };
+  };
+  const boutiqueNamesSet = new Set<string>();
+  orders?.forEach((o) => {
+    if (o.boutique?.name) boutiqueNamesSet.add(o.boutique.name);
+    o.order_items?.forEach((it) => {
+      if (it.boutique?.name) boutiqueNamesSet.add(it.boutique.name);
+    });
+  });
+  const boutiques = Array.from(boutiqueNamesSet);
+
   const [selectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>
       <div className="p-4 md:p-6 grid grid-cols-1 gap-8">
+        {boutiques.length > 0 && (
+          <div className="mb-4 flex items-center gap-3 flex-wrap">
+            <span className="text-xs font-bold text-slate-400">Légende boutiques:</span>
+            {boutiques.map((b) => (
+              <div
+                key={b}
+                className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 rounded-full px-2 py-1"
+              >
+                <div
+                  className="h-4 w-4 rounded-full"
+                  style={{ backgroundColor: getBadge(b).color }}
+                />
+                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{b}</span>
+              </div>
+            ))}
+          </div>
+        )}
         {orders?.map((order) => {
           return (
             <div
@@ -37,7 +88,7 @@ export function OrdersTable({ orders, currentUserId, userRole, employees }: Orde
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="text-lg font-bold text-slate-900 dark:text-white">
-                      Commande #{order.id.slice(0, 8).toUpperCase()}
+                      Commande #{order.id.slice(0, 8)}
                     </h4>
                     <Badge
                       variant="secondary"
@@ -47,12 +98,21 @@ export function OrdersTable({ orders, currentUserId, userRole, employees }: Orde
                         ? "Boutique"
                         : order.source
                             .split("_")
-                            .map(
-                              (word) =>
-                                word.charAt(0).toUpperCase() + word.slice(1),
-                            )
+                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                             .join(" ")}
                     </Badge>
+
+                    {order.boutique?.name && (
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-6 w-6 rounded-full flex items-center justify-center text-white text-xs font-black"
+                          style={{ backgroundColor: getBadge(order.boutique.name).color }}
+                          title={order.boutique.name}
+                        >
+                          {getBadge(order.boutique.name).initials}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs text-slate-400 font-medium lowercase">
                     {formatDistanceToNow(new Date(order.created_at), {
@@ -96,21 +156,29 @@ export function OrdersTable({ orders, currentUserId, userRole, employees }: Orde
                     Produits commandés
                   </h5>
                   <div className="space-y-3">
-                    {order.order_items?.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="flex justify-between items-center text-xs"
-                      >
-                        <span className="text-slate-600 dark:text-slate-400">
-                          <span className="font-bold text-slate-900 dark:text-white">
-                            {item.quantity}x
-                          </span>{" "}
+                    {(
+                      (filteredBoutiqueId
+                        ? order.order_items?.filter((it) => it.boutique_id === filteredBoutiqueId)
+                        : order.order_items) || []
+                    ).map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center text-xs">
+                        <span className="text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                          {/* Show boutique badge per item when order is multi-boutique or item boutique differs */}
+                          {(!order.boutique || (item.boutique && item.boutique.name !== order.boutique?.name)) && item.boutique?.name && (
+                            <div
+                              className="h-5 w-5 rounded-full flex items-center justify-center text-white text-[10px] font-black"
+                              style={{ backgroundColor: getBadge(item.boutique.name).color }}
+                              title={item.boutique.name}
+                            >
+                              {getBadge(item.boutique.name).initials}
+                            </div>
+                          )}
+                          <span className="font-bold text-slate-900 dark:text-white">{item.quantity}x</span>
+                          {" "}
                           {item.product?.name}
                         </span>
                         <span className="font-bold text-slate-900 dark:text-white italic">
-                          {formatCurrency(
-                            (item.price ?? 0) * (item.quantity ?? 1),
-                          )}
+                          {formatCurrency((item.price ?? 0) * (item.quantity ?? 1))}
                         </span>
                       </div>
                     ))}
@@ -130,21 +198,18 @@ export function OrdersTable({ orders, currentUserId, userRole, employees }: Orde
 
               {/* Footer Actions */}
               <div className="mt-auto pt-6 border-t border-slate-50 dark:border-slate-800 flex flex-col gap-4">
-                <OrderStatusUpdater
+                <div className="flex flex-col gap-3">
+                  <OrderStatusUpdater
                   orderId={order.id}
                   currentStatus={order.status}
                   handlerId={order.handler_id}
+                  handlerName={order.handler?.name || null}
                   currentUserId={currentUserId}
                   currentUserRole={userRole}
                   employees={employees}
                 />
-                <Button
-                  size="lg"
-                  className="w-full h-12 bg-[#064e3b] hover:bg-[#065f46] text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-[0.98]"
-                >
-                  <FileText className="h-4 w-4" />
-                  Imprimer le ticket
-                </Button>
+                  <PrintOrderButton order={order} />
+                </div>
               </div>
             </div>
           );
@@ -171,6 +236,7 @@ export function OrdersTable({ orders, currentUserId, userRole, employees }: Orde
         order={selectedOrder}
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
+        filteredBoutiqueId={filteredBoutiqueId}
       />
     </>
   );
