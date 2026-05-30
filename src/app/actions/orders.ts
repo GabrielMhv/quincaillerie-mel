@@ -17,6 +17,14 @@ export async function createOrderAction(formData: CreateOrderInput) {
   }
 
   const { items, ...orderData } = result.data;
+  const orderBoutiqueId =
+    orderData.boutique_id ?? items[0]?.boutique_id ?? null;
+
+  if (!orderBoutiqueId) {
+    return {
+      error: "Impossible de déterminer la boutique principale de la commande.",
+    };
+  }
 
   try {
     // 2. Création de la commande
@@ -24,6 +32,7 @@ export async function createOrderAction(formData: CreateOrderInput) {
       .from("orders")
       .insert({
         ...orderData,
+        boutique_id: orderBoutiqueId,
         created_at: new Date().toISOString(),
       })
       .select()
